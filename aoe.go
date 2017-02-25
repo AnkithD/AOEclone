@@ -19,7 +19,7 @@ func (*myScene) Preload() {
 func (*myScene) Setup(world *ecs.World) {
 	world.AddSystem(new(common.RenderSystem))
 
-	common.SetBackground(color.Gray)
+	common.SetBackground(color.RGBA{120, 120, 120, 255})
 }
 func main() {
 	opts := engo.RunOptions{
