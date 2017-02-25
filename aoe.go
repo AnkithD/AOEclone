@@ -20,6 +20,7 @@ func (*myScene) Preload() {
 func (*myScene) Setup(world *ecs.World) {
 	world.AddSystem(new(common.RenderSystem))
 	world.AddSystem(new(systems.MapSystem))
+	world.AddSystem(new(systems.HUDSystem))
 
 	common.SetBackground(color.RGBA{120, 120, 120, 255})
 }
