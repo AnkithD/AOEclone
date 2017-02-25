@@ -1,10 +1,10 @@
 package main
 
 import (
-	"./systems"
 	"engo.io/ecs"
 	"engo.io/engo"
 	"engo.io/engo/common"
+	"github.com/Ankithd/AOEClone/systems"
 
 	"image/color"
 )
