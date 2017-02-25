@@ -6,7 +6,6 @@ import (
 	"engo.io/engo/common"
 
 	"image/color"
-	"log"
 )
 
 type myScene struct{}
@@ -20,7 +19,7 @@ func (*myScene) Preload() {
 func (*myScene) Setup(world *ecs.World) {
 	world.AddSystem(new(common.RenderSystem))
 
-	comm
+	common.SetBackground(color.Gray)
 }
 func main() {
 	opts := engo.RunOptions{
