@@ -1,6 +1,7 @@
 package main
 
 import (
+	"./systems"
 	"engo.io/ecs"
 	"engo.io/engo"
 	"engo.io/engo/common"
@@ -18,6 +19,7 @@ func (*myScene) Preload() {
 
 func (*myScene) Setup(world *ecs.World) {
 	world.AddSystem(new(common.RenderSystem))
+	world.AddSystem(new(systems.MapSystem))
 
 	common.SetBackground(color.RGBA{120, 120, 120, 255})
 }
