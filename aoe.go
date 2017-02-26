@@ -26,9 +26,10 @@ func (*myScene) Setup(world *ecs.World) {
 }
 func main() {
 	opts := engo.RunOptions{
-		Title:  "AOE Clone",
-		Width:  1280,
-		Height: 720,
+		Title:         "AOE Clone",
+		Width:         1280,
+		Height:        720,
+		ScaleOnResize: true,
 	}
 
 	engo.Run(opts, new(myScene))
