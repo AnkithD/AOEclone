@@ -11,6 +11,7 @@ import (
 
 type myScene struct{}
 
+// Place holder methods to satisfy interface
 func (*myScene) Type() string { return "myGame" }
 
 func (*myScene) Preload() {
