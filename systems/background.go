@@ -96,8 +96,11 @@ func (ms *MapSystem) New(w *ecs.World) {
 				sys.Add(&ms.hor_lines[i].BasicEntity, &ms.hor_lines[i].RenderComponent, &ms.hor_lines[i].SpaceComponent)
 				ms.hor_lines[i].RenderComponent.Hidden = true
 			}
+		case *common.CameraSystem:
+			fmt.Println(sys.X(), sys.Y())
 		}
 	}
+
 	fmt.Println("Map System initialized")
 }
 
