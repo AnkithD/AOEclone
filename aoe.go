@@ -15,7 +15,10 @@ type myScene struct{}
 func (*myScene) Type() string { return "myGame" }
 
 func (*myScene) Preload() {
-
+	err := engo.Files.Load("Roboto-Regular.ttf")
+	if err != nil {
+		panic(err)
+	}
 }
 
 func (*myScene) Setup(world *ecs.World) {
