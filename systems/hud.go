@@ -39,7 +39,7 @@ func (*HUDSystem) New(w *ecs.World) {
 		Height:   float32(HudHeight),
 	}
 
-	BottomHud.RenderComponent.SetZIndex(1)
+	BottomHud.RenderComponent.SetZIndex(1000)
 	BottomHud.RenderComponent.SetShader(common.HUDShader)
 
 	TopHud := HUD{BasicEntity: ecs.NewBasic()}
@@ -57,7 +57,7 @@ func (*HUDSystem) New(w *ecs.World) {
 		Height:   float32(TopHeight),
 	}
 
-	TopHud.RenderComponent.SetZIndex(1)
+	TopHud.RenderComponent.SetZIndex(1000)
 	TopHud.RenderComponent.SetShader(common.HUDShader)
 
 	for _, system := range w.Systems() {
