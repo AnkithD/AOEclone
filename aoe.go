@@ -29,7 +29,7 @@ func main() {
 	opts := engo.RunOptions{
 		Title:         "AOE Clone",
 		Width:         1280,
-		Height:        720,
+		Height:        768,
 		ScaleOnResize: true,
 	}
 
