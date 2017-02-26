@@ -21,13 +21,19 @@ type HUD struct {
 	common.SpaceComponent
 }
 
+type SHAPE struct {
+	ecs.BasicEntity
+	common.RenderComponent
+	common.SpaceComponent
+}
+
 func (*HUDSystem) New(w *ecs.World) {
 	BottomHud := HUD{BasicEntity: ecs.NewBasic()}
 
 	HudWidth := int(engo.WindowWidth())
-	HudHeight := 150
+	HudHeight := 160
 
-	colorA := color.RGBA{160, 82, 45, 250}
+	colorA := color.RGBA{222, 184, 135, 250}
 
 	BottomHud.RenderComponent = common.RenderComponent{
 		Drawable: common.Rectangle{},
@@ -45,7 +51,7 @@ func (*HUDSystem) New(w *ecs.World) {
 	TopHud := HUD{BasicEntity: ecs.NewBasic()}
 
 	TopWidth := int(engo.WindowWidth())
-	TopHeight := 50
+	TopHeight := 64
 
 	TopHud.RenderComponent = common.RenderComponent{
 		Drawable: common.Rectangle{},
@@ -68,4 +74,24 @@ func (*HUDSystem) New(w *ecs.World) {
 		}
 	}
 
+	/*
+
+	   The above part is for the plane HUD's and from here the indicators are placed on them
+
+
+	*/
+
+	Rect1 := SHAPE{BasicEntity: ecs.NewBasic()}
+	Rect1.SpaceComponent = common.SpaceComponent{Position: engo.Point{15, engo.WindowHeight() - float32(HudHeight-15)}, Width: float32((HudWidth / 3) - 80), Height: float32((HudHeight) - 30)}
+	Rect1.RenderComponent = common.RenderComponent{Drawable: common.Rectangle{}, Color: color.RGBA{255, 255, 255, 255}}
+
+	Rect1.RenderComponent.SetZIndex(1500)
+	Rect1.RenderComponent.SetShader(common.HUDShader)
+
+	for _, system := range w.Systems() {
+		switch sys := system.(type) {
+		case *common.RenderSystem:
+			sys.Add(&Rect1.BasicEntity, &Rect1.RenderComponent, &Rect1.SpaceComponent)
+		}
+	}
 }
