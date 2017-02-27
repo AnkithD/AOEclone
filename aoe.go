@@ -34,6 +34,7 @@ func main() {
 		Width:         1280,
 		Height:        768,
 		ScaleOnResize: true,
+		MSAA:          2,
 	}
 
 	engo.Run(opts, new(myScene))
