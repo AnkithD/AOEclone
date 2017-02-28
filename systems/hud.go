@@ -383,8 +383,9 @@ func (rect *HUDSystem) New(w *ecs.World) {
 		switch sys := system.(type) {
 		case *common.RenderSystem:
 			lab := rect.Bottomlabel[1]
-			for _, item := range lab {
-				sys.Add(&item.BasicEntity, &item.RenderComponent, &item.SpaceComponent)
+			fmt.Println(len(lab))
+			for i, _ := range lab {
+				sys.Add(&lab[i].BasicEntity, &lab[i].RenderComponent, &lab[i].SpaceComponent)
 			}
 
 		}
