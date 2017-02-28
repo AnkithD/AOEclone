@@ -26,6 +26,7 @@ func (*myScene) Setup(world *ecs.World) {
 	world.AddSystem(new(systems.MapSystem))
 	world.AddSystem(new(systems.HUDSystem))
 	world.AddSystem(new(systems.BuildingSystem))
+	world.AddSystem(&common.EdgeScroller{ScrollSpeed: 640, EdgeMargin: 32})
 
 	common.SetBackground(color.RGBA{120, 120, 120, 255})
 }
