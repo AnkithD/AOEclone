@@ -19,6 +19,8 @@ func (*myScene) Preload() {
 	if err != nil {
 		panic(err)
 	}
+
+	engo.Files.Load("Town_center.png")
 }
 
 func (*myScene) Setup(world *ecs.World) {

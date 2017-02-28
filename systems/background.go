@@ -9,10 +9,6 @@ import (
 	"image/color"
 )
 
-var (
-	gridToggle = "gridToggle"
-)
-
 // Defining the Map system
 type MapSystem struct {
 	world      *ecs.World
@@ -24,13 +20,6 @@ type MapSystem struct {
 //Place holders to satisfy Interface
 
 func (*MapSystem) Remove(ecs.BasicEntity) {}
-
-// Every object of this entity is one grid line
-type GridLineEntity struct {
-	ecs.BasicEntity
-	common.RenderComponent
-	common.SpaceComponent
-}
 
 // When system is created this func is executed
 // Initialze the world variable and assign tab to toggle the grid
@@ -113,4 +102,11 @@ func (ms *MapSystem) Update(dt float32) {
 			ms.hor_lines[i].RenderComponent.Hidden = !ms.hor_lines[i].RenderComponent.Hidden
 		}
 	}
+}
+
+// Every object of this entity is one grid line
+type GridLineEntity struct {
+	ecs.BasicEntity
+	common.RenderComponent
+	common.SpaceComponent
 }
