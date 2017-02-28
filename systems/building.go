@@ -18,7 +18,7 @@ func (bs *BuildingSystem) Remove(ecs.BasicEntity) {}
 func (bs *BuildingSystem) New(w *ecs.World) {
 	bs.world = w
 
-	TownCenterTexture, err := common.LoadedSprite("House.png")
+	TownCenterTexture, err := common.LoadedSprite("Town_centre.png")
 	if err != nil {
 		fmt.Println(err.Error())
 	}
