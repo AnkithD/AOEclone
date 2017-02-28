@@ -15,7 +15,10 @@ type myScene struct{}
 func (*myScene) Type() string { return "myGame" }
 
 func (*myScene) Preload() {
-	err := engo.Files.Load("Roboto-Regular.ttf", "Town_centre.png")
+	err := engo.Files.Load(
+		"Roboto-Regular.ttf", "Town_centre.png", "Military_block.png", "Resource_Building.png",
+		"House.png",
+	)
 	if err != nil {
 		panic(err)
 	}
@@ -23,10 +26,12 @@ func (*myScene) Preload() {
 
 func (*myScene) Setup(world *ecs.World) {
 	world.AddSystem(new(common.RenderSystem))
+	world.AddSystem(&common.EdgeScroller{ScrollSpeed: 640, EdgeMargin: 32})
+	systems.CacheActiveSystems(world)
+
 	world.AddSystem(new(systems.MapSystem))
 	world.AddSystem(new(systems.HUDSystem))
 	world.AddSystem(new(systems.BuildingSystem))
-	world.AddSystem(&common.EdgeScroller{ScrollSpeed: 640, EdgeMargin: 32})
 
 	common.SetBackground(color.RGBA{120, 120, 120, 255})
 }

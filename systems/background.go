@@ -82,18 +82,13 @@ func (ms *MapSystem) New(w *ecs.World) {
 	}
 
 	// Add each grid line entity to the render system
-	for _, system := range w.Systems() {
-		switch sys := system.(type) {
-		case *common.RenderSystem:
-			for i := 0; i < vert_num; i++ {
-				sys.Add(&ms.vert_lines[i].BasicEntity, &ms.vert_lines[i].RenderComponent, &ms.vert_lines[i].SpaceComponent)
-				ms.vert_lines[i].RenderComponent.Hidden = true
-			}
-			for i := 0; i < hor_num; i++ {
-				sys.Add(&ms.hor_lines[i].BasicEntity, &ms.hor_lines[i].RenderComponent, &ms.hor_lines[i].SpaceComponent)
-				ms.hor_lines[i].RenderComponent.Hidden = true
-			}
-		}
+	for i := 0; i < vert_num; i++ {
+		ActiveSystems.RenderSys.Add(&ms.vert_lines[i].BasicEntity, &ms.vert_lines[i].RenderComponent, &ms.vert_lines[i].SpaceComponent)
+		ms.vert_lines[i].RenderComponent.Hidden = true
+	}
+	for i := 0; i < hor_num; i++ {
+		ActiveSystems.RenderSys.Add(&ms.hor_lines[i].BasicEntity, &ms.hor_lines[i].RenderComponent, &ms.hor_lines[i].SpaceComponent)
+		ms.hor_lines[i].RenderComponent.Hidden = true
 	}
 
 	fmt.Println("Map System initialized")

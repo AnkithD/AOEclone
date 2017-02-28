@@ -77,13 +77,8 @@ func (rect *HUDSystem) New(w *ecs.World) {
 	TopHud.RenderComponent.SetZIndex(100)
 	TopHud.RenderComponent.SetShader(common.HUDShader)
 
-	for _, system := range w.Systems() {
-		switch sys := system.(type) {
-		case *common.RenderSystem:
-			sys.Add(&BottomHud.BasicEntity, &BottomHud.RenderComponent, &BottomHud.SpaceComponent)
-			sys.Add(&TopHud.BasicEntity, &TopHud.RenderComponent, &TopHud.SpaceComponent)
-		}
-	}
+	ActiveSystems.RenderSys.Add(&BottomHud.BasicEntity, &BottomHud.RenderComponent, &BottomHud.SpaceComponent)
+	ActiveSystems.RenderSys.Add(&TopHud.BasicEntity, &TopHud.RenderComponent, &TopHud.SpaceComponent)
 
 	/*
 
@@ -119,15 +114,10 @@ func (rect *HUDSystem) New(w *ecs.World) {
 	Rect4.RenderComponent.SetZIndex(125)
 	Rect4.RenderComponent.SetShader(common.HUDShader)
 
-	for _, system := range w.Systems() {
-		switch sys := system.(type) {
-		case *common.RenderSystem:
-			sys.Add(&Rect1.BasicEntity, &Rect1.RenderComponent, &Rect1.SpaceComponent)
-			sys.Add(&Rect2.BasicEntity, &Rect2.RenderComponent, &Rect2.SpaceComponent)
-			sys.Add(&Rect3.BasicEntity, &Rect3.RenderComponent, &Rect3.SpaceComponent)
-			sys.Add(&Rect4.BasicEntity, &Rect4.RenderComponent, &Rect4.SpaceComponent)
-		}
-	}
+	ActiveSystems.RenderSys.Add(&Rect1.BasicEntity, &Rect1.RenderComponent, &Rect1.SpaceComponent)
+	ActiveSystems.RenderSys.Add(&Rect2.BasicEntity, &Rect2.RenderComponent, &Rect2.SpaceComponent)
+	ActiveSystems.RenderSys.Add(&Rect3.BasicEntity, &Rect3.RenderComponent, &Rect3.SpaceComponent)
+	ActiveSystems.RenderSys.Add(&Rect4.BasicEntity, &Rect4.RenderComponent, &Rect4.SpaceComponent)
 
 	Rect5 := SHAPE{BasicEntity: ecs.NewBasic()}
 	Rect5.SpaceComponent = common.SpaceComponent{Position: engo.Point{Rect2.SpaceComponent.Position.X, Rect2.SpaceComponent.Position.Y + Rect2.Height + 10}, Width: Rect2.SpaceComponent.Width, Height: Rect2.SpaceComponent.Height}
@@ -150,14 +140,9 @@ func (rect *HUDSystem) New(w *ecs.World) {
 	Rect7.RenderComponent.SetZIndex(125)
 	Rect7.RenderComponent.SetShader(common.HUDShader)
 
-	for _, system := range w.Systems() {
-		switch sys := system.(type) {
-		case *common.RenderSystem:
-			sys.Add(&Rect5.BasicEntity, &Rect5.RenderComponent, &Rect5.SpaceComponent)
-			sys.Add(&Rect6.BasicEntity, &Rect6.RenderComponent, &Rect6.SpaceComponent)
-			sys.Add(&Rect7.BasicEntity, &Rect7.RenderComponent, &Rect7.SpaceComponent)
-		}
-	}
+	ActiveSystems.RenderSys.Add(&Rect5.BasicEntity, &Rect5.RenderComponent, &Rect5.SpaceComponent)
+	ActiveSystems.RenderSys.Add(&Rect6.BasicEntity, &Rect6.RenderComponent, &Rect6.SpaceComponent)
+	ActiveSystems.RenderSys.Add(&Rect7.BasicEntity, &Rect7.RenderComponent, &Rect7.SpaceComponent)
 
 	/*
 
@@ -182,13 +167,8 @@ func (rect *HUDSystem) New(w *ecs.World) {
 	Rect9.RenderComponent.SetZIndex(125)
 	Rect9.RenderComponent.SetShader(common.HUDShader)
 
-	for _, system := range w.Systems() {
-		switch sys := system.(type) {
-		case *common.RenderSystem:
-			sys.Add(&Rect8.BasicEntity, &Rect8.RenderComponent, &Rect8.SpaceComponent)
-			sys.Add(&Rect9.BasicEntity, &Rect9.RenderComponent, &Rect9.SpaceComponent)
-		}
-	}
+	ActiveSystems.RenderSys.Add(&Rect8.BasicEntity, &Rect8.RenderComponent, &Rect8.SpaceComponent)
+	ActiveSystems.RenderSys.Add(&Rect9.BasicEntity, &Rect9.RenderComponent, &Rect9.SpaceComponent)
 
 	/*
 
@@ -210,13 +190,8 @@ func (rect *HUDSystem) New(w *ecs.World) {
 	Rect11.RenderComponent.SetZIndex(125)
 	Rect11.RenderComponent.SetShader(common.HUDShader)
 
-	for _, system := range w.Systems() {
-		switch sys := system.(type) {
-		case *common.RenderSystem:
-			sys.Add(&Rect10.BasicEntity, &Rect10.RenderComponent, &Rect10.SpaceComponent)
-			sys.Add(&Rect11.BasicEntity, &Rect11.RenderComponent, &Rect11.SpaceComponent)
-		}
-	}
+	ActiveSystems.RenderSys.Add(&Rect10.BasicEntity, &Rect10.RenderComponent, &Rect10.SpaceComponent)
+	ActiveSystems.RenderSys.Add(&Rect11.BasicEntity, &Rect11.RenderComponent, &Rect11.SpaceComponent)
 
 	/*
 
@@ -258,20 +233,15 @@ func (rect *HUDSystem) New(w *ecs.World) {
 	label2.SetShader(common.TextHUDShader)
 	label2.SetZIndex(150)
 
-	for _, system := range w.Systems() {
-		switch sys := system.(type) {
-		case *common.RenderSystem:
-			sys.Add(&label1.BasicEntity, &label1.RenderComponent, &label1.SpaceComponent)
-			sys.Add(&label2.BasicEntity, &label2.RenderComponent, &label2.SpaceComponent)
-		}
-	}
+	ActiveSystems.RenderSys.Add(&label1.BasicEntity, &label1.RenderComponent, &label1.SpaceComponent)
+	ActiveSystems.RenderSys.Add(&label2.BasicEntity, &label2.RenderComponent, &label2.SpaceComponent)
 
 	/*
 
 	   TEXT On the Bottom HUD----
+	   for loop to be able to collapse code
 
 	*/
-
 	lab1 := Details{BasicEntity: ecs.NewBasic()}
 	lab1.SpaceComponent = common.SpaceComponent{Position: engo.Point{Rect1.SpaceComponent.Position.X + 48, Rect1.SpaceComponent.Position.Y + 32}}
 	lab1.RenderComponent.Drawable = common.Text{Font: fnt, Text: "TOWN CENTRE\n\n\nHealth : XX/YY"}
@@ -355,6 +325,7 @@ func (rect *HUDSystem) New(w *ecs.World) {
 	/*
 
 		Appending to the slices
+		for loop to be able to collapse code
 
 	*/
 	rect.Bottomlabel = make([][]Details, 0)
@@ -379,101 +350,16 @@ func (rect *HUDSystem) New(w *ecs.World) {
 	tempslice = append(tempslice, lab5)
 	rect.Bottomlabel = append(rect.Bottomlabel, tempslice)
 
-	for _, system := range w.Systems() {
-		switch sys := system.(type) {
-		case *common.RenderSystem:
-			lab := rect.Bottomlabel[1]
-			fmt.Println(len(lab))
-			for i, _ := range lab {
-				sys.Add(&lab[i].BasicEntity, &lab[i].RenderComponent, &lab[i].SpaceComponent)
-			}
-
-		}
+	lab := rect.Bottomlabel[1]
+	fmt.Println(len(lab))
+	for i, _ := range lab {
+		ActiveSystems.RenderSys.Add(&lab[i].BasicEntity, &lab[i].RenderComponent, &lab[i].SpaceComponent)
 	}
 
-	/*rect.rect1label[00].RenderComponent.Drawable = common.Text{Text: "TOWN CENTRE\n\n\nHealth : XX/YY"}
-	rect.rect1label[1].RenderComponent.Drawable = common.Text{Text: "VILLAGER\n\n\nHealth : xx/yy\n\n\nTask: xxxx"}
-	rect.rect1label[2].RenderComponent.Drawable = common.Text{Text: "HOUSE\n\n\nHealth : xx/yy"}
-	rect.rect1label[3].RenderComponent.Drawable = common.Text{Text: "MILITARY\n\n\nHealth : xx/yy"}
-
-	rect.rect2label[0].RenderComponent.Drawable = common.Text{Text: "Create Villager"}
-	rect.rect2label[1].RenderComponent.Drawable = common.Text{Text: "Build"}
-	//rect.rect2label[2].RenderComponent.Drawable = common.Text{Text: ""}
-	rect.rect2label[3].RenderComponent.Drawable = common.Text{Text: "Create Army"}
-
-	rect.rect3label[1].RenderComponent.Drawable = common.Text{Text: "Repair"}
-
-	/*
-		rect.label3 = Details{BasicEntity: ecs.NewBasic()}
-		rect.label3.SpaceComponent = common.SpaceComponent{Position: engo.Point{Rect1.SpaceComponent.Position.X + 48, Rect1.SpaceComponent.Position.Y + 32}}
-		rect.label3.RenderComponent.Drawable = common.Text{
-			Font: fnt,
-			Text: "TOWN CENTRE\n\n\nHealth : XX/YY",
-		}
-		rect.label3.SetShader(common.HUDShader)
-		rect.label3.SetZIndex(250)
-
-		rect.label4 = Details{BasicEntity: ecs.NewBasic()}
-		rect.label4.SpaceComponent = common.SpaceComponent{Position: engo.Point{Rect1.SpaceComponent.Position.X + 48, Rect1.SpaceComponent.Position.Y + 32}}
-		rect.label4.RenderComponent.Drawable = common.Text{
-			Font: fnt,
-			Text: "  VILLAGER\n\n\nHealth : xx/yy\n\n\nTask : xxxx",
-		}
-		rect.label4.SetShader(common.HUDShader)
-		rect.label4.SetZIndex(250)
-	*/
-
-	/*
-
-		Text on Middle three Rectangles
-
-	*/
-
-	/*rect.label5 = Details{BasicEntity: ecs.NewBasic()}
-	rect.label5.SpaceComponent = common.SpaceComponent{Position: engo.Point{Rect2.SpaceComponent.Position.X + 24, Rect2.SpaceComponent.Position.Y + 24}}
-	rect.label5.RenderComponent.Drawable = common.Text{
-		Font: fnt,
-		Text: "Villager",
-	}
-	rect.label5.SetShader(common.HUDShader)
-	rect.label5.SetZIndex(250)
-
-	rect.label6 = Details{BasicEntity: ecs.NewBasic()}
-	rect.label6.SpaceComponent = common.SpaceComponent{Position: engo.Point{Rect2.SpaceComponent.Position.X + 24, Rect2.SpaceComponent.Position.Y + 24}}
-	rect.label6.RenderComponent.Drawable = common.Text{
-		Font: fnt,
-		Text: "Build",
-	}
-	rect.label6.SetShader(common.HUDShader)
-	rect.label6.SetZIndex(250)
-
-	rect.label7 = Details{BasicEntity: ecs.NewBasic()}
-	rect.label7.SpaceComponent = common.SpaceComponent{Position: engo.Point{Rect3.SpaceComponent.Position.X + 24, Rect3.SpaceComponent.Position.Y + 24}}
-	rect.label7.RenderComponent.Drawable = common.Text{
-		Font: fnt,
-		Text: "Repair",
-	}
-	rect.label7.SetShader(common.HUDShader)
-	rect.label7.SetZIndex(250)
-	*/
 	fmt.Println("HUD System Initialized")
 
 }
 
-func (rect *HUDSystem) Update(dt float32) {
+func (rect *HUDSystem) Update(dt float32) {}
 
-	/*for _, system := range w.Systems() {
-		switch sys := system.(type) {
-		case *common.RenderSystem:
-			lab := rect.Bottomlabel[1]
-			for _, item := range lab {
-				sys.Add(&item.BasicEntity, &item.RenderComponent, &item.SpaceComponent)
-			}
-
-		}
-	}*/
-}
-
-func (*HUDSystem) Remove(ecs.BasicEntity) {
-
-}
+func (*HUDSystem) Remove(ecs.BasicEntity) {}

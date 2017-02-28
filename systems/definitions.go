@@ -1,22 +1,26 @@
 package systems
 
-// import (
-// 	"engo.io/engo/common"
-// 	"fmt"
-// )
+import (
+	"engo.io/ecs"
+	"engo.io/engo/common"
+)
 
 // Button mappings
 var (
 	gridToggle = "gridToggle"
 )
 
-// //textures
-// var TownCenterTexture, TownCenterTextureErr = common.LoadedSprite("House.png")
+var ActiveSystems ActiveSystemsStruct
 
-// func LoadTextures() {
+func CacheActiveSystems(world *ecs.World) {
+	for _, system := range world.Systems() {
+		switch sys := system.(type) {
+		case *common.RenderSystem:
+			ActiveSystems.RenderSys = sys
+		}
+	}
+}
 
-// 	if TownCenterTextureErr != nil {
-// 		fmt.Println("Problem with loading TownCenter Texture")
-// 		panic(TownCenterTextureErr)
-// 	}
-// }
+type ActiveSystemsStruct struct {
+	RenderSys *common.RenderSystem
+}
