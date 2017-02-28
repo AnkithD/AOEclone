@@ -82,7 +82,7 @@ func (ms *MapSystem) New(w *ecs.World) {
 	}
 
 	// Add each grid line entity to the render system
-	for _, system := range ms.world.Systems() {
+	for _, system := range w.Systems() {
 		switch sys := system.(type) {
 		case *common.RenderSystem:
 			for i := 0; i < vert_num; i++ {

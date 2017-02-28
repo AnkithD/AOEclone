@@ -15,7 +15,7 @@ type myScene struct{}
 func (*myScene) Type() string { return "myGame" }
 
 func (*myScene) Preload() {
-	err := engo.Files.Load("Roboto-Regular.ttf")
+	err := engo.Files.Load("Roboto-Regular.ttf", "House.png")
 	if err != nil {
 		panic(err)
 	}
@@ -25,6 +25,7 @@ func (*myScene) Setup(world *ecs.World) {
 	world.AddSystem(new(common.RenderSystem))
 	world.AddSystem(new(systems.MapSystem))
 	world.AddSystem(new(systems.HUDSystem))
+	world.AddSystem(new(systems.BuildingSystem))
 
 	common.SetBackground(color.RGBA{120, 120, 120, 255})
 }
