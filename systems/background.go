@@ -21,6 +21,13 @@ type MapSystem struct {
 
 func (*MapSystem) Remove(ecs.BasicEntity) {}
 
+// Every object of this entity is one grid line
+type GridLineEntity struct {
+	ecs.BasicEntity
+	common.RenderComponent
+	common.SpaceComponent
+}
+
 // When system is created this func is executed
 // Initialze the world variable and assign tab to toggle the grid
 func (ms *MapSystem) New(w *ecs.World) {
@@ -52,7 +59,7 @@ func (ms *MapSystem) New(w *ecs.World) {
 				Height:   engo.WindowHeight(),
 			},
 		}
-		ms.vert_lines[i].RenderComponent.SetZIndex(80)
+		ms.vert_lines[i].RenderComponent.SetZIndex(800)
 		ms.vert_lines[i].RenderComponent.SetShader(common.HUDShader)
 	}
 	//Generating the hor grid lines
@@ -70,7 +77,7 @@ func (ms *MapSystem) New(w *ecs.World) {
 			},
 		}
 		// Make the grid HUD, at a depth between 0 and HUD's
-		ms.hor_lines[i].RenderComponent.SetZIndex(80)
+		ms.hor_lines[i].RenderComponent.SetZIndex(800)
 		ms.hor_lines[i].RenderComponent.SetShader(common.HUDShader)
 	}
 
@@ -102,11 +109,4 @@ func (ms *MapSystem) Update(dt float32) {
 			ms.hor_lines[i].RenderComponent.Hidden = !ms.hor_lines[i].RenderComponent.Hidden
 		}
 	}
-}
-
-// Every object of this entity is one grid line
-type GridLineEntity struct {
-	ecs.BasicEntity
-	common.RenderComponent
-	common.SpaceComponent
 }

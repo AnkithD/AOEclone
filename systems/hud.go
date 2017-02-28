@@ -4,6 +4,7 @@ import (
 	"engo.io/ecs"
 	"engo.io/engo"
 	"engo.io/engo/common"
+	"fmt"
 	"image/color"
 )
 
@@ -11,8 +12,6 @@ type HUDSystem struct {
 	world       *ecs.World
 	Bottomlabel [][]Details
 }
-
-func (*HUDSystem) Remove(ecs.BasicEntity) {}
 
 type HUD struct {
 	ecs.BasicEntity
@@ -304,25 +303,25 @@ func (rect *HUDSystem) New(w *ecs.World) {
 	lab5.SetZIndex(250)
 
 	lab6 := Details{BasicEntity: ecs.NewBasic()}
-	lab6.SpaceComponent = common.SpaceComponent{Position: engo.Point{Rect2.SpaceComponent.Position.X + 24, Rect2.SpaceComponent.Position.Y + 24}}
+	lab6.SpaceComponent = common.SpaceComponent{Position: engo.Point{Rect2.SpaceComponent.Position.X + 16, Rect2.SpaceComponent.Position.Y + 16}}
 	lab6.RenderComponent.Drawable = common.Text{Font: fnt, Text: "Create Villager"}
 	lab6.SetShader(common.TextHUDShader)
 	lab6.SetZIndex(250)
 
 	lab7 := Details{BasicEntity: ecs.NewBasic()}
-	lab7.SpaceComponent = common.SpaceComponent{Position: engo.Point{Rect2.SpaceComponent.Position.X + 24, Rect2.SpaceComponent.Position.Y + 24}}
+	lab7.SpaceComponent = common.SpaceComponent{Position: engo.Point{Rect2.SpaceComponent.Position.X + 16, Rect2.SpaceComponent.Position.Y + 16}}
 	lab7.RenderComponent.Drawable = common.Text{Font: fnt, Text: "Build"}
 	lab7.SetShader(common.TextHUDShader)
 	lab7.SetZIndex(250)
 
 	lab8 := Details{BasicEntity: ecs.NewBasic()}
-	lab8.SpaceComponent = common.SpaceComponent{Position: engo.Point{Rect2.SpaceComponent.Position.X + 24, Rect2.SpaceComponent.Position.Y + 24}}
+	lab8.SpaceComponent = common.SpaceComponent{Position: engo.Point{Rect2.SpaceComponent.Position.X + 16, Rect2.SpaceComponent.Position.Y + 16}}
 	lab8.RenderComponent.Drawable = common.Text{Font: fnt, Text: "Create Soldier"}
 	lab8.SetShader(common.TextHUDShader)
 	lab8.SetZIndex(250)
 
 	lab9 := Details{BasicEntity: ecs.NewBasic()}
-	lab9.SpaceComponent = common.SpaceComponent{Position: engo.Point{Rect3.SpaceComponent.Position.X + 24, Rect3.SpaceComponent.Position.Y + 24}}
+	lab9.SpaceComponent = common.SpaceComponent{Position: engo.Point{Rect3.SpaceComponent.Position.X + 16, Rect3.SpaceComponent.Position.Y + 16}}
 	lab9.RenderComponent.Drawable = common.Text{Font: fnt, Text: "Repair"}
 	lab9.SetShader(common.TextHUDShader)
 	lab9.SetZIndex(250)
@@ -330,25 +329,25 @@ func (rect *HUDSystem) New(w *ecs.World) {
 	//If clicked on Build Then the following options are displayed
 
 	lab11 := Details{BasicEntity: ecs.NewBasic()}
-	lab11.SpaceComponent = common.SpaceComponent{Position: engo.Point{Rect2.SpaceComponent.Position.X + 24, Rect2.SpaceComponent.Position.Y + 24}}
+	lab11.SpaceComponent = common.SpaceComponent{Position: engo.Point{Rect2.SpaceComponent.Position.X + 16, Rect2.SpaceComponent.Position.Y + 16}}
 	lab11.RenderComponent.Drawable = common.Text{Font: fnt, Text: "House"}
 	lab11.SetShader(common.TextHUDShader)
 	lab11.SetZIndex(250)
 
 	lab12 := Details{BasicEntity: ecs.NewBasic()}
-	lab12.SpaceComponent = common.SpaceComponent{Position: engo.Point{Rect3.SpaceComponent.Position.X + 24, Rect3.SpaceComponent.Position.Y + 24}}
+	lab12.SpaceComponent = common.SpaceComponent{Position: engo.Point{Rect3.SpaceComponent.Position.X + 16, Rect3.SpaceComponent.Position.Y + 16}}
 	lab12.RenderComponent.Drawable = common.Text{Font: fnt, Text: "Military Camp"}
 	lab12.SetShader(common.TextHUDShader)
 	lab12.SetZIndex(250)
 
 	lab13 := Details{BasicEntity: ecs.NewBasic()}
-	lab13.SpaceComponent = common.SpaceComponent{Position: engo.Point{Rect4.SpaceComponent.Position.X + 24, Rect4.SpaceComponent.Position.Y + 24}}
+	lab13.SpaceComponent = common.SpaceComponent{Position: engo.Point{Rect4.SpaceComponent.Position.X + 16, Rect4.SpaceComponent.Position.Y + 16}}
 	lab13.RenderComponent.Drawable = common.Text{Font: fnt, Text: "Resource"}
 	lab13.SetShader(common.TextHUDShader)
 	lab13.SetZIndex(250)
 
 	lab14 := Details{BasicEntity: ecs.NewBasic()}
-	lab14.SpaceComponent = common.SpaceComponent{Position: engo.Point{Rect5.SpaceComponent.Position.X + 24, Rect5.SpaceComponent.Position.Y + 24}}
+	lab14.SpaceComponent = common.SpaceComponent{Position: engo.Point{Rect5.SpaceComponent.Position.X + 16, Rect5.SpaceComponent.Position.Y + 16}}
 	lab14.RenderComponent.Drawable = common.Text{Font: fnt, Text: "Go Back"}
 	lab14.SetShader(common.TextHUDShader)
 	lab14.SetZIndex(250)
@@ -380,18 +379,17 @@ func (rect *HUDSystem) New(w *ecs.World) {
 	tempslice = append(tempslice, lab5)
 	rect.Bottomlabel = append(rect.Bottomlabel, tempslice)
 
-	/*	for _, system := range w.Systems() {
-			switch sys := system.(type) {
-			case *common.RenderSystem:
-				for _, lab := range rect.Bottomlabel{
-					for _, item := range lab {
-						sys
-					}
-				}
+	for _, system := range w.Systems() {
+		switch sys := system.(type) {
+		case *common.RenderSystem:
+			lab := rect.Bottomlabel[1]
+			for _, item := range lab {
+				sys.Add(&item.BasicEntity, &item.RenderComponent, &item.SpaceComponent)
 			}
-		}
 
-	*/
+		}
+	}
+
 	/*rect.rect1label[00].RenderComponent.Drawable = common.Text{Text: "TOWN CENTRE\n\n\nHealth : XX/YY"}
 	rect.rect1label[1].RenderComponent.Drawable = common.Text{Text: "VILLAGER\n\n\nHealth : xx/yy\n\n\nTask: xxxx"}
 	rect.rect1label[2].RenderComponent.Drawable = common.Text{Text: "HOUSE\n\n\nHealth : xx/yy"}
@@ -457,9 +455,24 @@ func (rect *HUDSystem) New(w *ecs.World) {
 	rect.label7.SetShader(common.HUDShader)
 	rect.label7.SetZIndex(250)
 	*/
+	fmt.Println("HUD System Initialized")
 
 }
 
 func (rect *HUDSystem) Update(dt float32) {
+
+	/*for _, system := range w.Systems() {
+		switch sys := system.(type) {
+		case *common.RenderSystem:
+			lab := rect.Bottomlabel[1]
+			for _, item := range lab {
+				sys.Add(&item.BasicEntity, &item.RenderComponent, &item.SpaceComponent)
+			}
+
+		}
+	}*/
+}
+
+func (*HUDSystem) Remove(ecs.BasicEntity) {
 
 }
