@@ -52,7 +52,7 @@ func (ms *MapSystem) New(w *ecs.World) {
 				Height:   engo.WindowHeight(),
 			},
 		}
-		ms.vert_lines[i].RenderComponent.SetZIndex(800)
+		ms.vert_lines[i].RenderComponent.SetZIndex(80)
 		ms.vert_lines[i].RenderComponent.SetShader(common.HUDShader)
 	}
 	//Generating the hor grid lines
@@ -70,7 +70,7 @@ func (ms *MapSystem) New(w *ecs.World) {
 			},
 		}
 		// Make the grid HUD, at a depth between 0 and HUD's
-		ms.hor_lines[i].RenderComponent.SetZIndex(800)
+		ms.hor_lines[i].RenderComponent.SetZIndex(80)
 		ms.hor_lines[i].RenderComponent.SetShader(common.HUDShader)
 	}
 
