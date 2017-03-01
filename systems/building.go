@@ -98,7 +98,7 @@ func (bs *BuildingSystem) AddBuilding(_BuildingName string, Pos engo.Point) {
 			Width:    tex.Width(),
 			Height:   tex.Height(),
 		},
-		MouseComponent: common.MouseComponent{},
+		MouseComponent: common.MouseComponent{Track: true},
 		BuildingName:   _BuildingName,
 	}
 	bs.Buildings = append(bs.Buildings, new_building)
