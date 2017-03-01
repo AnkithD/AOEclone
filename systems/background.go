@@ -57,7 +57,7 @@ func (ms *MapSystem) New(w *ecs.World) {
 				Height:   engo.WindowHeight(),
 			},
 		}
-		ms.vert_lines[i].RenderComponent.SetZIndex(800)
+		ms.vert_lines[i].RenderComponent.SetZIndex(80)
 		ms.vert_lines[i].RenderComponent.SetShader(common.HUDShader)
 	}
 	//Generating the hor grid lines
@@ -75,7 +75,7 @@ func (ms *MapSystem) New(w *ecs.World) {
 			},
 		}
 		// Make the grid HUD, at a depth between 0 and HUD's
-		ms.hor_lines[i].RenderComponent.SetZIndex(800)
+		ms.hor_lines[i].RenderComponent.SetZIndex(80)
 		ms.hor_lines[i].RenderComponent.SetShader(common.HUDShader)
 	}
 
@@ -94,7 +94,7 @@ func (ms *MapSystem) New(w *ecs.World) {
 
 func (ms *MapSystem) Update(dt float32) {
 	// Toggle the hidden attribute of every grid line's render component
-	if engo.Input.Button(gridToggle).JustPressed() {
+	if engo.Input.Button(GridToggle).JustPressed() {
 		for i, _ := range ms.vert_lines {
 			ms.vert_lines[i].RenderComponent.Hidden = !ms.vert_lines[i].RenderComponent.Hidden
 		}
