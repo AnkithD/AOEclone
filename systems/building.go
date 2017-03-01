@@ -76,6 +76,12 @@ func (bs *BuildingSystem) New(w *ecs.World) {
 }
 
 func (bs *BuildingSystem) Update(dt float32) {
+	if engo.Input.Mouse.Action == engo.Press {
+		fmt.Println("Mouse Press")
+	}
+	if engo.Input.Mouse.Action == engo.Release {
+		fmt.Println("Mouse Release")
+	}
 	// Mouse Bug is here!
 	for _, item := range bs.Buildings {
 		if item.MouseComponent.Clicked {
@@ -99,7 +105,7 @@ func (bs *BuildingSystem) AddBuilding(_BuildingName string, Pos engo.Point) {
 			Width:    tex.Width(),
 			Height:   tex.Height(),
 		},
-		MouseComponent: common.MouseComponent{Track: true},
+		MouseComponent: common.MouseComponent{Track: false},
 		BuildingName:   _BuildingName,
 	}
 	bs.Buildings = append(bs.Buildings, new_building)
