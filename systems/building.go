@@ -76,6 +76,7 @@ func (bs *BuildingSystem) New(w *ecs.World) {
 }
 
 func (bs *BuildingSystem) Update(dt float32) {
+	// Mouse Bug is here!
 	for _, item := range bs.Buildings {
 		if item.MouseComponent.Clicked {
 			fmt.Println(item.BuildingName + " has been clicked!")
