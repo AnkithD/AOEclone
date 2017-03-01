@@ -33,8 +33,6 @@ type GridLineEntity struct {
 func (ms *MapSystem) New(w *ecs.World) {
 	ms.world = w
 
-	engo.Input.RegisterButton(gridToggle, engo.Tab)
-
 	ms.grid_size = 32
 	//Calculates how many vertical and horizontal grid lines we need
 	vert_num := int(engo.WindowWidth()) / ms.grid_size

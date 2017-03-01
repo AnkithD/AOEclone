@@ -15,14 +15,14 @@ type BuildingSystem struct {
 	Buildings          []*BuildingEntity
 }
 
-func (bs *BuildingSystem) Update(dt float32)      {}
 func (bs *BuildingSystem) Remove(ecs.BasicEntity) {}
 
 func (bs *BuildingSystem) New(w *ecs.World) {
 	bs.world = w
 
-	bs.BuildingDetailsMap = make(map[string]BuildingDetails)
 	//Building Definitions (For loop to be able to collapse it)
+	bs.BuildingDetailsMap = make(map[string]BuildingDetails)
+
 	for {
 		TownCenterTexture, err := common.LoadedSprite("Town_centre.png")
 		if err != nil {
@@ -67,16 +67,24 @@ func (bs *BuildingSystem) New(w *ecs.World) {
 		break
 	}
 
-	bs.AddBuilding("Town Center", engo.Point{96, 320}, false)
-	bs.AddBuilding("Military Block", engo.Point{320, 320}, false)
-	bs.AddBuilding("Resource Building", engo.Point{544, 320}, false)
-	bs.AddBuilding("Town Center", engo.Point{768, 320}, false)
+	bs.AddBuilding("Town Center", engo.Point{96, 320})
+	bs.AddBuilding("Military Block", engo.Point{320, 320})
+	bs.AddBuilding("Resource Building", engo.Point{544, 320})
+	bs.AddBuilding("House", engo.Point{768, 320})
 
 	fmt.Println("Building System Initialized")
 }
 
-func (bs *BuildingSystem) AddBuilding(BuildingName string, Pos engo.Point, Render bool) {
-	tex := bs.BuildingDetailsMap[BuildingName].Texture
+func (bs *BuildingSystem) Update(dt float32) {
+	for _, item := range bs.Buildings {
+		if item.MouseComponent.Clicked {
+			fmt.Println(item.BuildingName + " has been clicked!")
+		}
+	}
+}
+
+func (bs *BuildingSystem) AddBuilding(_BuildingName string, Pos engo.Point) {
+	tex := bs.BuildingDetailsMap[_BuildingName].Texture
 
 	// Using reference so that the newly created building
 	// doesn't get garbage collected after func return
@@ -90,17 +98,20 @@ func (bs *BuildingSystem) AddBuilding(BuildingName string, Pos engo.Point, Rende
 			Width:    tex.Width(),
 			Height:   tex.Height(),
 		},
+		MouseComponent: common.MouseComponent{},
+		BuildingName:   _BuildingName,
 	}
 	bs.Buildings = append(bs.Buildings, new_building)
 
-	if Render {
-	}
+	ActiveSystems.RenderSys.Add(&new_building.BasicEntity, &new_building.RenderComponent, &new_building.SpaceComponent)
+	ActiveSystems.MouseSys.Add(&new_building.BasicEntity, &new_building.MouseComponent, &new_building.SpaceComponent, &new_building.RenderComponent)
 }
 
 type BuildingEntity struct {
 	ecs.BasicEntity
 	common.RenderComponent
 	common.SpaceComponent
+	common.MouseComponent
 
 	BuildingName string
 }

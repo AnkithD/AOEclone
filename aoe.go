@@ -25,13 +25,15 @@ func (*myScene) Preload() {
 }
 
 func (*myScene) Setup(world *ecs.World) {
-	world.AddSystem(new(common.RenderSystem))
+	world.AddSystem(&common.RenderSystem{})
 	world.AddSystem(&common.EdgeScroller{ScrollSpeed: 640, EdgeMargin: 32})
+	world.AddSystem(&common.MouseSystem{})
 	systems.CacheActiveSystems(world)
+	systems.RegisterButtons()
 
-	world.AddSystem(new(systems.MapSystem))
-	world.AddSystem(new(systems.HUDSystem))
-	world.AddSystem(new(systems.BuildingSystem))
+	world.AddSystem(&systems.MapSystem{})
+	world.AddSystem(&systems.HUDSystem{})
+	world.AddSystem(&systems.BuildingSystem{})
 
 	common.SetBackground(color.RGBA{120, 120, 120, 255})
 }

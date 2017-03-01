@@ -351,7 +351,6 @@ func (rect *HUDSystem) New(w *ecs.World) {
 	rect.Bottomlabel = append(rect.Bottomlabel, tempslice)
 
 	lab := rect.Bottomlabel[1]
-	fmt.Println(len(lab))
 	for i, _ := range lab {
 		ActiveSystems.RenderSys.Add(&lab[i].BasicEntity, &lab[i].RenderComponent, &lab[i].SpaceComponent)
 	}
