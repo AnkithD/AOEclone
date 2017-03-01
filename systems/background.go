@@ -94,7 +94,7 @@ func (ms *MapSystem) New(w *ecs.World) {
 
 func (ms *MapSystem) Update(dt float32) {
 	// Toggle the hidden attribute of every grid line's render component
-	if engo.Input.Button(gridToggle).JustPressed() {
+	if engo.Input.Button(GridToggle).JustPressed() {
 		for i, _ := range ms.vert_lines {
 			ms.vert_lines[i].RenderComponent.Hidden = !ms.vert_lines[i].RenderComponent.Hidden
 		}
