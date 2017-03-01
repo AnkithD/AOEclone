@@ -26,10 +26,10 @@ func (*myScene) Preload() {
 
 func (*myScene) Setup(world *ecs.World) {
 	world.AddSystem(&common.RenderSystem{})
-	systems.RegisterButtons()
-	world.AddSystem(common.NewKeyboardScroller(640, systems.HorAxis, systems.VertAxis))
+	world.AddSystem(&common.EdgeScroller{ScrollSpeed: 640, EdgeMargin: 32})
 	world.AddSystem(&common.MouseSystem{})
 	systems.CacheActiveSystems(world)
+	systems.RegisterButtons()
 
 	world.AddSystem(&systems.MapSystem{})
 	world.AddSystem(&systems.HUDSystem{})
