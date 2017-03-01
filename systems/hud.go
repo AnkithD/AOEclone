@@ -296,6 +296,12 @@ func (rect *HUDSystem) New(w *ecs.World) {
 	lab9.SetShader(common.TextHUDShader)
 	lab9.SetZIndex(250)
 
+	lab15 := Details{BasicEntity: ecs.NewBasic()}
+	lab15.SpaceComponent = common.SpaceComponent{Position: engo.Point{Rect1.SpaceComponent.Position.X + 48, Rect1.SpaceComponent.Position.Y + 32}}
+	lab15.RenderComponent.Drawable = common.Text{Font: fnt, Text: "WARRIOR"}
+	lab15.SetShader(common.TextHUDShader)
+	lab15.SetZIndex(250)
+
 	//If clicked on Build Then the following options are displayed
 
 	lab11 := Details{BasicEntity: ecs.NewBasic()}
@@ -348,6 +354,10 @@ func (rect *HUDSystem) New(w *ecs.World) {
 
 	tempslice = make([]Details, 0)
 	tempslice = append(tempslice, lab5)
+	rect.Bottomlabel = append(rect.Bottomlabel, tempslice)
+
+	tempslice = make([]Details, 0)
+	tempslice = append(tempslice, lab13)
 	rect.Bottomlabel = append(rect.Bottomlabel, tempslice)
 
 	lab := rect.Bottomlabel[1]
