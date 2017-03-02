@@ -76,12 +76,6 @@ func (bs *BuildingSystem) New(w *ecs.World) {
 }
 
 func (bs *BuildingSystem) Update(dt float32) {
-	if engo.Input.Mouse.Action == engo.Press {
-		fmt.Println("Mouse Press")
-	}
-	if engo.Input.Mouse.Action == engo.Release {
-		fmt.Println("Mouse Release")
-	}
 	// Mouse Bug is here!
 	for _, item := range bs.Buildings {
 		if item.MouseComponent.Clicked {
