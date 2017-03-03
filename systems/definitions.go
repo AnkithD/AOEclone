@@ -31,6 +31,9 @@ func CacheActiveSystems(world *ecs.World) {
 			ActiveSystems.RenderSys = sys
 		case *common.MouseSystem:
 			ActiveSystems.MouseSys = sys
+		case *common.CameraSystem:
+			ActiveSystems.CameraSys = sys
+			fmt.Println("Found Camera System")
 		}
 	}
 
@@ -40,4 +43,5 @@ func CacheActiveSystems(world *ecs.World) {
 type ActiveSystemsStruct struct {
 	RenderSys *common.RenderSystem
 	MouseSys  *common.MouseSystem
+	CameraSys *common.CameraSystem
 }

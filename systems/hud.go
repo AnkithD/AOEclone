@@ -11,6 +11,14 @@ import (
 type HUDSystem struct {
 	World              *ecs.World
 	CurrentActiveLabel *LabelGroup
+
+	LeftMouseButtonPressed bool
+	SelectionRect          SHAPE
+
+	BottomHUDWidth  int
+	BottomHUDHeight int
+	TopHUDWidth     int
+	TopHUDHeight    int
 }
 
 type HUD struct {
@@ -39,6 +47,7 @@ var (
 )
 
 func (hs *HUDSystem) New(w *ecs.World) {
+
 	hs.CurrentActiveLabel = nil
 	hs.World = w
 	LabelGroupMap = make(map[string]LabelGroup)
@@ -46,8 +55,8 @@ func (hs *HUDSystem) New(w *ecs.World) {
 	HUDColor := color.RGBA{222, 184, 135, 250}
 
 	//Bottom Hud Definition
-	BottomHudWidth := int(engo.WindowWidth())
-	BottomHudHeight := 160
+	hs.BottomHUDWidth = int(engo.WindowWidth())
+	hs.BottomHUDHeight = 160
 
 	BottomHud := HUD{
 		BasicEntity: ecs.NewBasic(),
@@ -56,9 +65,9 @@ func (hs *HUDSystem) New(w *ecs.World) {
 			Color:    HUDColor,
 		},
 		SpaceComponent: common.SpaceComponent{
-			Position: engo.Point{0, engo.WindowHeight() - float32(BottomHudHeight)},
-			Width:    float32(BottomHudWidth),
-			Height:   float32(BottomHudHeight),
+			Position: engo.Point{0, engo.WindowHeight() - float32(hs.BottomHUDHeight)},
+			Width:    float32(hs.BottomHUDWidth),
+			Height:   float32(hs.BottomHUDHeight),
 		},
 	}
 
@@ -67,8 +76,8 @@ func (hs *HUDSystem) New(w *ecs.World) {
 	ActiveSystems.RenderSys.Add(&BottomHud.BasicEntity, &BottomHud.RenderComponent, &BottomHud.SpaceComponent)
 
 	//Top Hud Definition
-	TopWidth := int(engo.WindowWidth())
-	TopHeight := 64
+	hs.TopHUDWidth = int(engo.WindowWidth())
+	hs.TopHUDHeight = 64
 
 	TopHud := HUD{
 		BasicEntity: ecs.NewBasic(),
@@ -78,8 +87,8 @@ func (hs *HUDSystem) New(w *ecs.World) {
 		},
 		SpaceComponent: common.SpaceComponent{
 			Position: engo.Point{0, 0},
-			Width:    float32(TopWidth),
-			Height:   float32(TopHeight),
+			Width:    float32(hs.TopHUDWidth),
+			Height:   float32(hs.TopHUDHeight),
 		},
 	}
 
@@ -94,7 +103,7 @@ func (hs *HUDSystem) New(w *ecs.World) {
 	*/
 
 	DescriptionRect := SHAPE{BasicEntity: ecs.NewBasic()} //First Big Rectangle
-	DescriptionRect.SpaceComponent = common.SpaceComponent{Position: engo.Point{15, engo.WindowHeight() - float32(BottomHudHeight-15)}, Width: float32((BottomHudWidth / 3) - 80), Height: float32((BottomHudHeight) - 30)}
+	DescriptionRect.SpaceComponent = common.SpaceComponent{Position: engo.Point{15, engo.WindowHeight() - float32(hs.BottomHUDHeight-15)}, Width: float32((hs.BottomHUDWidth / 3) - 80), Height: float32((hs.BottomHUDHeight) - 30)}
 	DescriptionRect.RenderComponent = common.RenderComponent{Drawable: common.Rectangle{}, Color: color.RGBA{255, 255, 255, 255}}
 
 	DescriptionRect.RenderComponent.SetZIndex(125)
@@ -160,15 +169,15 @@ func (hs *HUDSystem) New(w *ecs.World) {
 
 	DeselectRect := SHAPE{BasicEntity: ecs.NewBasic()}
 	wid := Action1Rect.SpaceComponent.Width - 30
-	hig := float32(BottomHudHeight/2) - 15
-	DeselectRect.SpaceComponent = common.SpaceComponent{Position: engo.Point{engo.WindowWidth() - wid - 20, engo.WindowHeight() - float32(BottomHudHeight) + 10}, Width: wid, Height: hig}
+	hig := float32(hs.BottomHUDHeight/2) - 15
+	DeselectRect.SpaceComponent = common.SpaceComponent{Position: engo.Point{engo.WindowWidth() - wid - 20, engo.WindowHeight() - float32(hs.BottomHUDHeight) + 10}, Width: wid, Height: hig}
 	DeselectRect.RenderComponent = common.RenderComponent{Drawable: common.Rectangle{}, Color: color.RGBA{255, 255, 255, 255}}
 
 	DeselectRect.RenderComponent.SetZIndex(125)
 	DeselectRect.RenderComponent.SetShader(common.HUDShader)
 
 	HelpRect := SHAPE{BasicEntity: ecs.NewBasic()}
-	HelpRect.SpaceComponent = common.SpaceComponent{Position: engo.Point{DeselectRect.SpaceComponent.Position.X, engo.WindowHeight() - float32(BottomHudHeight/2) + 5}, Width: wid, Height: hig}
+	HelpRect.SpaceComponent = common.SpaceComponent{Position: engo.Point{DeselectRect.SpaceComponent.Position.X, engo.WindowHeight() - float32(hs.BottomHUDHeight/2) + 5}, Width: wid, Height: hig}
 	HelpRect.RenderComponent = common.RenderComponent{Drawable: common.Rectangle{}, Color: color.RGBA{255, 255, 255, 255}}
 
 	HelpRect.RenderComponent.SetZIndex(125)
@@ -411,6 +420,73 @@ type LabelGroup struct {
 	ActionLabels     []Details
 }
 
-func (hs *HUDSystem) Update(dt float32) {}
+func (hs *HUDSystem) Update(dt float32) {
+	CamSys := ActiveSystems.CameraSys
+	// Converting Mouse Coordinates to be Independent of Camera ZooM
+	mx := engo.Input.Mouse.X * CamSys.Z() * (engo.GameWidth() / engo.CanvasWidth())
+	my := engo.Input.Mouse.Y * CamSys.Z() * (engo.GameHeight() / engo.CanvasHeight())
+
+	//If left Mouse button is pressed within Active Game Area
+	if engo.Input.Mouse.Action == engo.Press && engo.Input.Mouse.Button == engo.MouseButtonLeft &&
+		my > float32(hs.TopHUDHeight) && my < engo.WindowHeight()-float32(hs.BottomHUDHeight) {
+
+		hs.LeftMouseButtonPressed = true
+
+		hs.SelectionRect = SHAPE{
+			BasicEntity: ecs.NewBasic(),
+			SpaceComponent: common.SpaceComponent{
+				Position: engo.Point{mx, my},
+				Width:    0,
+				Height:   0,
+			},
+			RenderComponent: common.RenderComponent{
+				Drawable: common.Rectangle{
+					BorderColor: color.RGBA{255, 255, 255, 255},
+					BorderWidth: 2,
+				},
+				Color: color.RGBA{0, 0, 0, 0},
+			},
+		}
+
+		hs.SelectionRect.RenderComponent.SetShader(common.HUDShader)
+		hs.SelectionRect.RenderComponent.SetZIndex(200)
+		ActiveSystems.RenderSys.Add(
+			&hs.SelectionRect.BasicEntity, &hs.SelectionRect.RenderComponent,
+			&hs.SelectionRect.SpaceComponent,
+		)
+	}
+
+	// If Left Mouse Button is released
+	if engo.Input.Mouse.Action == engo.Release && engo.Input.Mouse.Button == engo.MouseButtonLeft {
+		hs.LeftMouseButtonPressed = false
+		ActiveSystems.RenderSys.Remove(hs.SelectionRect.BasicEntity)
+	}
+
+	// While Left Mouse Button is held down
+	if hs.LeftMouseButtonPressed {
+		// Clamp the mouse cooridnates to be within Active Game Area
+		if my < float32(hs.TopHUDHeight) {
+			my = float32(hs.TopHUDHeight)
+		}
+		if my > (engo.WindowHeight() - float32(hs.BottomHUDHeight)) {
+			my = (engo.WindowHeight() - float32(hs.BottomHUDHeight))
+		}
+
+		if mx < 0 {
+			mx = 0
+		}
+		if mx > engo.WindowWidth() {
+			mx = engo.WindowWidth()
+		}
+
+		SpaceCompRef := &hs.SelectionRect.SpaceComponent
+
+		// Since mx, my represent the opposite cornor to the Position
+		// Widht and Height is the difference between (mx, my) and Position
+		SpaceCompRef.Width = mx - SpaceCompRef.Position.X
+		SpaceCompRef.Height = my - SpaceCompRef.Position.Y
+	}
+
+}
 
 func (*HUDSystem) Remove(ecs.BasicEntity) {}
