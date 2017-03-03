@@ -7,14 +7,20 @@ import (
 
 	"fmt"
 	"image/color"
+	"sync"
 )
 
 // Defining the Map system
 type MapSystem struct {
 	world      *ecs.World
-	grid_size  int
+	GridSize   int
 	vert_lines []GridLineEntity
 	hor_lines  []GridLineEntity
+
+	PrevXOffset int
+	PrevYOffset int
+	XOffset     int
+	YOffset     int
 }
 
 //Place holders to satisfy Interface
@@ -32,11 +38,13 @@ type GridLineEntity struct {
 // Initialze the world variable and assign tab to toggle the grid
 func (ms *MapSystem) New(w *ecs.World) {
 	ms.world = w
+	ms.GridSize = 32
+	ms.PrevXOffset = 0
+	ms.PrevYOffset = 0
 
-	ms.grid_size = 32
 	//Calculates how many vertical and horizontal grid lines we need
-	vert_num := int(engo.WindowWidth()) / ms.grid_size
-	hor_num := int(engo.WindowHeight()) / ms.grid_size
+	vert_num := int(engo.WindowWidth()) / ms.GridSize
+	hor_num := int(engo.WindowHeight()) / ms.GridSize
 
 	//Each grid line is an Entity, so we are storing all vert and hor lines in two
 	//Seperate slices
@@ -52,7 +60,7 @@ func (ms *MapSystem) New(w *ecs.World) {
 				Color:    color.RGBA{0, 0, 0, 125},
 			},
 			SpaceComponent: common.SpaceComponent{
-				Position: engo.Point{float32(i * ms.grid_size), 0},
+				Position: engo.Point{float32(i * ms.GridSize), 0},
 				Width:    2,
 				Height:   engo.WindowHeight(),
 			},
@@ -69,7 +77,7 @@ func (ms *MapSystem) New(w *ecs.World) {
 				Color:    color.RGBA{0, 0, 0, 125},
 			},
 			SpaceComponent: common.SpaceComponent{
-				Position: engo.Point{0, float32(i * ms.grid_size)},
+				Position: engo.Point{0, float32(i * ms.GridSize)},
 				Width:    engo.WindowWidth(),
 				Height:   2,
 			},
@@ -101,5 +109,34 @@ func (ms *MapSystem) Update(dt float32) {
 		for i, _ := range ms.hor_lines {
 			ms.hor_lines[i].RenderComponent.Hidden = !ms.hor_lines[i].RenderComponent.Hidden
 		}
+	}
+
+	if ms.vert_lines[0].RenderComponent.Hidden == false {
+		CameraSystem := ActiveSystems.CameraSys
+
+		ms.XOffset = int(CameraSystem.X()) % ms.GridSize
+		ms.YOffset = int(CameraSystem.Y()) % ms.GridSize
+
+		wg := sync.WaitGroup{}
+
+		wg.Add(2)
+		// Updating hor and vert lines in parallel for faster execution
+		go func() {
+			for i, _ := range ms.vert_lines {
+				ms.vert_lines[i].Position.Add(engo.Point{float32(ms.PrevXOffset - ms.XOffset), 0})
+			}
+			wg.Done()
+		}()
+
+		go func() {
+			for i, _ := range ms.hor_lines {
+				ms.hor_lines[i].Position.Add(engo.Point{0, float32(ms.PrevYOffset - ms.YOffset)})
+			}
+			wg.Done()
+		}()
+		wg.Wait()
+
+		ms.PrevXOffset = ms.XOffset
+		ms.PrevYOffset = ms.YOffset
 	}
 }

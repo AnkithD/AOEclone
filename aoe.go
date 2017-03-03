@@ -7,6 +7,7 @@ import (
 	"github.com/Ankithd/AOEClone/systems"
 
 	"image/color"
+	"runtime"
 )
 
 type myScene struct{}
@@ -35,15 +36,17 @@ func (*myScene) Setup(world *ecs.World) {
 	world.AddSystem(&systems.HUDSystem{})
 	world.AddSystem(&systems.BuildingSystem{})
 
-	common.SetBackground(color.RGBA{120, 120, 120, 255})
+	common.SetBackground(color.RGBA{182, 204, 104, 255})
 }
 func main() {
+	runtime.GOMAXPROCS(8)
 	opts := engo.RunOptions{
 		Title:         "AOE Clone",
 		Width:         1280,
 		Height:        768,
 		ScaleOnResize: true,
 		MSAA:          2,
+		VSync:         true,
 	}
 
 	engo.Run(opts, new(myScene))
