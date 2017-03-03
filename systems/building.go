@@ -83,7 +83,7 @@ func (bs *BuildingSystem) Update(dt float32) {
 	// Mouse Bug is here!
 	for _, item := range bs.Buildings {
 		if item.MouseComponent.Clicked {
-			engo.Mailbox.Dispatch(BuildingMessage{Action: setHUD, HUDSelectionIndex: item.GetDetails().HUDSelectionIndex})
+			engo.Mailbox.Dispatch(BuildingMessage{Action: SetHUD, Name: item.GetDetails().Name})
 		}
 	}
 }
@@ -133,8 +133,8 @@ type BuildingDetails struct {
 }
 
 type BuildingMessage struct {
-	Action            string
-	HUDSelectionIndex int
+	Action string
+	Name   string
 }
 
 func (BuildingMessage) Type() string {

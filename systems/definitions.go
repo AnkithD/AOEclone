@@ -34,7 +34,7 @@ func CacheActiveSystems(world *ecs.World) {
 		}
 	}
 
-	fmt.Println("Cached Importan System References")
+	fmt.Println("Cached Important System References")
 }
 
 type ActiveSystemsStruct struct {
