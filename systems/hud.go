@@ -641,7 +641,7 @@ func (hs *HUDSystem) Update(dt float32) {
 		}
 	}()
 
-	//Handling clicking of action buttons
+	//Handling clicking of action buttons and deselect button
 	func() {
 		if hs.CurrentActiveLabel != nil && engo.Input.Mouse.Action == engo.Press &&
 			engo.Input.Mouse.Button == engo.MouseButtonLeft {
