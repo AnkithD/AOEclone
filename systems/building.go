@@ -5,6 +5,8 @@ import (
 	"engo.io/engo"
 	"engo.io/engo/common"
 	"fmt"
+	"math"
+	"math/rand"
 	// "image/color"
 )
 
@@ -22,6 +24,7 @@ type BuildingSystem struct {
 func (bs *BuildingSystem) Remove(ecs.BasicEntity) {}
 
 func (bs *BuildingSystem) New(w *ecs.World) {
+	rand.Seed(123456789)
 	bs.world = w
 
 	//Building Definitions (For loop to be able to collapse it)
@@ -98,6 +101,10 @@ func (bs *BuildingSystem) Update(dt float32) {
 		if item.MouseComponent.Clicked {
 			engo.Mailbox.Dispatch(BuildingMessage{ID: item.BasicEntity.ID(), Name: item.GetDetails().Name, Index: 0})
 		}
+	}
+
+	if engo.Input.Button(SpaceButton).JustReleased() {
+		bs.Buildings[int(math.Floor(rand.Float64()*float64(len(bs.Buildings))))].Health -= 10
 	}
 }
 

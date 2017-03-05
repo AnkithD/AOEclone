@@ -612,41 +612,22 @@ func (hs *HUDSystem) Update(dt float32) {
 			}
 			hs.PrevWoodVal = PlayerWood
 		}
+
+		if hs.CurrentActiveLabel != nil {
+			for i, _ := range hs.CurrentActiveLabel.DynamicLabels {
+				hs.CurrentActiveLabel.DynamicLabels[i].UpdateDrawable()
+			}
+		}
 	}()
 }
 
 func (hs *HUDSystem) SetBottomHUD(Name string, Index int, ID uint64) {
 	LabelToSet := LabelGroupMap[Name]
-	LastLabel := hs.CurrentActiveLabel
-	LastIndex := hs.CurrentLabelIndex
 
 	// fmt.Println("----------------------------")
-	// fmt.Printf("Name: %v, Index: %v", Name, Index)
+	// fmt.Printf("Name: %v, Index: %v\n", Name, Index)
 
-	// Remove the Labels currently being displayed
-	if hs.CurrentActiveLabel != nil {
-
-		// fmt.Printf(", LastLabel: %v, LastIndex: %v\n", LastLabel.Name, LastIndex)
-
-		ActiveSystems.RenderSys.Remove(LastLabel.DescriptionLabel.BasicEntity)
-		if len(LastLabel.ActionLabels) > 0 {
-			for i, _ := range LastLabel.ActionLabels[LastIndex] {
-				ActionLabel := &LastLabel.ActionLabels[LastIndex][i]
-
-				// fmt.Printf("Action Label Remove: %v\n", ActionLabel.BasicEntity.ID())
-
-				ActiveSystems.RenderSys.Remove(ActionLabel.BasicEntity)
-			}
-		}
-
-		if len(LastLabel.DynamicLabels) > 0 {
-			for i, _ := range LastLabel.DynamicLabels {
-				LastLabel.DynamicLabels[i].RemoveSelfFromRenderSystem()
-			}
-		}
-	}
-
-	// fmt.Println("\nRemoved Label")
+	hs.RemoveCurrentBottomHUDLabel()
 
 	ActiveSystems.RenderSys.Add(
 		&LabelToSet.DescriptionLabel.BasicEntity, &LabelToSet.DescriptionLabel.RenderComponent,
@@ -678,6 +659,37 @@ func (hs *HUDSystem) SetBottomHUD(Name string, Index int, ID uint64) {
 	hs.CurrentActiveLabel = &LabelToSet
 
 	// fmt.Println("----------------------------")
+}
+
+func (hs *HUDSystem) RemoveCurrentBottomHUDLabel() {
+	LastLabel := hs.CurrentActiveLabel
+	LastIndex := hs.CurrentLabelIndex
+
+	// Remove the Labels currently being displayed
+	if hs.CurrentActiveLabel != nil {
+
+		// fmt.Printf("LastLabel: %v, LastIndex: %v\n", LastLabel.Name, LastIndex)
+
+		ActiveSystems.RenderSys.Remove(LastLabel.DescriptionLabel.BasicEntity)
+		if len(LastLabel.ActionLabels) > 0 {
+			for i, _ := range LastLabel.ActionLabels[LastIndex] {
+				ActionLabel := &LastLabel.ActionLabels[LastIndex][i]
+
+				// fmt.Printf("Action Label Remove: %v\n", ActionLabel.BasicEntity.ID())
+
+				ActiveSystems.RenderSys.Remove(ActionLabel.BasicEntity)
+			}
+		}
+
+		if len(LastLabel.DynamicLabels) > 0 {
+			for i, _ := range LastLabel.DynamicLabels {
+				LastLabel.DynamicLabels[i].RemoveSelfFromRenderSystem()
+			}
+		}
+	}
+
+	hs.CurrentActiveLabel = nil
+	// fmt.Println("\nRemoved Label")
 }
 
 func (*HUDSystem) Remove(ecs.BasicEntity) {}
