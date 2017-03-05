@@ -23,10 +23,10 @@ type HUDSystem struct {
 	TopHUDWidth     int
 	TopHUDHeight    int
 
-	FoodValLabelPos engo.Point
-	WoodValLabelPos engo.Point
-	PrevFoodVal     int
-	PrevWoodVal     int
+	FoodValLabel *Label
+	WoodValLabel *Label
+	PrevFoodVal  int
+	PrevWoodVal  int
 }
 
 type HUD struct {
@@ -47,12 +47,58 @@ type Label struct {
 	common.SpaceComponent
 }
 
+type DynamicLabel interface {
+	UpdateDrawable()
+	SetOwner(uint64)
+	AddSelfToRenderSystem()
+	RemoveSelfFromRenderSystem()
+}
+
+type HealthLabel struct {
+	ecs.BasicEntity
+	common.RenderComponent
+	common.SpaceComponent
+	Health    int
+	MaxHealth int
+	OwnerID   uint64
+}
+
+func (hl *HealthLabel) UpdateDrawable() {
+	engo.Mailbox.Dispatch(HealthEnquiryMessage{ID: hl.OwnerID})
+	if HealthEnquiryResponse.set {
+		HealthEnquiryResponse.set = false
+		if HealthEnquiryResponse.HealthResult != hl.Health {
+			hl.Health = HealthEnquiryResponse.HealthResult
+		} else {
+			fmt.Println("Not updating")
+			return
+		}
+	}
+
+	hl.RenderComponent.Drawable = common.Text{
+		Font: LabelFont,
+		Text: "Health: " + strconv.Itoa(hl.Health) + "/" + strconv.Itoa(hl.MaxHealth),
+	}
+}
+
+func (hl *HealthLabel) SetOwner(ID uint64) {
+	hl.OwnerID = ID
+}
+
+func (hl *HealthLabel) AddSelfToRenderSystem() {
+	ActiveSystems.RenderSys.Add(&hl.BasicEntity, &hl.RenderComponent, &hl.SpaceComponent)
+}
+
+func (hl *HealthLabel) RemoveSelfFromRenderSystem() {
+	ActiveSystems.RenderSys.Remove(hl.BasicEntity)
+}
+
 type LabelGroup struct {
 	Name string
 
 	DescriptionLabel Label
 	ActionLabels     [][]Label
-	DynamicLabels    []Label
+	DynamicLabels    []DynamicLabel
 }
 
 var (
@@ -60,6 +106,8 @@ var (
 	HouseLabels, VillagerLabels LabelGroup
 
 	LabelGroupMap map[string]LabelGroup
+
+	LabelFont *common.Font
 )
 
 func (hs *HUDSystem) New(w *ecs.World) {
@@ -245,6 +293,8 @@ func (hs *HUDSystem) New(w *ecs.World) {
 			panic(err)
 		}
 
+		LabelFont = fnt
+
 		//Top HUD Labels
 		FoodTitleLabel := Label{BasicEntity: ecs.NewBasic()}
 		FoodTitleLabel.SpaceComponent = common.SpaceComponent{Position: engo.Point{32, 24}}
@@ -264,9 +314,8 @@ func (hs *HUDSystem) New(w *ecs.World) {
 		WoodTitleLabel.SetShader(common.TextHUDShader)
 		WoodTitleLabel.SetZIndex(150)
 
-		hs.FoodValLabelPos = engo.Point{104, 24}
 		FoodValLabel := Label{BasicEntity: ecs.NewBasic()}
-		FoodValLabel.SpaceComponent = common.SpaceComponent{Position: hs.FoodValLabelPos}
+		FoodValLabel.SpaceComponent = common.SpaceComponent{Position: engo.Point{104, 24}}
 		FoodValLabel.RenderComponent.Drawable = common.Text{
 			Font: fnt,
 			Text: strconv.Itoa(PlayerFood),
@@ -274,15 +323,17 @@ func (hs *HUDSystem) New(w *ecs.World) {
 		FoodValLabel.SetShader(common.TextHUDShader)
 		FoodValLabel.SetZIndex(150)
 
-		hs.WoodValLabelPos = engo.Point{360, 24}
 		WoodValLabel := Label{BasicEntity: ecs.NewBasic()}
-		WoodValLabel.SpaceComponent = common.SpaceComponent{Position: hs.WoodValLabelPos}
+		WoodValLabel.SpaceComponent = common.SpaceComponent{Position: engo.Point{360, 24}}
 		WoodValLabel.RenderComponent.Drawable = common.Text{
 			Font: fnt,
 			Text: strconv.Itoa(PlayerWood),
 		}
 		WoodValLabel.SetShader(common.TextHUDShader)
 		WoodValLabel.SetZIndex(150)
+
+		hs.FoodValLabel = &FoodValLabel
+		hs.WoodValLabel = &WoodValLabel
 
 		ActiveSystems.RenderSys.Add(&FoodTitleLabel.BasicEntity, &FoodTitleLabel.RenderComponent, &FoodTitleLabel.SpaceComponent)
 		ActiveSystems.RenderSys.Add(&FoodValLabel.BasicEntity, &FoodValLabel.RenderComponent, &FoodValLabel.SpaceComponent)
@@ -291,12 +342,13 @@ func (hs *HUDSystem) New(w *ecs.World) {
 
 		//Bottom HUD Labels
 		var temp1, temp2 Label
+		var temp3 *HealthLabel
 
 		// -----------------------------------------------------------------------------------------------------
 
 		temp1 = Label{BasicEntity: ecs.NewBasic()}
 		temp1.SpaceComponent = common.SpaceComponent{Position: engo.Point{DescriptionRect.SpaceComponent.Position.X + 48, DescriptionRect.SpaceComponent.Position.Y + 32}}
-		temp1.RenderComponent.Drawable = common.Text{Font: fnt, Text: "TOWN CENTRE\n\n\nHealth : XX/YY"}
+		temp1.RenderComponent.Drawable = common.Text{Font: fnt, Text: "TOWN CENTRE"}
 		temp1.SetShader(common.TextHUDShader)
 		temp1.SetZIndex(250)
 
@@ -306,27 +358,42 @@ func (hs *HUDSystem) New(w *ecs.World) {
 		temp2.SetShader(common.TextHUDShader)
 		temp2.SetZIndex(250)
 
+		temp3 = &HealthLabel{BasicEntity: ecs.NewBasic()}
+		fmt.Println(BuildingDetailsMap["Town Center"].MaxHealth)
+		temp3.MaxHealth = BuildingDetailsMap["Town Center"].MaxHealth
+		temp3.SpaceComponent = common.SpaceComponent{Position: engo.Point{temp1.SpaceComponent.Position.X, temp1.SpaceComponent.Position.Y + 32}}
+		temp3.RenderComponent.SetShader(common.TextHUDShader)
+		temp3.RenderComponent.SetZIndex(250)
+
 		TownCenterLabels = LabelGroup{Name: "Town Center"}
 		TownCenterLabels.DescriptionLabel = temp1
 		TownCenterLabels.ActionLabels = append(make([][]Label, 0), make([]Label, 0))
 		TownCenterLabels.ActionLabels[0] = append(TownCenterLabels.ActionLabels[0], temp2)
+		TownCenterLabels.DynamicLabels = append(make([]DynamicLabel, 0), temp3)
 
 		// -----------------------------------------------------------------------------------------------------
 
 		temp1 = Label{BasicEntity: ecs.NewBasic()}
 		temp1.SpaceComponent = common.SpaceComponent{Position: engo.Point{DescriptionRect.SpaceComponent.Position.X + 48, DescriptionRect.SpaceComponent.Position.Y + 32}}
-		temp1.RenderComponent.Drawable = common.Text{Font: fnt, Text: "HOUSE\n\n\nHealth : XX/YY\n\n\nCapacity : xx/yy"}
+		temp1.RenderComponent.Drawable = common.Text{Font: fnt, Text: "HOUSE"}
 		temp1.SetShader(common.TextHUDShader)
 		temp1.SetZIndex(250)
 
+		temp3 = &HealthLabel{BasicEntity: ecs.NewBasic()}
+		temp3.MaxHealth = BuildingDetailsMap["House"].MaxHealth
+		temp3.SpaceComponent = common.SpaceComponent{Position: engo.Point{temp1.SpaceComponent.Position.X, temp1.SpaceComponent.Position.Y + 32}}
+		temp3.RenderComponent.SetShader(common.TextHUDShader)
+		temp3.RenderComponent.SetZIndex(250)
+
 		HouseLabels = LabelGroup{Name: "House"}
 		HouseLabels.DescriptionLabel = temp1
+		HouseLabels.DynamicLabels = append(make([]DynamicLabel, 0), temp3)
 
 		// -----------------------------------------------------------------------------------------------------
 
 		temp1 = Label{BasicEntity: ecs.NewBasic()}
 		temp1.SpaceComponent = common.SpaceComponent{Position: engo.Point{DescriptionRect.SpaceComponent.Position.X + 48, DescriptionRect.SpaceComponent.Position.Y + 32}}
-		temp1.RenderComponent.Drawable = common.Text{Font: fnt, Text: "MILITARY\n\n\nHealth : XX/YY"}
+		temp1.RenderComponent.Drawable = common.Text{Font: fnt, Text: "MILITARY"}
 		temp1.SetShader(common.TextHUDShader)
 		temp1.SetZIndex(250)
 
@@ -336,21 +403,35 @@ func (hs *HUDSystem) New(w *ecs.World) {
 		temp2.SetShader(common.TextHUDShader)
 		temp2.SetZIndex(250)
 
+		temp3 = &HealthLabel{BasicEntity: ecs.NewBasic()}
+		temp3.MaxHealth = BuildingDetailsMap["Military Block"].MaxHealth
+		temp3.SpaceComponent = common.SpaceComponent{Position: engo.Point{temp1.SpaceComponent.Position.X, temp1.SpaceComponent.Position.Y + 32}}
+		temp3.RenderComponent.SetShader(common.TextHUDShader)
+		temp3.RenderComponent.SetZIndex(250)
+
 		MilitaryBlockLabels = LabelGroup{Name: "Military Block"}
 		MilitaryBlockLabels.DescriptionLabel = temp1
 		MilitaryBlockLabels.ActionLabels = append(make([][]Label, 0), make([]Label, 0))
 		MilitaryBlockLabels.ActionLabels[0] = append(MilitaryBlockLabels.ActionLabels[0], temp2)
+		MilitaryBlockLabels.DynamicLabels = append(make([]DynamicLabel, 0), temp3)
 
 		// -----------------------------------------------------------------------------------------------------
 
 		temp1 = Label{BasicEntity: ecs.NewBasic()}
 		temp1.SpaceComponent = common.SpaceComponent{Position: engo.Point{DescriptionRect.SpaceComponent.Position.X + 48, DescriptionRect.SpaceComponent.Position.Y + 32}}
-		temp1.RenderComponent.Drawable = common.Text{Font: fnt, Text: "RESOURCE BUILDING\n\n\nHealth : XX/YY"}
+		temp1.RenderComponent.Drawable = common.Text{Font: fnt, Text: "RESOURCE BUILDING"}
 		temp1.SetShader(common.TextHUDShader)
 		temp1.SetZIndex(250)
 
+		temp3 = &HealthLabel{BasicEntity: ecs.NewBasic()}
+		temp3.MaxHealth = BuildingDetailsMap["Resource Building"].MaxHealth
+		temp3.SpaceComponent = common.SpaceComponent{Position: engo.Point{temp1.SpaceComponent.Position.X, temp1.SpaceComponent.Position.Y + 32}}
+		temp3.RenderComponent.SetShader(common.TextHUDShader)
+		temp3.RenderComponent.SetZIndex(250)
+
 		ResouceBuildingLabels = LabelGroup{Name: "Resource Building"}
 		ResouceBuildingLabels.DescriptionLabel = temp1
+		ResouceBuildingLabels.DynamicLabels = append(make([]DynamicLabel, 0), temp3)
 
 		// -----------------------------------------------------------------------------------------------------
 
@@ -427,12 +508,12 @@ func (hs *HUDSystem) New(w *ecs.World) {
 	engo.Mailbox.Listen("BuildingMessage", func(_msg engo.Message) {
 		msg, ok := _msg.(BuildingMessage)
 		if !ok {
-			panic("HUD recieved non BuildingMessage Message")
+			panic("HUD System expected BuildingMessage Message, instead got unexpected")
 		}
 
 		if hs.CurrentActiveLabel == nil ||
 			(hs.CurrentActiveLabel.Name != msg.Name || hs.CurrentLabelIndex != msg.Index) {
-			hs.SetBottomHUD(msg.Name, msg.Index)
+			hs.SetBottomHUD(msg.Name, msg.Index, msg.ID)
 		}
 	})
 
@@ -512,13 +593,29 @@ func (hs *HUDSystem) Update(dt float32) {
 
 	//Updating HUD with Food and Wood values
 	func() {
-		if hs.PrevFoodVal != PlayerFood {
+		if engo.Input.Button(SpaceButton).JustReleased() {
+			PlayerFood += 100
+			PlayerWood += 100
+		}
 
+		if hs.PrevFoodVal != PlayerFood {
+			hs.FoodValLabel.RenderComponent.Drawable = common.Text{
+				Font: LabelFont,
+				Text: strconv.Itoa(PlayerFood),
+			}
+			hs.PrevFoodVal = PlayerFood
+		}
+		if hs.PrevWoodVal != PlayerWood {
+			hs.WoodValLabel.RenderComponent.Drawable = common.Text{
+				Font: LabelFont,
+				Text: strconv.Itoa(PlayerWood),
+			}
+			hs.PrevWoodVal = PlayerWood
 		}
 	}()
 }
 
-func (hs *HUDSystem) SetBottomHUD(Name string, Index int) {
+func (hs *HUDSystem) SetBottomHUD(Name string, Index int, ID uint64) {
 	LabelToSet := LabelGroupMap[Name]
 	LastLabel := hs.CurrentActiveLabel
 	LastIndex := hs.CurrentLabelIndex
@@ -541,6 +638,12 @@ func (hs *HUDSystem) SetBottomHUD(Name string, Index int) {
 				ActiveSystems.RenderSys.Remove(ActionLabel.BasicEntity)
 			}
 		}
+
+		if len(LastLabel.DynamicLabels) > 0 {
+			for i, _ := range LastLabel.DynamicLabels {
+				LastLabel.DynamicLabels[i].RemoveSelfFromRenderSystem()
+			}
+		}
 	}
 
 	// fmt.Println("\nRemoved Label")
@@ -560,6 +663,14 @@ func (hs *HUDSystem) SetBottomHUD(Name string, Index int) {
 				&ActionLabel.RenderComponent,
 				&ActionLabel.SpaceComponent,
 			)
+		}
+	}
+
+	if len(LabelToSet.DynamicLabels) > 0 {
+		for i, _ := range LabelToSet.DynamicLabels {
+			LabelToSet.DynamicLabels[i].SetOwner(ID)
+			LabelToSet.DynamicLabels[i].UpdateDrawable()
+			LabelToSet.DynamicLabels[i].AddSelfToRenderSystem()
 		}
 	}
 

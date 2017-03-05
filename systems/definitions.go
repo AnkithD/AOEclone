@@ -9,9 +9,10 @@ import (
 
 // Button mappings
 var (
-	GridToggle = "gridtoggle"
-	HorAxis    = "horAxis"
-	VertAxis   = "vertAxis"
+	GridToggle  = "gridtoggle"
+	HorAxis     = "horAxis"
+	VertAxis    = "vertAxis"
+	SpaceButton = "SpaceButton"
 )
 
 type ActiveSystemsStruct struct {
@@ -28,8 +29,36 @@ var (
 	PlayerPop     int
 )
 
+// Message Structs
+type BuildingMessage struct {
+	Action string
+	Name   string
+	Index  int
+	ID     uint64
+}
+
+func (BuildingMessage) Type() string {
+	return "BuildingMessage"
+}
+
+type HealthEnquiryMessage struct {
+	ID uint64
+}
+
+func (HealthEnquiryMessage) Type() string {
+	return "HealthEnquiryMessage"
+}
+
+type HealthEnquiryResponseStruct struct {
+	HealthResult int
+	set          bool
+}
+
+var HealthEnquiryResponse HealthEnquiryResponseStruct
+
 func RegisterButtons() {
 	engo.Input.RegisterButton(GridToggle, engo.Tab)
+	engo.Input.RegisterButton(SpaceButton, engo.Space)
 	engo.Input.RegisterAxis(HorAxis, engo.AxisKeyPair{engo.A, engo.D})
 	engo.Input.RegisterAxis(VertAxis, engo.AxisKeyPair{engo.W, engo.S})
 
@@ -56,4 +85,6 @@ func InitializeVariables() {
 	PlayerFood = 100
 	PlayerWood = 50
 	PlayerPop = 0
+
+	HealthEnquiryResponse = HealthEnquiryResponseStruct{set: false}
 }

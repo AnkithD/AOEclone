@@ -34,8 +34,8 @@ func (*myScene) Setup(world *ecs.World) {
 	systems.InitializeVariables()
 
 	world.AddSystem(&systems.MapSystem{})
-	world.AddSystem(&systems.HUDSystem{})
 	world.AddSystem(&systems.BuildingSystem{})
+	world.AddSystem(&systems.HUDSystem{})
 
 	common.SetBackground(color.RGBA{182, 204, 104, 255})
 }
