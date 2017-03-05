@@ -31,6 +31,7 @@ func (*myScene) Setup(world *ecs.World) {
 	world.AddSystem(common.NewKeyboardScroller(640, systems.HorAxis, systems.VertAxis))
 	systems.CacheActiveSystems(world)
 	systems.RegisterButtons()
+	systems.InitializeVariables()
 
 	world.AddSystem(&systems.MapSystem{})
 	world.AddSystem(&systems.HUDSystem{})

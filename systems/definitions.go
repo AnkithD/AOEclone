@@ -14,7 +14,19 @@ var (
 	VertAxis   = "vertAxis"
 )
 
-var ActiveSystems ActiveSystemsStruct
+type ActiveSystemsStruct struct {
+	RenderSys *common.RenderSystem
+	MouseSys  *common.MouseSystem
+	CameraSys *common.CameraSystem
+}
+
+// Other Variables
+var (
+	ActiveSystems ActiveSystemsStruct
+	PlayerFood    int
+	PlayerWood    int
+	PlayerPop     int
+)
 
 func RegisterButtons() {
 	engo.Input.RegisterButton(GridToggle, engo.Tab)
@@ -40,8 +52,8 @@ func CacheActiveSystems(world *ecs.World) {
 	fmt.Println("Cached Important System References")
 }
 
-type ActiveSystemsStruct struct {
-	RenderSys *common.RenderSystem
-	MouseSys  *common.MouseSystem
-	CameraSys *common.CameraSystem
+func InitializeVariables() {
+	PlayerFood = 100
+	PlayerWood = 50
+	PlayerPop = 0
 }
