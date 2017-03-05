@@ -13,8 +13,8 @@ type HUDSystem struct {
 	CurrentActiveLabel *LabelGroup
 	CurrentLabelIndex  int
 
-	LeftMouseButtonPressed bool
-	SelectionRect          SHAPE
+	SelectionRect *SHAPE
+	ActionRects   []*SHAPE
 
 	BottomHUDWidth  int
 	BottomHUDHeight int
@@ -55,11 +55,10 @@ var (
 )
 
 func (hs *HUDSystem) New(w *ecs.World) {
-
+	hs.World = w
 	hs.CurrentActiveLabel = nil
 	hs.CurrentLabelIndex = 0
-	hs.World = w
-	LabelGroupMap = make(map[string]LabelGroup)
+	hs.SelectionRect = nil
 
 	HUDColor := color.RGBA{222, 184, 135, 250}
 
@@ -168,6 +167,9 @@ func (hs *HUDSystem) New(w *ecs.World) {
 	ActiveSystems.RenderSys.Add(&Action4Rect.BasicEntity, &Action4Rect.RenderComponent, &Action4Rect.SpaceComponent)
 	ActiveSystems.RenderSys.Add(&Action5Rect.BasicEntity, &Action5Rect.RenderComponent, &Action5Rect.SpaceComponent)
 	ActiveSystems.RenderSys.Add(&Action6Rect.BasicEntity, &Action6Rect.RenderComponent, &Action6Rect.SpaceComponent)
+	hs.ActionRects = append(make([]*SHAPE, 0),
+		&Action1Rect, &Action2Rect, &Action3Rect, &Action4Rect, &Action5Rect, &Action6Rect,
+	)
 
 	DeselectRect := SHAPE{BasicEntity: ecs.NewBasic()}
 	wid := Action1Rect.SpaceComponent.Width - 30
@@ -264,8 +266,7 @@ func (hs *HUDSystem) New(w *ecs.World) {
 
 	TownCenterLabels = LabelGroup{Name: "Town Center"}
 	TownCenterLabels.DescriptionLabel = temp1
-	TownCenterLabels.ActionLabels = make([][]Label, 0)
-	TownCenterLabels.ActionLabels = append(TownCenterLabels.ActionLabels, make([]Label, 0))
+	TownCenterLabels.ActionLabels = append(make([][]Label, 0), make([]Label, 0))
 	TownCenterLabels.ActionLabels[0] = append(TownCenterLabels.ActionLabels[0], temp2)
 
 	// -----------------------------------------------------------------------------------------------------
@@ -295,8 +296,7 @@ func (hs *HUDSystem) New(w *ecs.World) {
 
 	MilitaryBlockLabels = LabelGroup{Name: "Military Block"}
 	MilitaryBlockLabels.DescriptionLabel = temp1
-	MilitaryBlockLabels.ActionLabels = make([][]Label, 0)
-	MilitaryBlockLabels.ActionLabels = append(MilitaryBlockLabels.ActionLabels, make([]Label, 0))
+	MilitaryBlockLabels.ActionLabels = append(make([][]Label, 0), make([]Label, 0))
 	MilitaryBlockLabels.ActionLabels[0] = append(MilitaryBlockLabels.ActionLabels[0], temp2)
 
 	// -----------------------------------------------------------------------------------------------------
@@ -312,6 +312,7 @@ func (hs *HUDSystem) New(w *ecs.World) {
 
 	// -----------------------------------------------------------------------------------------------------
 
+	LabelGroupMap = make(map[string]LabelGroup)
 	LabelGroupMap["Town Center"] = TownCenterLabels
 	LabelGroupMap["Military Block"] = MilitaryBlockLabels
 	LabelGroupMap["Resource Building"] = ResouceBuildingLabels
@@ -405,9 +406,7 @@ func (hs *HUDSystem) Update(dt float32) {
 	if engo.Input.Mouse.Action == engo.Press && engo.Input.Mouse.Button == engo.MouseButtonLeft &&
 		my > float32(hs.TopHUDHeight) && my < engo.WindowHeight()-float32(hs.BottomHUDHeight) {
 
-		hs.LeftMouseButtonPressed = true
-
-		hs.SelectionRect = SHAPE{
+		hs.SelectionRect = &SHAPE{
 			BasicEntity: ecs.NewBasic(),
 			SpaceComponent: common.SpaceComponent{
 				Position: engo.Point{mx, my},
@@ -433,12 +432,14 @@ func (hs *HUDSystem) Update(dt float32) {
 
 	// If Left Mouse Button is released
 	if engo.Input.Mouse.Action == engo.Release && engo.Input.Mouse.Button == engo.MouseButtonLeft {
-		hs.LeftMouseButtonPressed = false
-		ActiveSystems.RenderSys.Remove(hs.SelectionRect.BasicEntity)
+		if hs.SelectionRect != nil {
+			ActiveSystems.RenderSys.Remove(hs.SelectionRect.BasicEntity)
+			hs.SelectionRect = nil
+		}
 	}
 
 	// While Left Mouse Button is held down
-	if hs.LeftMouseButtonPressed {
+	if hs.SelectionRect != nil {
 		// Clamp the mouse cooridnates to be within Active Game Area
 		if my < float32(hs.TopHUDHeight) {
 			my = float32(hs.TopHUDHeight)
