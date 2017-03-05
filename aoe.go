@@ -18,7 +18,7 @@ func (*myScene) Type() string { return "myGame" }
 func (*myScene) Preload() {
 	err := engo.Files.Load(
 		"Roboto-Regular.ttf", "Town_centre.png", "Military_block.png", "Resource_Building.png",
-		"House.png",
+		"House.png", "Deselect_button.png",
 	)
 	if err != nil {
 		panic(err)

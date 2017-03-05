@@ -17,6 +17,7 @@ type HUDSystem struct {
 
 	SelectionRect *SHAPE
 	ActionRects   []*SHAPE
+	DeselectRect  *SHAPE
 
 	BottomHUDWidth  int
 	BottomHUDHeight int
@@ -70,7 +71,7 @@ func (hl *HealthLabel) UpdateDrawable() {
 		if HealthEnquiryResponse.HealthResult != hl.Health {
 			hl.Health = HealthEnquiryResponse.HealthResult
 		} else {
-			fmt.Println("Not updating")
+			//fmt.Println("Not updating")
 			return
 		}
 	}
@@ -93,12 +94,16 @@ func (hl *HealthLabel) RemoveSelfFromRenderSystem() {
 	ActiveSystems.RenderSys.Remove(hl.BasicEntity)
 }
 
+type ActionHandler func()
+
 type LabelGroup struct {
 	Name string
 
 	DescriptionLabel Label
-	ActionLabels     [][]Label
 	DynamicLabels    []DynamicLabel
+
+	ActionLabels   [][]Label
+	ActionHandlers [][]ActionHandler
 }
 
 var (
@@ -239,16 +244,19 @@ func (hs *HUDSystem) New(w *ecs.World) {
 		)
 
 		DeselectRect := SHAPE{BasicEntity: ecs.NewBasic()}
-		wid := Action1Rect.SpaceComponent.Width - 30
-		hig := float32(hs.BottomHUDHeight/2) - 15
-		DeselectRect.SpaceComponent = common.SpaceComponent{Position: engo.Point{engo.WindowWidth() - wid - 20, engo.WindowHeight() - float32(hs.BottomHUDHeight) + 10}, Width: wid, Height: hig}
-		DeselectRect.RenderComponent = common.RenderComponent{Drawable: common.Rectangle{}, Color: color.RGBA{255, 255, 255, 255}}
+		DeselectTex, err := common.LoadedSprite("Deselect_button.png")
+		if err != nil {
+			fmt.Println(err.Error())
+		}
+		DeselectRect.SpaceComponent = common.SpaceComponent{Position: engo.Point{engo.WindowWidth() - DeselectTex.Width() - 20, engo.WindowHeight() - float32(hs.BottomHUDHeight) + 10}, Width: DeselectTex.Width(), Height: DeselectTex.Height()}
+		DeselectRect.RenderComponent = common.RenderComponent{Drawable: DeselectTex}
 
 		DeselectRect.RenderComponent.SetZIndex(125)
 		DeselectRect.RenderComponent.SetShader(common.HUDShader)
+		hs.DeselectRect = &DeselectRect
 
 		HelpRect := SHAPE{BasicEntity: ecs.NewBasic()}
-		HelpRect.SpaceComponent = common.SpaceComponent{Position: engo.Point{DeselectRect.SpaceComponent.Position.X, engo.WindowHeight() - float32(hs.BottomHUDHeight/2) + 5}, Width: wid, Height: hig}
+		HelpRect.SpaceComponent = common.SpaceComponent{Position: engo.Point{DeselectRect.SpaceComponent.Position.X, engo.WindowHeight() - float32(hs.BottomHUDHeight/2) + 5}, Width: DeselectRect.SpaceComponent.Width, Height: DeselectRect.SpaceComponent.Height}
 		HelpRect.RenderComponent = common.RenderComponent{Drawable: common.Rectangle{}, Color: color.RGBA{255, 255, 255, 255}}
 
 		HelpRect.RenderComponent.SetZIndex(125)
@@ -343,6 +351,7 @@ func (hs *HUDSystem) New(w *ecs.World) {
 		//Bottom HUD Labels
 		var temp1, temp2 Label
 		var temp3 *HealthLabel
+		var tempA ActionHandler
 
 		// -----------------------------------------------------------------------------------------------------
 
@@ -358,8 +367,11 @@ func (hs *HUDSystem) New(w *ecs.World) {
 		temp2.SetShader(common.TextHUDShader)
 		temp2.SetZIndex(250)
 
+		tempA = func() {
+			fmt.Println("Create Villager Button Clicked!")
+		}
+
 		temp3 = &HealthLabel{BasicEntity: ecs.NewBasic()}
-		fmt.Println(BuildingDetailsMap["Town Center"].MaxHealth)
 		temp3.MaxHealth = BuildingDetailsMap["Town Center"].MaxHealth
 		temp3.SpaceComponent = common.SpaceComponent{Position: engo.Point{temp1.SpaceComponent.Position.X, temp1.SpaceComponent.Position.Y + 32}}
 		temp3.RenderComponent.SetShader(common.TextHUDShader)
@@ -368,7 +380,9 @@ func (hs *HUDSystem) New(w *ecs.World) {
 		TownCenterLabels = LabelGroup{Name: "Town Center"}
 		TownCenterLabels.DescriptionLabel = temp1
 		TownCenterLabels.ActionLabels = append(make([][]Label, 0), make([]Label, 0))
+		TownCenterLabels.ActionHandlers = append(make([][]ActionHandler, 0), make([]ActionHandler, 0))
 		TownCenterLabels.ActionLabels[0] = append(TownCenterLabels.ActionLabels[0], temp2)
+		TownCenterLabels.ActionHandlers[0] = append(TownCenterLabels.ActionHandlers[0], tempA)
 		TownCenterLabels.DynamicLabels = append(make([]DynamicLabel, 0), temp3)
 
 		// -----------------------------------------------------------------------------------------------------
@@ -403,6 +417,10 @@ func (hs *HUDSystem) New(w *ecs.World) {
 		temp2.SetShader(common.TextHUDShader)
 		temp2.SetZIndex(250)
 
+		tempA = func() {
+			fmt.Println("Create Warrior Clicked!")
+		}
+
 		temp3 = &HealthLabel{BasicEntity: ecs.NewBasic()}
 		temp3.MaxHealth = BuildingDetailsMap["Military Block"].MaxHealth
 		temp3.SpaceComponent = common.SpaceComponent{Position: engo.Point{temp1.SpaceComponent.Position.X, temp1.SpaceComponent.Position.Y + 32}}
@@ -412,7 +430,9 @@ func (hs *HUDSystem) New(w *ecs.World) {
 		MilitaryBlockLabels = LabelGroup{Name: "Military Block"}
 		MilitaryBlockLabels.DescriptionLabel = temp1
 		MilitaryBlockLabels.ActionLabels = append(make([][]Label, 0), make([]Label, 0))
+		MilitaryBlockLabels.ActionHandlers = append(make([][]ActionHandler, 0), make([]ActionHandler, 0))
 		MilitaryBlockLabels.ActionLabels[0] = append(MilitaryBlockLabels.ActionLabels[0], temp2)
+		MilitaryBlockLabels.ActionHandlers[0] = append(MilitaryBlockLabels.ActionHandlers[0], tempA)
 		MilitaryBlockLabels.DynamicLabels = append(make([]DynamicLabel, 0), temp3)
 
 		// -----------------------------------------------------------------------------------------------------
@@ -521,14 +541,15 @@ func (hs *HUDSystem) New(w *ecs.World) {
 }
 
 func (hs *HUDSystem) Update(dt float32) {
+	CamSys := ActiveSystems.CameraSys
+
+	// Converting Mouse Coordinates to be Independent of Camera Zoom
+	mx := engo.Input.Mouse.X * CamSys.Z() * (engo.GameWidth() / engo.CanvasWidth())
+	my := engo.Input.Mouse.Y * CamSys.Z() * (engo.GameHeight() / engo.CanvasHeight())
+	mp := engo.Point{mx, my}
+
 	//Rendering Selection Rect
 	func() {
-		CamSys := ActiveSystems.CameraSys
-
-		// Converting Mouse Coordinates to be Independent of Camera ZooM
-		mx := engo.Input.Mouse.X * CamSys.Z() * (engo.GameWidth() / engo.CanvasWidth())
-		my := engo.Input.Mouse.Y * CamSys.Z() * (engo.GameHeight() / engo.CanvasHeight())
-
 		//If left Mouse button is pressed within Active Game Area
 		if engo.Input.Mouse.Action == engo.Press && engo.Input.Mouse.Button == engo.MouseButtonLeft &&
 			my > float32(hs.TopHUDHeight) && my < engo.WindowHeight()-float32(hs.BottomHUDHeight) {
@@ -616,6 +637,27 @@ func (hs *HUDSystem) Update(dt float32) {
 		if hs.CurrentActiveLabel != nil {
 			for i, _ := range hs.CurrentActiveLabel.DynamicLabels {
 				hs.CurrentActiveLabel.DynamicLabels[i].UpdateDrawable()
+			}
+		}
+	}()
+
+	//Handling clicking of action buttons
+	func() {
+		if hs.CurrentActiveLabel != nil && engo.Input.Mouse.Action == engo.Press &&
+			engo.Input.Mouse.Button == engo.MouseButtonLeft {
+
+			if len(hs.CurrentActiveLabel.ActionLabels) > 0 {
+				for i, _ := range hs.CurrentActiveLabel.ActionLabels[hs.CurrentLabelIndex] {
+					if hs.ActionRects[i].SpaceComponent.Contains(mp) {
+						hs.CurrentActiveLabel.ActionHandlers[hs.CurrentLabelIndex][i]()
+						return
+					}
+				}
+			}
+
+			if hs.DeselectRect.SpaceComponent.Contains(mp) {
+				hs.RemoveCurrentBottomHUDLabel()
+				return
 			}
 		}
 	}()
