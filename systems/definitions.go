@@ -21,6 +21,20 @@ type ActiveSystemsStruct struct {
 	CameraSys *common.CameraSystem
 }
 
+// File Names
+
+var (
+	TownCenterSprite        = "towncentre1.png"
+	ETownCenterSprite       = "towncentre2.png"
+	MilitaryBlockSprite     = "militarybuilding1.png"
+	EMilitaryBlockSprite    = "militarybuilding2.png"
+	ResourceBuildingSprite  = "Resourcebuilding1.png"
+	EResourceBuildingSprite = "Resourcebuilding2.png"
+	HouseSprite             = "house1.png"
+	EHouseSprite            = "house2.png"
+	BuildingSprites         = []string{TownCenterSprite, ETownCenterSprite, MilitaryBlockSprite, EMilitaryBlockSprite, ResourceBuildingSprite, EResourceBuildingSprite, HouseSprite, EHouseSprite}
+)
+
 // Other Variables
 var (
 	ActiveSystems ActiveSystemsStruct

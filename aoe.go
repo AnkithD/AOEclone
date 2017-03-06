@@ -17,12 +17,19 @@ func (*myScene) Type() string { return "myGame" }
 
 func (*myScene) Preload() {
 	err := engo.Files.Load(
-		"Roboto-Regular.ttf", "Town_centre.png", "Military_block.png", "Resource_Building.png",
-		"House.png", "Deselect_button.png",
+		"Roboto-Regular.ttf", "Deselect_button.png",
 	)
 	if err != nil {
 		panic(err)
 	}
+
+	for _, item := range systems.BuildingSprites {
+		err := engo.Files.Load(item)
+		if err != nil {
+			panic(err)
+		}
+	}
+
 }
 
 func (*myScene) Setup(world *ecs.World) {

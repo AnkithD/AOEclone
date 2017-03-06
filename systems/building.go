@@ -30,7 +30,7 @@ func (bs *BuildingSystem) New(w *ecs.World) {
 	//Building Definitions (For loop to be able to collapse it)
 	BuildingDetailsMap = make(map[string]BuildingDetails)
 	func() {
-		TownCenterTexture, err := common.LoadedSprite("Town_centre.png")
+		TownCenterTexture, err := common.LoadedSprite(TownCenterSprite)
 		if err != nil {
 			fmt.Println(err.Error())
 		}
@@ -40,7 +40,7 @@ func (bs *BuildingSystem) New(w *ecs.World) {
 		}
 		BuildingDetailsMap[TownCenterDetails.Name] = TownCenterDetails
 
-		MilitaryBlockTexture, err := common.LoadedSprite("Military_block.png")
+		MilitaryBlockTexture, err := common.LoadedSprite(MilitaryBlockSprite)
 		if err != nil {
 			fmt.Println(err.Error())
 		}
@@ -50,7 +50,7 @@ func (bs *BuildingSystem) New(w *ecs.World) {
 		}
 		BuildingDetailsMap[MilitaryBlockDetails.Name] = MilitaryBlockDetails
 
-		ResourceBuildingTexture, err := common.LoadedSprite("Resource_Building.png")
+		ResourceBuildingTexture, err := common.LoadedSprite(ResourceBuildingSprite)
 		if err != nil {
 			fmt.Println(err.Error())
 		}
@@ -60,7 +60,7 @@ func (bs *BuildingSystem) New(w *ecs.World) {
 		}
 		BuildingDetailsMap[ResourceBuildingDetails.Name] = ResourceBuildingDetails
 
-		HouseTexture, err := common.LoadedSprite("House.png")
+		HouseTexture, err := common.LoadedSprite(HouseSprite)
 		if err != nil {
 			fmt.Println(err.Error())
 		}

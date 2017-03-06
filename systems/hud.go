@@ -107,7 +107,7 @@ type LabelGroup struct {
 }
 
 var (
-	TownCenterLabels, MilitaryBlockLabels, ResouceBuildingLabels,
+	TownCenterLabels, MilitaryBlockLabels, ResourceBuildingLabels,
 	HouseLabels, VillagerLabels LabelGroup
 
 	LabelGroupMap map[string]LabelGroup
@@ -449,16 +449,16 @@ func (hs *HUDSystem) New(w *ecs.World) {
 		temp3.RenderComponent.SetShader(common.TextHUDShader)
 		temp3.RenderComponent.SetZIndex(250)
 
-		ResouceBuildingLabels = LabelGroup{Name: "Resource Building"}
-		ResouceBuildingLabels.DescriptionLabel = temp1
-		ResouceBuildingLabels.DynamicLabels = append(make([]DynamicLabel, 0), temp3)
+		ResourceBuildingLabels = LabelGroup{Name: "Resource Building"}
+		ResourceBuildingLabels.DescriptionLabel = temp1
+		ResourceBuildingLabels.DynamicLabels = append(make([]DynamicLabel, 0), temp3)
 
 		// -----------------------------------------------------------------------------------------------------
 
 		LabelGroupMap = make(map[string]LabelGroup)
 		LabelGroupMap["Town Center"] = TownCenterLabels
 		LabelGroupMap["Military Block"] = MilitaryBlockLabels
-		LabelGroupMap["Resource Building"] = ResouceBuildingLabels
+		LabelGroupMap["Resource Building"] = ResourceBuildingLabels
 		LabelGroupMap["House"] = HouseLabels
 	}()
 
