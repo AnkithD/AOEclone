@@ -41,6 +41,11 @@ var (
 	PlayerFood    int
 	PlayerWood    int
 	PlayerPop     int
+	GridSize      int
+	ScaleFactor   float32 // Ratio of Game World size with respect to Window Size
+	Chunks        [][]StaticEntity
+	ChunkSize     int
+	Grid          [][]bool
 )
 
 // Message Structs
@@ -69,6 +74,90 @@ type HealthEnquiryResponseStruct struct {
 }
 
 var HealthEnquiryResponse HealthEnquiryResponseStruct
+
+//Other types
+
+type Fillable interface {
+	GetPos() (float32, float32)
+	GetSize() (float32, float32)
+}
+
+type StaticEntity interface {
+	GetPos() (float32, float32)
+	GetSize() (float32, float32)
+	GetStaticComponent() *StaticComponent
+}
+
+// Functions
+
+// Get the mouse position adjusted for zoom
+func GetAdjustedMousePos(WRTWindow bool) (float32, float32) {
+	CamSys := ActiveSystems.CameraSys
+	x := engo.Input.Mouse.X * CamSys.Z() * (engo.GameWidth() / engo.CanvasWidth())
+	y := engo.Input.Mouse.Y * CamSys.Z() * (engo.GameHeight() / engo.CanvasHeight())
+
+	if !WRTWindow {
+		x += CamSys.X() - (engo.GameWidth()/2)*CamSys.Z()
+		y += CamSys.Y() - (engo.GameHeight()/2)*CamSys.Z()
+	}
+
+	return x, y
+
+}
+
+// Return chunk that the grid point belongs to
+func GetChunkFromPos(x, y float32) (*[]StaticEntity, int) {
+	rownum := int(engo.WindowWidth()*ScaleFactor) / (GridSize * ChunkSize)
+	X := int(x) / (GridSize * ChunkSize)
+	Y := int(y) / (GridSize * ChunkSize)
+
+	//fmt.Println("Chunk of index", X, ",", Y)
+	//fmt.Println("Row number is", rownum)
+
+	return &Chunks[Y*rownum+X], (Y*rownum + X)
+}
+
+// Store Static objects in respective Chunk(s)
+func CacheInChunks(se StaticEntity) {
+	x, y := se.GetPos()
+	X, Y := se.GetSize()
+	X = X + x
+	Y = Y + y
+
+	chunk1, _ := GetChunkFromPos(x, y)
+	*chunk1 = append(*chunk1, se)
+
+	chunk2, _ := GetChunkFromPos(X, y)
+	if chunk1 != chunk2 {
+		*chunk2 = append(*chunk2, se)
+	}
+
+	chunk3, _ := GetChunkFromPos(x, Y)
+	if chunk1 != chunk3 {
+		*chunk3 = append(*chunk3, se)
+	}
+
+	chunk4, _ := GetChunkFromPos(X, Y)
+	if chunk4 != chunk2 && chunk4 != chunk3 {
+		*chunk4 = append(*chunk4, se)
+	}
+}
+
+func GetGridAtPos(x, y float32) bool {
+	return Grid[int(x)/GridSize][int(y)/GridSize]
+}
+
+// Mark the solids in the Grid
+func FillGrid(f Fillable) {
+	x, y := f.GetPos()
+	w, h := f.GetSize()
+
+	for i := int(x) / GridSize; i < int(x+w)/GridSize; i += 1 {
+		for j := int(y) / GridSize; j < int(y+h)/GridSize; j += 1 {
+			Grid[i][j] = true
+		}
+	}
+}
 
 func RegisterButtons() {
 	engo.Input.RegisterButton(GridToggle, engo.Tab)
@@ -100,5 +189,26 @@ func InitializeVariables() {
 	PlayerWood = 50
 	PlayerPop = 0
 
+	ScaleFactor = 2
+
 	HealthEnquiryResponse = HealthEnquiryResponseStruct{set: false}
+
+	GridSize = 32
+
+	// Camera bounds is ScaleFactor times window size, also Go defaults to false
+	rows := int(engo.WindowWidth()*ScaleFactor) / GridSize
+	cols := int(engo.WindowHeight()*ScaleFactor) / GridSize
+	Grid = make([][]bool, rows)
+	for i, _ := range Grid {
+		Grid[i] = make([]bool, cols)
+	}
+
+	// Chunks used to Cache Static Entities
+	ChunkSize = 8
+	ChunkNum := (int(engo.WindowHeight()*ScaleFactor) / (GridSize * ChunkSize)) * (int(engo.WindowWidth()*ScaleFactor) / (GridSize * ChunkSize))
+
+	Chunks = make([][]StaticEntity, ChunkNum)
+	for i, _ := range Chunks {
+		Chunks[i] = make([]StaticEntity, 0)
+	}
 }

@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"math"
 	"math/rand"
-	// "image/color"
 )
 
 var (
@@ -24,7 +23,7 @@ type BuildingSystem struct {
 func (bs *BuildingSystem) Remove(ecs.BasicEntity) {}
 
 func (bs *BuildingSystem) New(w *ecs.World) {
-	rand.Seed(123456789)
+	rand.Seed(16548161)
 	bs.world = w
 
 	//Building Definitions (For loop to be able to collapse it)
@@ -36,7 +35,6 @@ func (bs *BuildingSystem) New(w *ecs.World) {
 		}
 		TownCenterDetails := BuildingDetails{
 			Name: "Town Center", MaxHealth: 150, Texture: TownCenterTexture,
-			HUDSelectionIndex: 0,
 		}
 		BuildingDetailsMap[TownCenterDetails.Name] = TownCenterDetails
 
@@ -46,7 +44,6 @@ func (bs *BuildingSystem) New(w *ecs.World) {
 		}
 		MilitaryBlockDetails := BuildingDetails{
 			Name: "Military Block", MaxHealth: 120, Texture: MilitaryBlockTexture,
-			HUDSelectionIndex: 3,
 		}
 		BuildingDetailsMap[MilitaryBlockDetails.Name] = MilitaryBlockDetails
 
@@ -56,7 +53,6 @@ func (bs *BuildingSystem) New(w *ecs.World) {
 		}
 		ResourceBuildingDetails := BuildingDetails{
 			Name: "Resource Building", MaxHealth: 75, Texture: ResourceBuildingTexture,
-			HUDSelectionIndex: 4,
 		}
 		BuildingDetailsMap[ResourceBuildingDetails.Name] = ResourceBuildingDetails
 
@@ -66,14 +62,8 @@ func (bs *BuildingSystem) New(w *ecs.World) {
 		}
 		HouseDetails := BuildingDetails{
 			Name: "House", MaxHealth: 30, Texture: HouseTexture,
-			HUDSelectionIndex: 2,
 		}
 		BuildingDetailsMap[HouseDetails.Name] = HouseDetails
-
-		bs.AddBuilding("Town Center", engo.Point{96, 320})
-		bs.AddBuilding("Military Block", engo.Point{320, 320})
-		bs.AddBuilding("Resource Building", engo.Point{544, 320})
-		bs.AddBuilding("House", engo.Point{768, 320})
 	}()
 
 	engo.Mailbox.Listen("HealthEnquiryMessage", func(_msg engo.Message) {
@@ -92,6 +82,11 @@ func (bs *BuildingSystem) New(w *ecs.World) {
 		panic("Health Enquiry for unkown building")
 	})
 
+	bs.AddBuilding("Town Center", engo.Point{96, 320})
+	bs.AddBuilding("Military Block", engo.Point{320, 320})
+	bs.AddBuilding("Resource Building", engo.Point{544, 320})
+	bs.AddBuilding("House", engo.Point{768, 320})
+
 	fmt.Println("Building System Initialized")
 }
 
@@ -108,48 +103,71 @@ func (bs *BuildingSystem) Update(dt float32) {
 	}
 }
 
-func (bs *BuildingSystem) AddBuilding(_BuildingName string, Pos engo.Point) {
-	tex := BuildingDetailsMap[_BuildingName].Texture
+func (bs *BuildingSystem) AddBuilding(_Name string, Pos engo.Point) {
+	tex := BuildingDetailsMap[_Name].Texture
 
 	// Using reference so that the newly created building
 	// doesn't get garbage collected after func return
 	new_building := &BuildingEntity{
-		BasicEntity: ecs.NewBasic(),
-		RenderComponent: common.RenderComponent{
-			Drawable: tex,
-		},
-		SpaceComponent: common.SpaceComponent{
-			Position: Pos,
-			Width:    tex.Width(),
-			Height:   tex.Height(),
+		StaticComponent: StaticComponent{
+			BasicEntity: ecs.NewBasic(),
+			RenderComponent: common.RenderComponent{
+				Drawable: tex,
+			},
+			SpaceComponent: common.SpaceComponent{
+				Position: Pos,
+				Width:    tex.Width(),
+				Height:   tex.Height(),
+			},
+			Name:   _Name,
+			Width:  tex.Width(),
+			Height: tex.Height(),
 		},
 		MouseComponent: common.MouseComponent{},
-		BuildingName:   _BuildingName,
-		Health:         BuildingDetailsMap[_BuildingName].MaxHealth,
+		Health:         BuildingDetailsMap[_Name].MaxHealth,
 	}
 	bs.Buildings = append(bs.Buildings, new_building)
+	fmt.Println("Filling Graph for", _Name)
+	CacheInChunks(new_building)
+	FillGrid(new_building)
 
 	ActiveSystems.RenderSys.Add(&new_building.BasicEntity, &new_building.RenderComponent, &new_building.SpaceComponent)
 	ActiveSystems.MouseSys.Add(&new_building.BasicEntity, &new_building.MouseComponent, &new_building.SpaceComponent, &new_building.RenderComponent)
 }
 
 type BuildingEntity struct {
-	ecs.BasicEntity
-	common.RenderComponent
-	common.SpaceComponent
+	StaticComponent
 	common.MouseComponent
-
-	BuildingName string
-	Health       int
+	Health int
 }
 
 func (be *BuildingEntity) GetDetails() BuildingDetails {
-	return BuildingDetailsMap[be.BuildingName]
+	return BuildingDetailsMap[be.Name]
 }
 
 type BuildingDetails struct {
-	Name              string
-	MaxHealth         int
-	Texture           *common.Texture
-	HUDSelectionIndex int
+	Name      string
+	MaxHealth int
+	Texture   *common.Texture
+}
+
+type StaticComponent struct {
+	ecs.BasicEntity
+	common.RenderComponent
+	common.SpaceComponent
+	Name   string
+	Width  float32
+	Height float32
+}
+
+func (se *StaticComponent) GetPos() (float32, float32) {
+	return se.Position.X, se.Position.Y
+}
+
+func (se *StaticComponent) GetSize() (float32, float32) {
+	return se.Width, se.Height
+}
+
+func (se *StaticComponent) GetStaticComponent() *StaticComponent {
+	return se
 }

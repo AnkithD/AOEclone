@@ -541,11 +541,9 @@ func (hs *HUDSystem) New(w *ecs.World) {
 }
 
 func (hs *HUDSystem) Update(dt float32) {
-	CamSys := ActiveSystems.CameraSys
 
 	// Converting Mouse Coordinates to be Independent of Camera Zoom
-	mx := engo.Input.Mouse.X * CamSys.Z() * (engo.GameWidth() / engo.CanvasWidth())
-	my := engo.Input.Mouse.Y * CamSys.Z() * (engo.GameHeight() / engo.CanvasHeight())
+	mx, my := GetAdjustedMousePos(true)
 	mp := engo.Point{mx, my}
 
 	//Rendering Selection Rect
