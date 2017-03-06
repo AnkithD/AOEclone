@@ -52,7 +52,10 @@ type DynamicLabel interface {
 	UpdateDrawable()
 	SetOwner(uint64)
 	AddSelfToRenderSystem()
+	SetSecondField(interface{})
 	RemoveSelfFromRenderSystem()
+	GetSpaceComponent() *common.SpaceComponent
+	GetRenderComponent() *common.RenderComponent
 }
 
 type HealthLabel struct {
@@ -62,6 +65,18 @@ type HealthLabel struct {
 	Health    int
 	MaxHealth int
 	OwnerID   uint64
+}
+
+func (hl *HealthLabel) SetSecondField(val interface{}) {
+	hl.MaxHealth = val.(int)
+}
+
+func (hl *HealthLabel) GetSpaceComponent() *common.SpaceComponent {
+	return &hl.SpaceComponent
+}
+
+func (hl *HealthLabel) GetRenderComponent() *common.RenderComponent {
+	return &hl.RenderComponent
 }
 
 func (hl *HealthLabel) UpdateDrawable() {
@@ -94,6 +109,58 @@ func (hl *HealthLabel) RemoveSelfFromRenderSystem() {
 	ActiveSystems.RenderSys.Remove(hl.BasicEntity)
 }
 
+type ResourceLabel struct {
+	ecs.BasicEntity
+	common.RenderComponent
+	common.SpaceComponent
+	Resource     int
+	ResourceType string
+	OwnerID      uint64
+}
+
+func (rl *ResourceLabel) GetSpaceComponent() *common.SpaceComponent {
+	return &rl.SpaceComponent
+}
+
+func (rl *ResourceLabel) GetRenderComponent() *common.RenderComponent {
+	return &rl.RenderComponent
+}
+
+func (rl *ResourceLabel) SetSecondField(val interface{}) {
+	rl.ResourceType = val.(string)
+}
+
+func (rl *ResourceLabel) UpdateDrawable() {
+	engo.Mailbox.Dispatch(HealthEnquiryMessage{ID: rl.OwnerID})
+	if HealthEnquiryResponse.set {
+		HealthEnquiryResponse.set = false
+		if HealthEnquiryResponse.HealthResult != rl.Resource {
+			rl.Resource = HealthEnquiryResponse.HealthResult
+			rl.SetSecondField(HealthEnquiryResponse.ResourceName)
+		} else {
+			//fmt.Println("Not updating")
+			return
+		}
+	}
+
+	rl.RenderComponent.Drawable = common.Text{
+		Font: LabelFont,
+		Text: strconv.Itoa(rl.Resource) + " " + rl.ResourceType + " Left",
+	}
+}
+
+func (rl *ResourceLabel) SetOwner(ID uint64) {
+	rl.OwnerID = ID
+}
+
+func (rl *ResourceLabel) AddSelfToRenderSystem() {
+	ActiveSystems.RenderSys.Add(&rl.BasicEntity, &rl.RenderComponent, &rl.SpaceComponent)
+}
+
+func (rl *ResourceLabel) RemoveSelfFromRenderSystem() {
+	ActiveSystems.RenderSys.Remove(rl.BasicEntity)
+}
+
 type ActionHandler func()
 
 type LabelGroup struct {
@@ -108,7 +175,7 @@ type LabelGroup struct {
 
 var (
 	TownCenterLabels, MilitaryBlockLabels, ResourceBuildingLabels,
-	HouseLabels, VillagerLabels LabelGroup
+	HouseLabels, VillagerLabels, BushLabels LabelGroup
 
 	LabelGroupMap map[string]LabelGroup
 
@@ -350,7 +417,7 @@ func (hs *HUDSystem) New(w *ecs.World) {
 
 		//Bottom HUD Labels
 		var temp1, temp2 Label
-		var temp3 *HealthLabel
+		var temp3 DynamicLabel
 		var tempA ActionHandler
 
 		// -----------------------------------------------------------------------------------------------------
@@ -372,10 +439,10 @@ func (hs *HUDSystem) New(w *ecs.World) {
 		}
 
 		temp3 = &HealthLabel{BasicEntity: ecs.NewBasic()}
-		temp3.MaxHealth = BuildingDetailsMap["Town Center"].MaxHealth
-		temp3.SpaceComponent = common.SpaceComponent{Position: engo.Point{temp1.SpaceComponent.Position.X, temp1.SpaceComponent.Position.Y + 32}}
-		temp3.RenderComponent.SetShader(common.TextHUDShader)
-		temp3.RenderComponent.SetZIndex(250)
+		temp3.SetSecondField(BuildingDetailsMap["Town Center"].MaxHealth)
+		*temp3.GetSpaceComponent() = common.SpaceComponent{Position: engo.Point{temp1.SpaceComponent.Position.X, temp1.SpaceComponent.Position.Y + 32}}
+		temp3.GetRenderComponent().SetShader(common.TextHUDShader)
+		temp3.GetRenderComponent().SetZIndex(250)
 
 		TownCenterLabels = LabelGroup{Name: "Town Center"}
 		TownCenterLabels.DescriptionLabel = temp1
@@ -394,10 +461,10 @@ func (hs *HUDSystem) New(w *ecs.World) {
 		temp1.SetZIndex(250)
 
 		temp3 = &HealthLabel{BasicEntity: ecs.NewBasic()}
-		temp3.MaxHealth = BuildingDetailsMap["House"].MaxHealth
-		temp3.SpaceComponent = common.SpaceComponent{Position: engo.Point{temp1.SpaceComponent.Position.X, temp1.SpaceComponent.Position.Y + 32}}
-		temp3.RenderComponent.SetShader(common.TextHUDShader)
-		temp3.RenderComponent.SetZIndex(250)
+		temp3.SetSecondField(BuildingDetailsMap["House"].MaxHealth)
+		*temp3.GetSpaceComponent() = common.SpaceComponent{Position: engo.Point{temp1.SpaceComponent.Position.X, temp1.SpaceComponent.Position.Y + 32}}
+		temp3.GetRenderComponent().SetShader(common.TextHUDShader)
+		temp3.GetRenderComponent().SetZIndex(250)
 
 		HouseLabels = LabelGroup{Name: "House"}
 		HouseLabels.DescriptionLabel = temp1
@@ -422,10 +489,10 @@ func (hs *HUDSystem) New(w *ecs.World) {
 		}
 
 		temp3 = &HealthLabel{BasicEntity: ecs.NewBasic()}
-		temp3.MaxHealth = BuildingDetailsMap["Military Block"].MaxHealth
-		temp3.SpaceComponent = common.SpaceComponent{Position: engo.Point{temp1.SpaceComponent.Position.X, temp1.SpaceComponent.Position.Y + 32}}
-		temp3.RenderComponent.SetShader(common.TextHUDShader)
-		temp3.RenderComponent.SetZIndex(250)
+		temp3.SetSecondField(BuildingDetailsMap["Military Block"].MaxHealth)
+		*temp3.GetSpaceComponent() = common.SpaceComponent{Position: engo.Point{temp1.SpaceComponent.Position.X, temp1.SpaceComponent.Position.Y + 32}}
+		temp3.GetRenderComponent().SetShader(common.TextHUDShader)
+		temp3.GetRenderComponent().SetZIndex(250)
 
 		MilitaryBlockLabels = LabelGroup{Name: "Military Block"}
 		MilitaryBlockLabels.DescriptionLabel = temp1
@@ -444,14 +511,31 @@ func (hs *HUDSystem) New(w *ecs.World) {
 		temp1.SetZIndex(250)
 
 		temp3 = &HealthLabel{BasicEntity: ecs.NewBasic()}
-		temp3.MaxHealth = BuildingDetailsMap["Resource Building"].MaxHealth
-		temp3.SpaceComponent = common.SpaceComponent{Position: engo.Point{temp1.SpaceComponent.Position.X, temp1.SpaceComponent.Position.Y + 32}}
-		temp3.RenderComponent.SetShader(common.TextHUDShader)
-		temp3.RenderComponent.SetZIndex(250)
+		temp3.SetSecondField(BuildingDetailsMap["Resource Building"].MaxHealth)
+		*temp3.GetSpaceComponent() = common.SpaceComponent{Position: engo.Point{temp1.SpaceComponent.Position.X, temp1.SpaceComponent.Position.Y + 32}}
+		temp3.GetRenderComponent().SetShader(common.TextHUDShader)
+		temp3.GetRenderComponent().SetZIndex(250)
 
 		ResourceBuildingLabels = LabelGroup{Name: "Resource Building"}
 		ResourceBuildingLabels.DescriptionLabel = temp1
 		ResourceBuildingLabels.DynamicLabels = append(make([]DynamicLabel, 0), temp3)
+
+		// -----------------------------------------------------------------------------------------------------
+
+		temp1 = Label{BasicEntity: ecs.NewBasic()}
+		temp1.SpaceComponent = common.SpaceComponent{Position: engo.Point{DescriptionRect.SpaceComponent.Position.X + 48, DescriptionRect.SpaceComponent.Position.Y + 32}}
+		temp1.RenderComponent.Drawable = common.Text{Font: fnt, Text: "Bush"}
+		temp1.SetShader(common.TextHUDShader)
+		temp1.SetZIndex(250)
+
+		temp3 = &ResourceLabel{BasicEntity: ecs.NewBasic()}
+		*temp3.GetSpaceComponent() = common.SpaceComponent{Position: engo.Point{temp1.SpaceComponent.Position.X, temp1.SpaceComponent.Position.Y + 32}}
+		temp3.GetRenderComponent().SetShader(common.TextHUDShader)
+		temp3.GetRenderComponent().SetZIndex(250)
+
+		BushLabels = LabelGroup{Name: "Bush"}
+		BushLabels.DescriptionLabel = temp1
+		BushLabels.DynamicLabels = append(make([]DynamicLabel, 0), temp3)
 
 		// -----------------------------------------------------------------------------------------------------
 
@@ -460,6 +544,8 @@ func (hs *HUDSystem) New(w *ecs.World) {
 		LabelGroupMap["Military Block"] = MilitaryBlockLabels
 		LabelGroupMap["Resource Building"] = ResourceBuildingLabels
 		LabelGroupMap["House"] = HouseLabels
+		LabelGroupMap["Bush"] = BushLabels
+
 	}()
 
 	// -----------------------------------------------------------------------------------------------------

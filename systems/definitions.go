@@ -32,7 +32,8 @@ var (
 	EResourceBuildingSprite = "Resourcebuilding2.png"
 	HouseSprite             = "house1.png"
 	EHouseSprite            = "house2.png"
-	BuildingSprites         = []string{TownCenterSprite, ETownCenterSprite, MilitaryBlockSprite, EMilitaryBlockSprite, ResourceBuildingSprite, EResourceBuildingSprite, HouseSprite, EHouseSprite}
+	BushSprite              = "bush.png"
+	BuildingSprites         = []string{TownCenterSprite, ETownCenterSprite, MilitaryBlockSprite, EMilitaryBlockSprite, ResourceBuildingSprite, EResourceBuildingSprite, HouseSprite, EHouseSprite, BushSprite}
 )
 
 // Other Variables
@@ -70,6 +71,7 @@ func (HealthEnquiryMessage) Type() string {
 
 type HealthEnquiryResponseStruct struct {
 	HealthResult int
+	ResourceName string
 	set          bool
 }
 

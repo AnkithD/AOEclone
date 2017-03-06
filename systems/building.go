@@ -64,6 +64,15 @@ func (bs *BuildingSystem) New(w *ecs.World) {
 			Name: "House", MaxHealth: 30, Texture: HouseTexture,
 		}
 		BuildingDetailsMap[HouseDetails.Name] = HouseDetails
+
+		BushTexture, err := common.LoadedSprite(BushSprite)
+		if err != nil {
+			fmt.Println(err.Error())
+		}
+		BushDetails := BuildingDetails{
+			Name: "Bush", MaxHealth: 50, Texture: BushTexture,
+		}
+		BuildingDetailsMap[BushDetails.Name] = BushDetails
 	}()
 
 	engo.Mailbox.Listen("HealthEnquiryMessage", func(_msg engo.Message) {
@@ -74,6 +83,10 @@ func (bs *BuildingSystem) New(w *ecs.World) {
 		for _, item := range bs.Buildings {
 			if item.BasicEntity.ID() == msg.ID {
 				HealthEnquiryResponse.HealthResult = item.Health
+				switch item.Name {
+				case "Bush":
+					HealthEnquiryResponse.ResourceName = "Food"
+				}
 				HealthEnquiryResponse.set = true
 				return
 			}
@@ -86,15 +99,32 @@ func (bs *BuildingSystem) New(w *ecs.World) {
 	bs.AddBuilding("Military Block", engo.Point{320, 320})
 	bs.AddBuilding("Resource Building", engo.Point{544, 320})
 	bs.AddBuilding("House", engo.Point{768, 320})
+	bs.AddBuilding("Bush", engo.Point{812, 320})
 
 	fmt.Println("Building System Initialized")
 }
 
 func (bs *BuildingSystem) Update(dt float32) {
-	// Mouse Bug is here!
-	for _, item := range bs.Buildings {
-		if item.MouseComponent.Clicked {
-			engo.Mailbox.Dispatch(BuildingMessage{ID: item.BasicEntity.ID(), Name: item.GetDetails().Name, Index: 0})
+	// Handling of clicking building
+	mx, my := GetAdjustedMousePos(false)
+	mp := engo.Point{mx, my}
+
+	if engo.Input.Mouse.Action == engo.Press && engo.Input.Mouse.Button == engo.MouseButtonLeft {
+		ChunkRef, _ := GetChunkFromPos(mx, my)
+		Chunk := *ChunkRef
+
+		if len(Chunk) > 0 {
+			//fmt.Println("-------------------------")
+			for _, item := range Chunk {
+				sc := item.GetStaticComponent()
+				if sc.Contains(mp) {
+					engo.Mailbox.Dispatch(BuildingMessage{ID: sc.BasicEntity.ID(), Name: sc.Name, Index: 0})
+				}
+				//fmt.Println(item.GetStaticComponent().Name, "present in chunk:", ChunkIndex)
+			}
+			//fmt.Println("-------------------------")
+		} else {
+			//fmt.Println("Chunk", ChunkIndex, "Empty")
 		}
 	}
 
@@ -123,8 +153,7 @@ func (bs *BuildingSystem) AddBuilding(_Name string, Pos engo.Point) {
 			Width:  tex.Width(),
 			Height: tex.Height(),
 		},
-		MouseComponent: common.MouseComponent{},
-		Health:         BuildingDetailsMap[_Name].MaxHealth,
+		Health: BuildingDetailsMap[_Name].MaxHealth,
 	}
 	bs.Buildings = append(bs.Buildings, new_building)
 	fmt.Println("Filling Graph for", _Name)
@@ -132,7 +161,6 @@ func (bs *BuildingSystem) AddBuilding(_Name string, Pos engo.Point) {
 	FillGrid(new_building)
 
 	ActiveSystems.RenderSys.Add(&new_building.BasicEntity, &new_building.RenderComponent, &new_building.SpaceComponent)
-	ActiveSystems.MouseSys.Add(&new_building.BasicEntity, &new_building.MouseComponent, &new_building.SpaceComponent, &new_building.RenderComponent)
 }
 
 type StaticComponent struct {
@@ -158,7 +186,6 @@ func (se *StaticComponent) GetStaticComponent() *StaticComponent {
 
 type BuildingEntity struct {
 	StaticComponent
-	common.MouseComponent
 	Health int
 }
 
