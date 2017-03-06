@@ -135,22 +135,6 @@ func (bs *BuildingSystem) AddBuilding(_Name string, Pos engo.Point) {
 	ActiveSystems.MouseSys.Add(&new_building.BasicEntity, &new_building.MouseComponent, &new_building.SpaceComponent, &new_building.RenderComponent)
 }
 
-type BuildingEntity struct {
-	StaticComponent
-	common.MouseComponent
-	Health int
-}
-
-func (be *BuildingEntity) GetDetails() BuildingDetails {
-	return BuildingDetailsMap[be.Name]
-}
-
-type BuildingDetails struct {
-	Name      string
-	MaxHealth int
-	Texture   *common.Texture
-}
-
 type StaticComponent struct {
 	ecs.BasicEntity
 	common.RenderComponent
@@ -170,4 +154,20 @@ func (se *StaticComponent) GetSize() (float32, float32) {
 
 func (se *StaticComponent) GetStaticComponent() *StaticComponent {
 	return se
+}
+
+type BuildingEntity struct {
+	StaticComponent
+	common.MouseComponent
+	Health int
+}
+
+func (be *BuildingEntity) GetDetails() BuildingDetails {
+	return BuildingDetailsMap[be.Name]
+}
+
+type BuildingDetails struct {
+	Name      string
+	MaxHealth int
+	Texture   *common.Texture
 }

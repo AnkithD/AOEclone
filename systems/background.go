@@ -164,12 +164,12 @@ func (ms *MapSystem) Update(dt float32) {
 		}
 
 		if ms.vert_lines[0].RenderComponent.Hidden == false {
-			CameraSystem := ActiveSystems.CameraSys
+			CamSys := ActiveSystems.CameraSys
 
-			LineXOffset := int(CameraSystem.X()) % GridSize
-			LineYOffset := int(CameraSystem.Y()) % GridSize
-			BoxXOffset := int(CameraSystem.X()-engo.WindowWidth()/2) % (GridSize * ChunkSize)
-			BoxYOffset := int(CameraSystem.Y()-engo.WindowHeight()/2) % (GridSize * ChunkSize)
+			LineXOffset := int(CamSys.X()) % GridSize
+			LineYOffset := int(CamSys.Y()) % GridSize
+			BoxXOffset := int(CamSys.X()-engo.WindowWidth()/2) % (GridSize * ChunkSize)
+			BoxYOffset := int(CamSys.Y()-engo.WindowHeight()/2) % (GridSize * ChunkSize)
 
 			wg := sync.WaitGroup{}
 
@@ -178,14 +178,14 @@ func (ms *MapSystem) Update(dt float32) {
 			go func() {
 				defer wg.Done()
 				for i, _ := range ms.vert_lines {
-					ms.vert_lines[i].Position.Add(engo.Point{float32(ms.LinePrevXOffset - LineXOffset), 0})
+					ms.vert_lines[i].Position.Add(engo.Point{float32(ms.LinePrevXOffset-LineXOffset) * CamSys.Z() * (engo.GameWidth() / engo.CanvasWidth()), 0})
 				}
 			}()
 
 			go func() {
 				defer wg.Done()
 				for i, _ := range ms.hor_lines {
-					ms.hor_lines[i].Position.Add(engo.Point{0, float32(ms.LinePrevYOffset - LineYOffset)})
+					ms.hor_lines[i].Position.Add(engo.Point{0, float32(ms.LinePrevYOffset-LineYOffset) * CamSys.Z() * (engo.GameHeight() / engo.CanvasHeight())})
 				}
 			}()
 
@@ -193,7 +193,7 @@ func (ms *MapSystem) Update(dt float32) {
 				defer wg.Done()
 				for i, _ := range ms.ChunkBoxes {
 					for j, _ := range ms.ChunkBoxes[i] {
-						ms.ChunkBoxes[i][j].Position.Add(engo.Point{float32(ms.BoxPrevXOffset - BoxXOffset), float32(ms.BoxPrevYOffset - BoxYOffset)})
+						ms.ChunkBoxes[i][j].Position.Add(engo.Point{float32(ms.BoxPrevXOffset-BoxXOffset) * CamSys.Z() * (engo.GameWidth() / engo.CanvasWidth()), float32(ms.BoxPrevYOffset-BoxYOffset) * CamSys.Z() * (engo.GameHeight() / engo.CanvasHeight())})
 					}
 				}
 			}()
