@@ -143,11 +143,18 @@ func (ms *MapSystem) New(w *ecs.World) {
 	}()
 
 	c := make(chan []grid)
-	go GetPath(grid{x: 0, y: 0}, grid{x: 7, y: 13}, c)
+	s, e := grid{x: 0, y: 3}, grid{x: 7, y: 13}
+	DrawPathBlock(s.x, s.y, color.RGBA{0, 0, 255, 255})
+	go GetPath(s, e, c)
 	res := <-c
 
-	for _, item := range res {
-		DrawPathBlock(item.x, item.y)
+	for i, item := range res {
+		if i == len(res)-1 {
+			DrawPathBlock(item.x, item.y, color.RGBA{0, 255, 0, 255})
+		} else {
+			DrawPathBlock(item.x, item.y, color.RGBA{255, 0, 0, 255})
+		}
+
 	}
 
 	fmt.Println("Map System initialized")
@@ -254,14 +261,14 @@ type grid struct {
 	par *grid
 }
 
-type gridHeap []grid
+type gridHeap []*grid
 
 func (h gridHeap) Len() int           { return len(h) }
-func (h gridHeap) Less(i, j int) bool { return h[i].f < h[j].f }
+func (h gridHeap) Less(i, j int) bool { return (h)[i].f < (h)[j].f }
 func (h gridHeap) Swap(i, j int)      { h[i], h[j] = h[j], h[i] }
 
 func (h *gridHeap) Push(x interface{}) {
-	*h = append(*h, x.(grid))
+	*h = append(*h, x.(*grid))
 }
 
 func (h *gridHeap) Pop() interface{} {
@@ -287,25 +294,22 @@ func hvalue(x, y int, endgrid grid) int {
 func eval(neighbor *grid, block *grid, endgrid *grid, h *gridHeap, list *[][]bool) bool {
 	if neighbor.x == endgrid.x && neighbor.y == endgrid.y {
 		endgrid.par = block
+		(*list)[endgrid.x][endgrid.y] = true
 		return true
 	}
 	neighbor.g = block.g + 1
 	hval := hvalue(neighbor.x, neighbor.y, *endgrid)
 	neighbor.f = hval + neighbor.g
 	neighbor.par = block
-	fmt.Println("f =", neighbor.f, ", Set par to", neighbor.par.x, ",", neighbor.par.y)
 	(*list)[neighbor.x][neighbor.y] = true
-	heap.Push(h, *neighbor)
+	heap.Push(h, neighbor)
 	return false
 }
 
-func open(block grid, h *gridHeap, _list *[][]bool, endgrid *grid) {
+func open(block *grid, h *gridHeap, _list *[][]bool, endgrid *grid) {
 	list := *_list
 
 	if func() bool {
-		fmt.Println("-----------------------------------")
-		defer fmt.Println("-----------------------------------")
-		fmt.Println("Analyzing the neighbors of", block.x, ",", block.y)
 		if block.x-1 >= 0 && block.y-1 >= 0 {
 			if !Grid[block.x-1][block.y-1] {
 				if !list[block.x-1][block.y-1] {
@@ -313,9 +317,8 @@ func open(block grid, h *gridHeap, _list *[][]bool, endgrid *grid) {
 						x: block.x - 1,
 						y: block.y - 1,
 					}
-					fmt.Println("Evaluating grid at", neighbor.x, ",", neighbor.y)
 					//DrawPathBlock(neighbor.x, neighbor.y)
-					foundend := eval(&neighbor, &block, endgrid, h, _list)
+					foundend := eval(&neighbor, block, endgrid, h, _list)
 					if foundend {
 						return true
 					}
@@ -329,9 +332,8 @@ func open(block grid, h *gridHeap, _list *[][]bool, endgrid *grid) {
 						x: block.x,
 						y: block.y - 1,
 					}
-					fmt.Println("Evaluating grid at", neighbor.x, ",", neighbor.y)
 					//DrawPathBlock(neighbor.x, neighbor.y)
-					foundend := eval(&neighbor, &block, endgrid, h, _list)
+					foundend := eval(&neighbor, block, endgrid, h, _list)
 					if foundend {
 						return true
 					}
@@ -345,9 +347,8 @@ func open(block grid, h *gridHeap, _list *[][]bool, endgrid *grid) {
 						x: block.x + 1,
 						y: block.y - 1,
 					}
-					fmt.Println("Evaluating grid at", neighbor.x, ",", neighbor.y)
 					//DrawPathBlock(neighbor.x, neighbor.y)
-					foundend := eval(&neighbor, &block, endgrid, h, _list)
+					foundend := eval(&neighbor, block, endgrid, h, _list)
 					if foundend {
 						return true
 					}
@@ -361,9 +362,8 @@ func open(block grid, h *gridHeap, _list *[][]bool, endgrid *grid) {
 						x: block.x - 1,
 						y: block.y,
 					}
-					fmt.Println("Evaluating grid at", neighbor.x, ",", neighbor.y)
 					//DrawPathBlock(neighbor.x, neighbor.y)
-					foundend := eval(&neighbor, &block, endgrid, h, _list)
+					foundend := eval(&neighbor, block, endgrid, h, _list)
 					if foundend {
 						return true
 					}
@@ -377,9 +377,8 @@ func open(block grid, h *gridHeap, _list *[][]bool, endgrid *grid) {
 						x: block.x + 1,
 						y: block.y,
 					}
-					fmt.Println("Evaluating grid at", neighbor.x, ",", neighbor.y)
 					//DrawPathBlock(neighbor.x, neighbor.y)
-					foundend := eval(&neighbor, &block, endgrid, h, _list)
+					foundend := eval(&neighbor, block, endgrid, h, _list)
 					if foundend {
 						return true
 					}
@@ -393,9 +392,8 @@ func open(block grid, h *gridHeap, _list *[][]bool, endgrid *grid) {
 						x: block.x - 1,
 						y: block.y + 1,
 					}
-					fmt.Println("Evaluating grid at", neighbor.x, ",", neighbor.y)
 					//DrawPathBlock(neighbor.x, neighbor.y)
-					foundend := eval(&neighbor, &block, endgrid, h, _list)
+					foundend := eval(&neighbor, block, endgrid, h, _list)
 					if foundend {
 						return true
 					}
@@ -409,9 +407,8 @@ func open(block grid, h *gridHeap, _list *[][]bool, endgrid *grid) {
 						x: block.x,
 						y: block.y + 1,
 					}
-					fmt.Println("Evaluating grid at", neighbor.x, ",", neighbor.y)
 					//DrawPathBlock(neighbor.x, neighbor.y)
-					foundend := eval(&neighbor, &block, endgrid, h, _list)
+					foundend := eval(&neighbor, block, endgrid, h, _list)
 					if foundend {
 						return true
 					}
@@ -425,9 +422,8 @@ func open(block grid, h *gridHeap, _list *[][]bool, endgrid *grid) {
 						x: block.x + 1,
 						y: block.y + 1,
 					}
-					fmt.Println("Evaluating grid at", neighbor.x, ",", neighbor.y)
 					//DrawPathBlock(neighbor.x, neighbor.y)
-					foundend := eval(&neighbor, &block, endgrid, h, _list)
+					foundend := eval(&neighbor, block, endgrid, h, _list)
 					if foundend {
 						return true
 					}
@@ -439,14 +435,14 @@ func open(block grid, h *gridHeap, _list *[][]bool, endgrid *grid) {
 		return
 	}
 
-	block = (*h)[0]
-	heap.Pop(h)
+	block = heap.Pop(h).(*grid)
 	p := block.x
 	q := block.y
-	list[p][q] = true
+	(*_list)[p][q] = true
 	if len(*h) <= 0 {
 		return
 	}
+
 	open(block, h, _list, endgrid) //function calling recursively
 }
 
@@ -476,7 +472,7 @@ func GetPath(startgrid grid, endgrid grid, c chan []grid) {
 	}
 	list[x1][y1] = true
 
-	open(startgrid, h, &list, &endgrid)
+	open(&startgrid, h, &list, &endgrid)
 
 	var path []grid
 
@@ -485,7 +481,7 @@ func GetPath(startgrid grid, endgrid grid, c chan []grid) {
 	fmt.Println("Adding grid at", temp.x, ",", temp.y, "to the path")
 	for temp.par != &startgrid {
 		prevtemp := temp
-		temp = *temp.par
+		temp = *(temp.par)
 		fmt.Println("Adding grid at", temp.x, ",", temp.y, "to the path")
 		path = append(path, temp)
 		if prevtemp.x == temp.x && prevtemp.y == temp.y {
@@ -498,7 +494,7 @@ func GetPath(startgrid grid, endgrid grid, c chan []grid) {
 
 }
 
-func DrawPathBlock(x, y int) {
+func DrawPathBlock(x, y int, col color.RGBA) {
 	myblock := GridEntity{
 		BasicEntity: ecs.NewBasic(),
 		SpaceComponent: common.SpaceComponent{
@@ -508,7 +504,7 @@ func DrawPathBlock(x, y int) {
 		},
 		RenderComponent: common.RenderComponent{
 			Drawable: common.Rectangle{},
-			Color:    color.RGBA{255, 0, 0, 255},
+			Color:    col,
 		},
 	}
 	myblock.SetZIndex(999)
