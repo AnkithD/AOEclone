@@ -1,335 +1,989 @@
 Cached Important System References
 Registered Buttons
------------------------------------
-Analyzing the neighbors of 0 , 3
-Evaluating grid at 0 , 2
-f = 12 , Set par to 0 , 3
-Evaluating grid at 1 , 2
-f = 12 , Set par to 0 , 3
-Evaluating grid at 1 , 3
-f = 11 , Set par to 0 , 3
-Evaluating grid at 0 , 4
-f = 10 , Set par to 0 , 3
-Evaluating grid at 1 , 4
-f = 10 , Set par to 0 , 3
------------------------------------
-Current Block Address 0xc04200a2a0, Current Block: {0 3 0 0 0xc04200a2a0}, Current Block Parent: &{0 3 0 0 0xc04200a2a0}
-Next Block Address 0xc04200b290, Next Block: {0 4 10 1 0xc04200a2a0}, Next Block Parent: &{0 3 0 0 0xc04200a2a0}
-Next Block Address 0xc04200b290, Next Block: {0 4 10 1 0xc04200a2a0}, Next Block Parent: &{0 3 0 0 0xc04200a2a0}
-Next Block Address 0xc04200b290, Next Block: {0 4 10 1 0xc04200a2a0}, Next Block Parent: &{0 3 0 0 0xc04200a2a0}
-Next Block Address 0xc04200b290, Next Block: {0 4 10 1 0xc04200a2a0}, Next Block Parent: &{0 3 0 0 0xc04200a2a0}
-Next Block Address 0xc04200b290, Next Block: {0 4 10 1 0xc04200a2a0}, Next Block Parent: &{0 3 0 0 0xc04200a2a0}
------------------------------------
-Analyzing the neighbors of 0 , 4
-Evaluating grid at 0 , 5
-f = 10 , Set par to 0 , 4
-Evaluating grid at 1 , 5
-f = 10 , Set par to 0 , 4
------------------------------------
-Current Block Address 0xc04200b290, Current Block: {0 4 10 1 0xc04200a2a0}, Current Block Parent: &{0 3 0 0 0xc04200a2a0}
-Next Block Address 0xc04200b2c0, Next Block: {1 4 10 1 0xc04200a2a0}, Next Block Parent: &{0 3 0 0 0xc04200a2a0}
-Next Block Address 0xc04200b2c0, Next Block: {1 4 10 1 0xc04200a2a0}, Next Block Parent: &{0 3 0 0 0xc04200a2a0}
-Next Block Address 0xc04200b2c0, Next Block: {1 4 10 1 0xc04200a2a0}, Next Block Parent: &{0 3 0 0 0xc04200a2a0}
-Next Block Address 0xc04200b2c0, Next Block: {1 4 10 1 0xc04200a2a0}, Next Block Parent: &{0 3 0 0 0xc04200a2a0}
-Next Block Address 0xc04200b2c0, Next Block: {1 4 10 1 0xc04200a2a0}, Next Block Parent: &{0 3 0 0 0xc04200a2a0}
------------------------------------
-Analyzing the neighbors of 1 , 4
-Evaluating grid at 2 , 3
-f = 12 , Set par to 1 , 4
-Evaluating grid at 2 , 4
-f = 11 , Set par to 1 , 4
-Evaluating grid at 2 , 5
-f = 10 , Set par to 1 , 4
------------------------------------
-Current Block Address 0xc04200b2c0, Current Block: {1 4 10 1 0xc04200a2a0}, Current Block Parent: &{0 3 0 0 0xc04200a2a0}
-Next Block Address 0xc04200b560, Next Block: {1 5 10 2 0xc04200b290}, Next Block Parent: &{0 4 10 1 0xc04200a2a0}
-Next Block Address 0xc04200b560, Next Block: {1 5 10 2 0xc04200b290}, Next Block Parent: &{0 4 10 1 0xc04200a2a0}
-Next Block Address 0xc04200b560, Next Block: {1 5 10 2 0xc04200b290}, Next Block Parent: &{0 4 10 1 0xc04200a2a0}
-Next Block Address 0xc04200b560, Next Block: {1 5 10 2 0xc04200b290}, Next Block Parent: &{0 4 10 1 0xc04200a2a0}
-Next Block Address 0xc04200b560, Next Block: {1 5 10 2 0xc04200b290}, Next Block Parent: &{0 4 10 1 0xc04200a2a0}
------------------------------------
-Analyzing the neighbors of 1 , 5
-Evaluating grid at 0 , 6
-f = 10 , Set par to 1 , 5
-Evaluating grid at 1 , 6
-f = 10 , Set par to 1 , 5
-Evaluating grid at 2 , 6
-f = 10 , Set par to 1 , 5
------------------------------------
-Current Block Address 0xc04200b560, Current Block: {1 5 10 2 0xc04200b290}, Current Block Parent: &{0 4 10 1 0xc04200a2a0}
-Next Block Address 0xc04200b530, Next Block: {0 5 10 2 0xc04200b290}, Next Block Parent: &{0 4 10 1 0xc04200a2a0}
-Next Block Address 0xc04200b530, Next Block: {0 5 10 2 0xc04200b290}, Next Block Parent: &{0 4 10 1 0xc04200a2a0}
-Next Block Address 0xc04200b530, Next Block: {0 5 10 2 0xc04200b290}, Next Block Parent: &{0 4 10 1 0xc04200a2a0}
-Next Block Address 0xc04200b530, Next Block: {0 5 10 2 0xc04200b290}, Next Block Parent: &{0 4 10 1 0xc04200a2a0}
-Next Block Address 0xc04200b530, Next Block: {0 5 10 2 0xc04200b290}, Next Block Parent: &{0 4 10 1 0xc04200a2a0}
------------------------------------
-Analyzing the neighbors of 0 , 5
------------------------------------
-Current Block Address 0xc04200b530, Current Block: {0 5 10 2 0xc04200b290}, Current Block Parent: &{0 4 10 1 0xc04200a2a0}
-Next Block Address 0xc04200b830, Next Block: {2 5 10 2 0xc04200b2c0}, Next Block Parent: &{1 4 10 1 0xc04200a2a0}
-Next Block Address 0xc04200b830, Next Block: {2 5 10 2 0xc04200b2c0}, Next Block Parent: &{1 4 10 1 0xc04200a2a0}
-Next Block Address 0xc04200b830, Next Block: {2 5 10 2 0xc04200b2c0}, Next Block Parent: &{1 4 10 1 0xc04200a2a0}
-Next Block Address 0xc04200b830, Next Block: {2 5 10 2 0xc04200b2c0}, Next Block Parent: &{1 4 10 1 0xc04200a2a0}
-Next Block Address 0xc04200b830, Next Block: {2 5 10 2 0xc04200b2c0}, Next Block Parent: &{1 4 10 1 0xc04200a2a0}
------------------------------------
-Analyzing the neighbors of 2 , 5
-Evaluating grid at 3 , 4
-f = 12 , Set par to 2 , 5
-Evaluating grid at 3 , 5
-f = 11 , Set par to 2 , 5
-Evaluating grid at 3 , 6
-f = 10 , Set par to 2 , 5
------------------------------------
-Current Block Address 0xc04200b830, Current Block: {2 5 10 2 0xc04200b2c0}, Current Block Parent: &{1 4 10 1 0xc04200a2a0}
-Next Block Address 0xc04200bad0, Next Block: {1 6 10 3 0xc04200b560}, Next Block Parent: &{1 5 10 2 0xc04200b290}
-Next Block Address 0xc04200bad0, Next Block: {1 6 10 3 0xc04200b560}, Next Block Parent: &{1 5 10 2 0xc04200b290}
-Next Block Address 0xc04200bad0, Next Block: {1 6 10 3 0xc04200b560}, Next Block Parent: &{1 5 10 2 0xc04200b290}
-Next Block Address 0xc04200bad0, Next Block: {1 6 10 3 0xc04200b560}, Next Block Parent: &{1 5 10 2 0xc04200b290}
-Next Block Address 0xc04200bad0, Next Block: {1 6 10 3 0xc04200b560}, Next Block Parent: &{1 5 10 2 0xc04200b290}
------------------------------------
-Analyzing the neighbors of 1 , 6
-Evaluating grid at 0 , 7
-f = 11 , Set par to 1 , 6
-Evaluating grid at 1 , 7
-f = 10 , Set par to 1 , 6
-Evaluating grid at 2 , 7
-f = 10 , Set par to 1 , 6
------------------------------------
-Current Block Address 0xc04200bad0, Current Block: {1 6 10 3 0xc04200b560}, Current Block Parent: &{1 5 10 2 0xc04200b290}
-Next Block Address 0xc04200bb00, Next Block: {2 6 10 3 0xc04200b560}, Next Block Parent: &{1 5 10 2 0xc04200b290}
-Next Block Address 0xc04200bb00, Next Block: {2 6 10 3 0xc04200b560}, Next Block Parent: &{1 5 10 2 0xc04200b290}
-Next Block Address 0xc04200bb00, Next Block: {2 6 10 3 0xc04200b560}, Next Block Parent: &{1 5 10 2 0xc04200b290}
-Next Block Address 0xc04200bb00, Next Block: {2 6 10 3 0xc04200b560}, Next Block Parent: &{1 5 10 2 0xc04200b290}
-Next Block Address 0xc04200bb00, Next Block: {2 6 10 3 0xc04200b560}, Next Block Parent: &{1 5 10 2 0xc04200b290}
------------------------------------
-Analyzing the neighbors of 2 , 6
-Evaluating grid at 3 , 7
-f = 10 , Set par to 2 , 6
------------------------------------
-Current Block Address 0xc04200bb00, Current Block: {2 6 10 3 0xc04200b560}, Current Block Parent: &{1 5 10 2 0xc04200b290}
-Next Block Address 0xc0423302d0, Next Block: {1 7 10 4 0xc04200bad0}, Next Block Parent: &{1 6 10 3 0xc04200b560}
-Next Block Address 0xc0423302d0, Next Block: {1 7 10 4 0xc04200bad0}, Next Block Parent: &{1 6 10 3 0xc04200b560}
-Next Block Address 0xc0423302d0, Next Block: {1 7 10 4 0xc04200bad0}, Next Block Parent: &{1 6 10 3 0xc04200b560}
-Next Block Address 0xc0423302d0, Next Block: {1 7 10 4 0xc04200bad0}, Next Block Parent: &{1 6 10 3 0xc04200b560}
-Next Block Address 0xc0423302d0, Next Block: {1 7 10 4 0xc04200bad0}, Next Block Parent: &{1 6 10 3 0xc04200b560}
------------------------------------
-Analyzing the neighbors of 1 , 7
-Evaluating grid at 0 , 8
-f = 12 , Set par to 1 , 7
-Evaluating grid at 1 , 8
-f = 11 , Set par to 1 , 7
-Evaluating grid at 2 , 8
-f = 10 , Set par to 1 , 7
------------------------------------
-Current Block Address 0xc0423302d0, Current Block: {1 7 10 4 0xc04200bad0}, Current Block Parent: &{1 6 10 3 0xc04200b560}
-Next Block Address 0xc042330300, Next Block: {2 7 10 4 0xc04200bad0}, Next Block Parent: &{1 6 10 3 0xc04200b560}
-Next Block Address 0xc042330300, Next Block: {2 7 10 4 0xc04200bad0}, Next Block Parent: &{1 6 10 3 0xc04200b560}
-Next Block Address 0xc042330300, Next Block: {2 7 10 4 0xc04200bad0}, Next Block Parent: &{1 6 10 3 0xc04200b560}
-Next Block Address 0xc042330300, Next Block: {2 7 10 4 0xc04200bad0}, Next Block Parent: &{1 6 10 3 0xc04200b560}
-Next Block Address 0xc042330300, Next Block: {2 7 10 4 0xc04200bad0}, Next Block Parent: &{1 6 10 3 0xc04200b560}
------------------------------------
-Analyzing the neighbors of 2 , 7
-Evaluating grid at 3 , 8
-f = 10 , Set par to 2 , 7
------------------------------------
-Current Block Address 0xc042330300, Current Block: {2 7 10 4 0xc04200bad0}, Current Block Parent: &{1 6 10 3 0xc04200b560}
-Next Block Address 0xc042330570, Next Block: {3 7 10 4 0xc04200bb00}, Next Block Parent: &{2 6 10 3 0xc04200b560}
-Next Block Address 0xc042330570, Next Block: {3 7 10 4 0xc04200bb00}, Next Block Parent: &{2 6 10 3 0xc04200b560}
-Next Block Address 0xc042330570, Next Block: {3 7 10 4 0xc04200bb00}, Next Block Parent: &{2 6 10 3 0xc04200b560}
-Next Block Address 0xc042330570, Next Block: {3 7 10 4 0xc04200bb00}, Next Block Parent: &{2 6 10 3 0xc04200b560}
-Next Block Address 0xc042330570, Next Block: {3 7 10 4 0xc04200bb00}, Next Block Parent: &{2 6 10 3 0xc04200b560}
------------------------------------
-Analyzing the neighbors of 3 , 7
-Evaluating grid at 4 , 6
-f = 12 , Set par to 3 , 7
-Evaluating grid at 4 , 7
-f = 11 , Set par to 3 , 7
-Evaluating grid at 4 , 8
-f = 10 , Set par to 3 , 7
------------------------------------
-Current Block Address 0xc042330570, Current Block: {3 7 10 4 0xc04200bb00}, Current Block Parent: &{2 6 10 3 0xc04200b560}
-Next Block Address 0xc042330840, Next Block: {2 8 10 5 0xc0423302d0}, Next Block Parent: &{1 7 10 4 0xc04200bad0}
-Next Block Address 0xc042330840, Next Block: {2 8 10 5 0xc0423302d0}, Next Block Parent: &{1 7 10 4 0xc04200bad0}
-Next Block Address 0xc042330840, Next Block: {2 8 10 5 0xc0423302d0}, Next Block Parent: &{1 7 10 4 0xc04200bad0}
-Next Block Address 0xc042330840, Next Block: {2 8 10 5 0xc0423302d0}, Next Block Parent: &{1 7 10 4 0xc04200bad0}
-Next Block Address 0xc042330840, Next Block: {2 8 10 5 0xc0423302d0}, Next Block Parent: &{1 7 10 4 0xc04200bad0}
------------------------------------
-Analyzing the neighbors of 2 , 8
-Evaluating grid at 1 , 9
-f = 12 , Set par to 2 , 8
-Evaluating grid at 2 , 9
-f = 11 , Set par to 2 , 8
-Evaluating grid at 3 , 9
-f = 10 , Set par to 2 , 8
------------------------------------
-Current Block Address 0xc042330840, Current Block: {2 8 10 5 0xc0423302d0}, Current Block Parent: &{1 7 10 4 0xc04200bad0}
-Next Block Address 0xc042330ab0, Next Block: {3 8 10 5 0xc042330300}, Next Block Parent: &{2 7 10 4 0xc04200bad0}
-Next Block Address 0xc042330ab0, Next Block: {3 8 10 5 0xc042330300}, Next Block Parent: &{2 7 10 4 0xc04200bad0}
-Next Block Address 0xc042330ab0, Next Block: {3 8 10 5 0xc042330300}, Next Block Parent: &{2 7 10 4 0xc04200bad0}
-Next Block Address 0xc042330ab0, Next Block: {3 8 10 5 0xc042330300}, Next Block Parent: &{2 7 10 4 0xc04200bad0}
-Next Block Address 0xc042330ab0, Next Block: {3 8 10 5 0xc042330300}, Next Block Parent: &{2 7 10 4 0xc04200bad0}
------------------------------------
-Analyzing the neighbors of 3 , 8
-Evaluating grid at 4 , 9
-f = 10 , Set par to 3 , 8
------------------------------------
-Current Block Address 0xc042330ab0, Current Block: {3 8 10 5 0xc042330300}, Current Block Parent: &{2 7 10 4 0xc04200bad0}
-Next Block Address 0xc042330030, Next Block: {3 6 10 3 0xc04200b830}, Next Block Parent: &{2 5 10 2 0xc04200b2c0}
-Next Block Address 0xc042330030, Next Block: {3 6 10 3 0xc04200b830}, Next Block Parent: &{2 5 10 2 0xc04200b2c0}
-Next Block Address 0xc042330030, Next Block: {3 6 10 3 0xc04200b830}, Next Block Parent: &{2 5 10 2 0xc04200b2c0}
-Next Block Address 0xc042330030, Next Block: {3 6 10 3 0xc04200b830}, Next Block Parent: &{2 5 10 2 0xc04200b2c0}
-Next Block Address 0xc042330030, Next Block: {3 6 10 3 0xc04200b830}, Next Block Parent: &{2 5 10 2 0xc04200b2c0}
------------------------------------
-Analyzing the neighbors of 3 , 6
-Evaluating grid at 4 , 5
-f = 12 , Set par to 3 , 6
------------------------------------
-Current Block Address 0xc042330030, Current Block: {3 6 10 3 0xc04200b830}, Current Block Parent: &{2 5 10 2 0xc04200b2c0}
-Next Block Address 0xc04200baa0, Next Block: {0 6 10 3 0xc04200b560}, Next Block Parent: &{1 5 10 2 0xc04200b290}
-Next Block Address 0xc04200baa0, Next Block: {0 6 10 3 0xc04200b560}, Next Block Parent: &{1 5 10 2 0xc04200b290}
-Next Block Address 0xc04200baa0, Next Block: {0 6 10 3 0xc04200b560}, Next Block Parent: &{1 5 10 2 0xc04200b290}
-Next Block Address 0xc04200baa0, Next Block: {0 6 10 3 0xc04200b560}, Next Block Parent: &{1 5 10 2 0xc04200b290}
-Next Block Address 0xc04200baa0, Next Block: {0 6 10 3 0xc04200b560}, Next Block Parent: &{1 5 10 2 0xc04200b290}
------------------------------------
-Analyzing the neighbors of 0 , 6
------------------------------------
-Current Block Address 0xc04200baa0, Current Block: {0 6 10 3 0xc04200b560}, Current Block Parent: &{1 5 10 2 0xc04200b290}
-Next Block Address 0xc042331050, Next Block: {3 9 10 6 0xc042330840}, Next Block Parent: &{2 8 10 5 0xc0423302d0}
-Next Block Address 0xc042331050, Next Block: {3 9 10 6 0xc042330840}, Next Block Parent: &{2 8 10 5 0xc0423302d0}
-Next Block Address 0xc042331050, Next Block: {3 9 10 6 0xc042330840}, Next Block Parent: &{2 8 10 5 0xc0423302d0}
-Next Block Address 0xc042331050, Next Block: {3 9 10 6 0xc042330840}, Next Block Parent: &{2 8 10 5 0xc0423302d0}
-Next Block Address 0xc042331050, Next Block: {3 9 10 6 0xc042330840}, Next Block Parent: &{2 8 10 5 0xc0423302d0}
------------------------------------
-Analyzing the neighbors of 3 , 9
-Evaluating grid at 2 , 10
-f = 12 , Set par to 3 , 9
-Evaluating grid at 3 , 10
-f = 11 , Set par to 3 , 9
-Evaluating grid at 4 , 10
-f = 10 , Set par to 3 , 9
------------------------------------
-Current Block Address 0xc042331050, Current Block: {3 9 10 6 0xc042330840}, Current Block Parent: &{2 8 10 5 0xc0423302d0}
-Next Block Address 0xc0423312c0, Next Block: {4 9 10 6 0xc042330ab0}, Next Block Parent: &{3 8 10 5 0xc042330300}
-Next Block Address 0xc0423312c0, Next Block: {4 9 10 6 0xc042330ab0}, Next Block Parent: &{3 8 10 5 0xc042330300}
-Next Block Address 0xc0423312c0, Next Block: {4 9 10 6 0xc042330ab0}, Next Block Parent: &{3 8 10 5 0xc042330300}
-Next Block Address 0xc0423312c0, Next Block: {4 9 10 6 0xc042330ab0}, Next Block Parent: &{3 8 10 5 0xc042330300}
-Next Block Address 0xc0423312c0, Next Block: {4 9 10 6 0xc042330ab0}, Next Block Parent: &{3 8 10 5 0xc042330300}
------------------------------------
-Analyzing the neighbors of 4 , 9
-Evaluating grid at 5 , 8
-f = 12 , Set par to 4 , 9
-Evaluating grid at 5 , 9
-f = 11 , Set par to 4 , 9
-Evaluating grid at 5 , 10
-f = 10 , Set par to 4 , 9
------------------------------------
-Current Block Address 0xc0423312c0, Current Block: {4 9 10 6 0xc042330ab0}, Current Block Parent: &{3 8 10 5 0xc042330300}
-Next Block Address 0xc042330d80, Next Block: {4 8 10 5 0xc042330570}, Next Block Parent: &{3 7 10 4 0xc04200bb00}
-Next Block Address 0xc042330d80, Next Block: {4 8 10 5 0xc042330570}, Next Block Parent: &{3 7 10 4 0xc04200bb00}
-Next Block Address 0xc042330d80, Next Block: {4 8 10 5 0xc042330570}, Next Block Parent: &{3 7 10 4 0xc04200bb00}
-Next Block Address 0xc042330d80, Next Block: {4 8 10 5 0xc042330570}, Next Block Parent: &{3 7 10 4 0xc04200bb00}
-Next Block Address 0xc042330d80, Next Block: {4 8 10 5 0xc042330570}, Next Block Parent: &{3 7 10 4 0xc04200bb00}
------------------------------------
-Analyzing the neighbors of 4 , 8
-Evaluating grid at 5 , 7
-f = 12 , Set par to 4 , 8
------------------------------------
-Current Block Address 0xc042330d80, Current Block: {4 8 10 5 0xc042330570}, Current Block Parent: &{3 7 10 4 0xc04200bb00}
-Next Block Address 0xc042331a40, Next Block: {4 10 10 7 0xc042331050}, Next Block Parent: &{3 9 10 6 0xc042330840}
-Next Block Address 0xc042331a40, Next Block: {4 10 10 7 0xc042331050}, Next Block Parent: &{3 9 10 6 0xc042330840}
-Next Block Address 0xc042331a40, Next Block: {4 10 10 7 0xc042331050}, Next Block Parent: &{3 9 10 6 0xc042330840}
-Next Block Address 0xc042331a40, Next Block: {4 10 10 7 0xc042331050}, Next Block Parent: &{3 9 10 6 0xc042330840}
-Next Block Address 0xc042331a40, Next Block: {4 10 10 7 0xc042331050}, Next Block Parent: &{3 9 10 6 0xc042330840}
------------------------------------
-Analyzing the neighbors of 4 , 10
-Evaluating grid at 3 , 11
-f = 12 , Set par to 4 , 10
-Evaluating grid at 4 , 11
-f = 11 , Set par to 4 , 10
-Evaluating grid at 5 , 11
-f = 10 , Set par to 4 , 10
------------------------------------
-Current Block Address 0xc042331a40, Current Block: {4 10 10 7 0xc042331050}, Current Block Parent: &{3 9 10 6 0xc042330840}
-Next Block Address 0xc042331d10, Next Block: {5 10 10 7 0xc0423312c0}, Next Block Parent: &{4 9 10 6 0xc042330ab0}
-Next Block Address 0xc042331d10, Next Block: {5 10 10 7 0xc0423312c0}, Next Block Parent: &{4 9 10 6 0xc042330ab0}
-Next Block Address 0xc042331d10, Next Block: {5 10 10 7 0xc0423312c0}, Next Block Parent: &{4 9 10 6 0xc042330ab0}
-Next Block Address 0xc042331d10, Next Block: {5 10 10 7 0xc0423312c0}, Next Block Parent: &{4 9 10 6 0xc042330ab0}
-Next Block Address 0xc042331d10, Next Block: {5 10 10 7 0xc0423312c0}, Next Block Parent: &{4 9 10 6 0xc042330ab0}
------------------------------------
-Analyzing the neighbors of 5 , 10
-Evaluating grid at 6 , 9
-f = 12 , Set par to 5 , 10
-Evaluating grid at 6 , 10
-f = 11 , Set par to 5 , 10
-Evaluating grid at 6 , 11
-f = 10 , Set par to 5 , 10
------------------------------------
-Current Block Address 0xc042331d10, Current Block: {5 10 10 7 0xc0423312c0}, Current Block Parent: &{4 9 10 6 0xc042330ab0}
-Next Block Address 0xc042332270, Next Block: {5 11 10 8 0xc042331a40}, Next Block Parent: &{4 10 10 7 0xc042331050}
-Next Block Address 0xc042332270, Next Block: {5 11 10 8 0xc042331a40}, Next Block Parent: &{4 10 10 7 0xc042331050}
-Next Block Address 0xc042332270, Next Block: {5 11 10 8 0xc042331a40}, Next Block Parent: &{4 10 10 7 0xc042331050}
-Next Block Address 0xc042332270, Next Block: {5 11 10 8 0xc042331a40}, Next Block Parent: &{4 10 10 7 0xc042331050}
-Next Block Address 0xc042332270, Next Block: {5 11 10 8 0xc042331a40}, Next Block Parent: &{4 10 10 7 0xc042331050}
------------------------------------
-Analyzing the neighbors of 5 , 11
-Evaluating grid at 4 , 12
-f = 12 , Set par to 5 , 11
-Evaluating grid at 5 , 12
-f = 11 , Set par to 5 , 11
-Evaluating grid at 6 , 12
-f = 10 , Set par to 5 , 11
------------------------------------
-Current Block Address 0xc042332270, Current Block: {5 11 10 8 0xc042331a40}, Current Block Parent: &{4 10 10 7 0xc042331050}
-Next Block Address 0xc042332540, Next Block: {6 11 10 8 0xc042331d10}, Next Block Parent: &{5 10 10 7 0xc0423312c0}
-Next Block Address 0xc042332540, Next Block: {6 11 10 8 0xc042331d10}, Next Block Parent: &{5 10 10 7 0xc0423312c0}
-Next Block Address 0xc042332540, Next Block: {6 11 10 8 0xc042331d10}, Next Block Parent: &{5 10 10 7 0xc0423312c0}
-Next Block Address 0xc042332540, Next Block: {6 11 10 8 0xc042331d10}, Next Block Parent: &{5 10 10 7 0xc0423312c0}
-Next Block Address 0xc042332540, Next Block: {6 11 10 8 0xc042331d10}, Next Block Parent: &{5 10 10 7 0xc0423312c0}
------------------------------------
-Analyzing the neighbors of 6 , 11
-Evaluating grid at 7 , 10
-f = 12 , Set par to 6 , 11
-Evaluating grid at 7 , 11
-f = 11 , Set par to 6 , 11
-Evaluating grid at 7 , 12
-f = 10 , Set par to 6 , 11
------------------------------------
-Current Block Address 0xc042332540, Current Block: {6 11 10 8 0xc042331d10}, Current Block Parent: &{5 10 10 7 0xc0423312c0}
-Next Block Address 0xc042332810, Next Block: {6 12 10 9 0xc042332270}, Next Block Parent: &{5 11 10 8 0xc042331a40}
-Next Block Address 0xc042332810, Next Block: {6 12 10 9 0xc042332270}, Next Block Parent: &{5 11 10 8 0xc042331a40}
-Next Block Address 0xc042332810, Next Block: {6 12 10 9 0xc042332270}, Next Block Parent: &{5 11 10 8 0xc042331a40}
-Next Block Address 0xc042332810, Next Block: {6 12 10 9 0xc042332270}, Next Block Parent: &{5 11 10 8 0xc042331a40}
-Next Block Address 0xc042332810, Next Block: {6 12 10 9 0xc042332270}, Next Block Parent: &{5 11 10 8 0xc042331a40}
------------------------------------
-Analyzing the neighbors of 6 , 12
-Evaluating grid at 5 , 13
-f = 12 , Set par to 6 , 12
-Evaluating grid at 6 , 13
-f = 11 , Set par to 6 , 12
-Evaluating grid at 7 , 13
------------------------------------
-Adding grid at 7 , 13 to the path
-Adding grid at 6 , 12 to the path
-Adding grid at 5 , 11 to the path
-Adding grid at 4 , 10 to the path
-Adding grid at 3 , 9 to the path
-Adding grid at 2 , 8 to the path
-Adding grid at 1 , 7 to the path
-Adding grid at 1 , 6 to the path
-Adding grid at 1 , 5 to the path
-Adding grid at 0 , 4 to the path
 Map System initialized
 Filling Graph for Town Center
 Filling Graph for Military Block
 Filling Graph for Resource Building
 Filling Graph for House
 Filling Graph for Bush
+-----------------------------------
+Analyzing the neighbors of 0 , 3
+Evaluating grid at 0 , 2
+f = 41 , Set par to 0 , 3
+Evaluating grid at 1 , 2
+f = 40 , Set par to 0 , 3
+Evaluating grid at 1 , 3
+f = 40 , Set par to 0 , 3
+Evaluating grid at 0 , 4
+f = 41 , Set par to 0 , 3
+Evaluating grid at 1 , 4
+f = 40 , Set par to 0 , 3
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 1 , 2
+Evaluating grid at 0 , 1
+f = 42 , Set par to 1 , 2
+Evaluating grid at 1 , 1
+f = 41 , Set par to 1 , 2
+Evaluating grid at 2 , 1
+f = 41 , Set par to 1 , 2
+Evaluating grid at 2 , 2
+f = 40 , Set par to 1 , 2
+Evaluating grid at 2 , 3
+f = 40 , Set par to 1 , 2
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 1 , 3
+Evaluating grid at 2 , 4
+f = 40 , Set par to 1 , 3
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 2 , 3
+Evaluating grid at 3 , 2
+f = 41 , Set par to 2 , 3
+Evaluating grid at 3 , 3
+f = 40 , Set par to 2 , 3
+Evaluating grid at 3 , 4
+f = 40 , Set par to 2 , 3
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 2 , 4
+Evaluating grid at 1 , 5
+f = 42 , Set par to 2 , 4
+Evaluating grid at 2 , 5
+f = 41 , Set par to 2 , 4
+Evaluating grid at 3 , 5
+f = 40 , Set par to 2 , 4
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 3 , 4
+Evaluating grid at 4 , 3
+f = 41 , Set par to 3 , 4
+Evaluating grid at 4 , 4
+f = 40 , Set par to 3 , 4
+Evaluating grid at 4 , 5
+f = 40 , Set par to 3 , 4
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 3 , 5
+Evaluating grid at 2 , 6
+f = 42 , Set par to 3 , 5
+Evaluating grid at 3 , 6
+f = 41 , Set par to 3 , 5
+Evaluating grid at 4 , 6
+f = 40 , Set par to 3 , 5
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 4 , 4
+Evaluating grid at 5 , 3
+f = 42 , Set par to 4 , 4
+Evaluating grid at 5 , 4
+f = 41 , Set par to 4 , 4
+Evaluating grid at 5 , 5
+f = 40 , Set par to 4 , 4
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 4 , 5
+Evaluating grid at 5 , 6
+f = 40 , Set par to 4 , 5
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 1 , 4
+Evaluating grid at 0 , 5
+f = 42 , Set par to 1 , 4
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 5 , 6
+Evaluating grid at 6 , 5
+f = 41 , Set par to 5 , 6
+Evaluating grid at 6 , 6
+f = 40 , Set par to 5 , 6
+Evaluating grid at 4 , 7
+f = 42 , Set par to 5 , 6
+Evaluating grid at 5 , 7
+f = 41 , Set par to 5 , 6
+Evaluating grid at 6 , 7
+f = 40 , Set par to 5 , 6
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 3 , 3
+Evaluating grid at 4 , 2
+f = 42 , Set par to 3 , 3
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 2 , 2
+Evaluating grid at 3 , 1
+f = 42 , Set par to 2 , 2
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 6 , 6
+Evaluating grid at 7 , 5
+f = 42 , Set par to 6 , 6
+Evaluating grid at 7 , 6
+f = 41 , Set par to 6 , 6
+Evaluating grid at 7 , 7
+f = 40 , Set par to 6 , 6
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 6 , 7
+Evaluating grid at 5 , 8
+f = 42 , Set par to 6 , 7
+Evaluating grid at 6 , 8
+f = 41 , Set par to 6 , 7
+Evaluating grid at 7 , 8
+f = 40 , Set par to 6 , 7
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 7 , 7
+Evaluating grid at 8 , 6
+f = 42 , Set par to 7 , 7
+Evaluating grid at 8 , 7
+f = 41 , Set par to 7 , 7
+Evaluating grid at 8 , 8
+f = 40 , Set par to 7 , 7
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 7 , 8
+Evaluating grid at 6 , 9
+f = 42 , Set par to 7 , 8
+Evaluating grid at 7 , 9
+f = 41 , Set par to 7 , 8
+Evaluating grid at 8 , 9
+f = 40 , Set par to 7 , 8
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 8 , 8
+Evaluating grid at 9 , 7
+f = 42 , Set par to 8 , 8
+Evaluating grid at 9 , 8
+f = 41 , Set par to 8 , 8
+Evaluating grid at 9 , 9
+f = 40 , Set par to 8 , 8
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 8 , 9
+Evaluating grid at 7 , 10
+f = 42 , Set par to 8 , 9
+Evaluating grid at 8 , 10
+f = 41 , Set par to 8 , 9
+Evaluating grid at 9 , 10
+f = 40 , Set par to 8 , 9
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 5 , 5
+Evaluating grid at 6 , 4
+f = 42 , Set par to 5 , 5
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 4 , 6
+Evaluating grid at 3 , 7
+f = 42 , Set par to 4 , 6
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 9 , 9
+Evaluating grid at 10 , 8
+f = 42 , Set par to 9 , 9
+Evaluating grid at 10 , 9
+f = 41 , Set par to 9 , 9
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 9 , 10
+Evaluating grid at 8 , 11
+f = 42 , Set par to 9 , 10
+Evaluating grid at 9 , 11
+f = 41 , Set par to 9 , 10
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 7 , 9
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 9 , 11
+Evaluating grid at 8 , 12
+f = 43 , Set par to 9 , 11
+Evaluating grid at 9 , 12
+f = 42 , Set par to 9 , 11
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 2 , 1
+Evaluating grid at 1 , 0
+f = 43 , Set par to 2 , 1
+Evaluating grid at 2 , 0
+f = 43 , Set par to 2 , 1
+Evaluating grid at 3 , 0
+f = 43 , Set par to 2 , 1
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 4 , 3
+Evaluating grid at 5 , 2
+f = 43 , Set par to 4 , 3
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 1 , 1
+Evaluating grid at 0 , 0
+f = 43 , Set par to 1 , 1
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 8 , 7
+Evaluating grid at 9 , 6
+f = 43 , Set par to 8 , 7
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 2 , 5
+Evaluating grid at 1 , 6
+f = 43 , Set par to 2 , 5
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 0 , 4
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 6 , 8
+Evaluating grid at 5 , 9
+f = 43 , Set par to 6 , 8
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 0 , 2
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 7 , 6
+Evaluating grid at 8 , 5
+f = 43 , Set par to 7 , 6
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 5 , 7
+Evaluating grid at 4 , 8
+f = 43 , Set par to 5 , 7
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 3 , 2
+Evaluating grid at 4 , 1
+f = 43 , Set par to 3 , 2
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 5 , 4
+Evaluating grid at 6 , 3
+f = 43 , Set par to 5 , 4
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 6 , 5
+Evaluating grid at 7 , 4
+f = 43 , Set par to 6 , 5
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 10 , 9
+Evaluating grid at 11 , 8
+f = 43 , Set par to 10 , 9
+Evaluating grid at 11 , 9
+f = 42 , Set par to 10 , 9
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 8 , 10
+Evaluating grid at 7 , 11
+f = 43 , Set par to 8 , 10
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 9 , 8
+Evaluating grid at 10 , 7
+f = 43 , Set par to 9 , 8
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 3 , 6
+Evaluating grid at 2 , 7
+f = 43 , Set par to 3 , 6
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 0 , 5
+Evaluating grid at 0 , 6
+f = 43 , Set par to 0 , 5
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 9 , 7
+Evaluating grid at 10 , 6
+f = 44 , Set par to 9 , 7
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 2 , 6
+Evaluating grid at 1 , 7
+f = 44 , Set par to 2 , 6
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 9 , 12
+Evaluating grid at 8 , 13
+f = 44 , Set par to 9 , 12
+Evaluating grid at 9 , 13
+f = 43 , Set par to 9 , 12
+Evaluating grid at 10 , 13
+f = 42 , Set par to 9 , 12
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 6 , 9
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 10 , 13
+Evaluating grid at 11 , 13
+f = 42 , Set par to 10 , 13
+Evaluating grid at 9 , 14
+f = 44 , Set par to 10 , 13
+Evaluating grid at 10 , 14
+f = 43 , Set par to 10 , 13
+Evaluating grid at 11 , 14
+f = 42 , Set par to 10 , 13
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 8 , 11
+Evaluating grid at 7 , 12
+f = 44 , Set par to 8 , 11
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 11 , 14
+Evaluating grid at 12 , 13
+f = 42 , Set par to 11 , 14
+Evaluating grid at 12 , 14
+f = 42 , Set par to 11 , 14
+Evaluating grid at 10 , 15
+f = 44 , Set par to 11 , 14
+Evaluating grid at 11 , 15
+f = 43 , Set par to 11 , 14
+Evaluating grid at 12 , 15
+f = 42 , Set par to 11 , 14
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 8 , 6
+Evaluating grid at 9 , 5
+f = 44 , Set par to 8 , 6
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 5 , 8
+Evaluating grid at 4 , 9
+f = 44 , Set par to 5 , 8
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 4 , 2
+Evaluating grid at 5 , 1
+f = 44 , Set par to 4 , 2
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 7 , 5
+Evaluating grid at 8 , 4
+f = 44 , Set par to 7 , 5
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 1 , 5
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 12 , 15
+Evaluating grid at 13 , 14
+f = 42 , Set par to 12 , 15
+Evaluating grid at 13 , 15
+f = 42 , Set par to 12 , 15
+Evaluating grid at 11 , 16
+f = 44 , Set par to 12 , 15
+Evaluating grid at 12 , 16
+f = 43 , Set par to 12 , 15
+Evaluating grid at 13 , 16
+f = 42 , Set par to 12 , 15
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 3 , 7
+Evaluating grid at 2 , 8
+f = 44 , Set par to 3 , 7
+Evaluating grid at 3 , 8
+f = 43 , Set par to 3 , 7
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 13 , 16
+Evaluating grid at 14 , 15
+f = 42 , Set par to 13 , 16
+Evaluating grid at 14 , 16
+f = 42 , Set par to 13 , 16
+Evaluating grid at 12 , 17
+f = 44 , Set par to 13 , 16
+Evaluating grid at 13 , 17
+f = 43 , Set par to 13 , 16
+Evaluating grid at 14 , 17
+f = 42 , Set par to 13 , 16
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 4 , 7
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 14 , 15
+Evaluating grid at 14 , 14
+f = 43 , Set par to 14 , 15
+Evaluating grid at 15 , 14
+f = 43 , Set par to 14 , 15
+Evaluating grid at 15 , 15
+f = 42 , Set par to 14 , 15
+Evaluating grid at 15 , 16
+f = 42 , Set par to 14 , 15
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 14 , 16
+Evaluating grid at 15 , 17
+f = 42 , Set par to 14 , 16
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 14 , 17
+Evaluating grid at 13 , 18
+f = 44 , Set par to 14 , 17
+Evaluating grid at 14 , 18
+f = 43 , Set par to 14 , 17
+Evaluating grid at 15 , 18
+f = 42 , Set par to 14 , 17
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 15 , 16
+Evaluating grid at 16 , 15
+f = 43 , Set par to 15 , 16
+Evaluating grid at 16 , 16
+f = 42 , Set par to 15 , 16
+Evaluating grid at 16 , 17
+f = 42 , Set par to 15 , 16
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 15 , 17
+Evaluating grid at 16 , 18
+f = 42 , Set par to 15 , 17
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 15 , 18
+Evaluating grid at 14 , 19
+f = 44 , Set par to 15 , 18
+Evaluating grid at 15 , 19
+f = 43 , Set par to 15 , 18
+Evaluating grid at 16 , 19
+f = 42 , Set par to 15 , 18
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 16 , 16
+Evaluating grid at 17 , 15
+f = 44 , Set par to 16 , 16
+Evaluating grid at 17 , 16
+f = 43 , Set par to 16 , 16
+Evaluating grid at 17 , 17
+f = 42 , Set par to 16 , 16
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 16 , 17
+Evaluating grid at 17 , 18
+f = 42 , Set par to 16 , 17
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 17 , 17
+Evaluating grid at 18 , 16
+f = 44 , Set par to 17 , 17
+Evaluating grid at 18 , 17
+f = 43 , Set par to 17 , 17
+Evaluating grid at 18 , 18
+f = 42 , Set par to 17 , 17
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 17 , 18
+Evaluating grid at 17 , 19
+f = 43 , Set par to 17 , 18
+Evaluating grid at 18 , 19
+f = 42 , Set par to 17 , 18
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 16 , 18
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 18 , 19
+Evaluating grid at 19 , 18
+f = 43 , Set par to 18 , 19
+Evaluating grid at 19 , 19
+f = 42 , Set par to 18 , 19
+Evaluating grid at 17 , 20
+f = 44 , Set par to 18 , 19
+Evaluating grid at 18 , 20
+f = 43 , Set par to 18 , 19
+Evaluating grid at 19 , 20
+f = 42 , Set par to 18 , 19
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 16 , 19
+Evaluating grid at 15 , 20
+f = 44 , Set par to 16 , 19
+Evaluating grid at 16 , 20
+f = 43 , Set par to 16 , 19
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 15 , 15
+Evaluating grid at 16 , 14
+f = 44 , Set par to 15 , 15
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 12 , 14
+Evaluating grid at 13 , 13
+f = 42 , Set par to 12 , 14
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 13 , 14
+Evaluating grid at 14 , 13
+f = 43 , Set par to 13 , 14
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 13 , 13
+Evaluating grid at 13 , 12
+f = 44 , Set par to 13 , 13
+Evaluating grid at 14 , 12
+f = 44 , Set par to 13 , 13
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 13 , 15
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 12 , 13
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 0 , 1
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 6 , 4
+Evaluating grid at 7 , 3
+f = 44 , Set par to 6 , 4
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 11 , 9
+Evaluating grid at 12 , 8
+f = 44 , Set par to 11 , 9
+Evaluating grid at 12 , 9
+f = 43 , Set par to 11 , 9
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 11 , 13
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 10 , 8
+Evaluating grid at 11 , 7
+f = 44 , Set par to 10 , 8
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 5 , 3
+Evaluating grid at 6 , 2
+f = 44 , Set par to 5 , 3
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 19 , 20
+Evaluating grid at 20 , 19
+f = 43 , Set par to 19 , 20
+Evaluating grid at 20 , 20
+f = 42 , Set par to 19 , 20
+Evaluating grid at 18 , 21
+f = 44 , Set par to 19 , 20
+Evaluating grid at 19 , 21
+f = 43 , Set par to 19 , 20
+Evaluating grid at 20 , 21
+f = 42 , Set par to 19 , 20
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 7 , 10
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 18 , 18
+Evaluating grid at 19 , 17
+f = 44 , Set par to 18 , 18
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 19 , 19
+Evaluating grid at 20 , 18
+f = 44 , Set par to 19 , 19
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 20 , 21
+Evaluating grid at 21 , 20
+f = 43 , Set par to 20 , 21
+Evaluating grid at 21 , 21
+f = 42 , Set par to 20 , 21
+Evaluating grid at 19 , 22
+f = 44 , Set par to 20 , 21
+Evaluating grid at 20 , 22
+f = 43 , Set par to 20 , 21
+Evaluating grid at 21 , 22
+f = 42 , Set par to 20 , 21
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 3 , 1
+Evaluating grid at 4 , 0
+f = 44 , Set par to 3 , 1
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 20 , 20
+Evaluating grid at 21 , 19
+f = 44 , Set par to 20 , 20
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 21 , 21
+Evaluating grid at 22 , 20
+f = 44 , Set par to 21 , 21
+Evaluating grid at 22 , 21
+f = 43 , Set par to 21 , 21
+Evaluating grid at 22 , 22
+f = 42 , Set par to 21 , 21
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 21 , 22
+Evaluating grid at 20 , 23
+f = 44 , Set par to 21 , 22
+Evaluating grid at 21 , 23
+f = 43 , Set par to 21 , 22
+Evaluating grid at 22 , 23
+f = 42 , Set par to 21 , 22
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 22 , 22
+Evaluating grid at 23 , 21
+f = 44 , Set par to 22 , 22
+Evaluating grid at 23 , 22
+f = 43 , Set par to 22 , 22
+Evaluating grid at 23 , 23
+f = 42 , Set par to 22 , 22
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 22 , 23
+Evaluating grid at 21 , 24
+f = 44 , Set par to 22 , 23
+Evaluating grid at 22 , 24
+f = 43 , Set par to 22 , 23
+Evaluating grid at 23 , 24
+f = 42 , Set par to 22 , 23
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 23 , 23
+Evaluating grid at 24 , 22
+f = 44 , Set par to 23 , 23
+Evaluating grid at 24 , 23
+f = 43 , Set par to 23 , 23
+Evaluating grid at 24 , 24
+f = 42 , Set par to 23 , 23
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 23 , 24
+Evaluating grid at 22 , 25
+f = 44 , Set par to 23 , 24
+Evaluating grid at 23 , 25
+f = 43 , Set par to 23 , 24
+Evaluating grid at 24 , 25
+f = 42 , Set par to 23 , 24
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 24 , 24
+Evaluating grid at 25 , 23
+f = 44 , Set par to 24 , 24
+Evaluating grid at 25 , 24
+f = 43 , Set par to 24 , 24
+Evaluating grid at 25 , 25
+f = 42 , Set par to 24 , 24
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 24 , 25
+Evaluating grid at 23 , 26
+f = 44 , Set par to 24 , 25
+Evaluating grid at 24 , 26
+f = 43 , Set par to 24 , 25
+Evaluating grid at 25 , 26
+f = 42 , Set par to 24 , 25
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 25 , 25
+Evaluating grid at 26 , 24
+f = 44 , Set par to 25 , 25
+Evaluating grid at 26 , 25
+f = 43 , Set par to 25 , 25
+Evaluating grid at 26 , 26
+f = 42 , Set par to 25 , 25
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 25 , 26
+Evaluating grid at 24 , 27
+f = 44 , Set par to 25 , 26
+Evaluating grid at 25 , 27
+f = 43 , Set par to 25 , 26
+Evaluating grid at 26 , 27
+f = 42 , Set par to 25 , 26
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 26 , 26
+Evaluating grid at 27 , 25
+f = 44 , Set par to 26 , 26
+Evaluating grid at 27 , 26
+f = 43 , Set par to 26 , 26
+Evaluating grid at 27 , 27
+f = 42 , Set par to 26 , 26
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 26 , 27
+Evaluating grid at 25 , 28
+f = 44 , Set par to 26 , 27
+Evaluating grid at 26 , 28
+f = 43 , Set par to 26 , 27
+Evaluating grid at 27 , 28
+f = 42 , Set par to 26 , 27
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 27 , 27
+Evaluating grid at 28 , 26
+f = 44 , Set par to 27 , 27
+Evaluating grid at 28 , 27
+f = 43 , Set par to 27 , 27
+Evaluating grid at 28 , 28
+f = 42 , Set par to 27 , 27
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 27 , 28
+Evaluating grid at 26 , 29
+f = 44 , Set par to 27 , 28
+Evaluating grid at 27 , 29
+f = 43 , Set par to 27 , 28
+Evaluating grid at 28 , 29
+f = 42 , Set par to 27 , 28
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 28 , 28
+Evaluating grid at 29 , 27
+f = 44 , Set par to 28 , 28
+Evaluating grid at 29 , 28
+f = 43 , Set par to 28 , 28
+Evaluating grid at 29 , 29
+f = 42 , Set par to 28 , 28
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 28 , 29
+Evaluating grid at 27 , 30
+f = 44 , Set par to 28 , 29
+Evaluating grid at 28 , 30
+f = 43 , Set par to 28 , 29
+Evaluating grid at 29 , 30
+f = 42 , Set par to 28 , 29
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 29 , 29
+Evaluating grid at 30 , 28
+f = 44 , Set par to 29 , 29
+Evaluating grid at 30 , 29
+f = 43 , Set par to 29 , 29
+Evaluating grid at 30 , 30
+f = 42 , Set par to 29 , 29
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 29 , 30
+Evaluating grid at 28 , 31
+f = 44 , Set par to 29 , 30
+Evaluating grid at 29 , 31
+f = 43 , Set par to 29 , 30
+Evaluating grid at 30 , 31
+f = 42 , Set par to 29 , 30
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 30 , 30
+Evaluating grid at 31 , 29
+f = 44 , Set par to 30 , 30
+Evaluating grid at 31 , 30
+f = 43 , Set par to 30 , 30
+Evaluating grid at 31 , 31
+f = 42 , Set par to 30 , 30
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 30 , 31
+Evaluating grid at 29 , 32
+f = 44 , Set par to 30 , 31
+Evaluating grid at 30 , 32
+f = 43 , Set par to 30 , 31
+Evaluating grid at 31 , 32
+f = 42 , Set par to 30 , 31
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 31 , 31
+Evaluating grid at 32 , 30
+f = 44 , Set par to 31 , 31
+Evaluating grid at 32 , 31
+f = 43 , Set par to 31 , 31
+Evaluating grid at 32 , 32
+f = 42 , Set par to 31 , 31
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 31 , 32
+Evaluating grid at 30 , 33
+f = 44 , Set par to 31 , 32
+Evaluating grid at 31 , 33
+f = 43 , Set par to 31 , 32
+Evaluating grid at 32 , 33
+f = 42 , Set par to 31 , 32
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 32 , 32
+Evaluating grid at 33 , 31
+f = 44 , Set par to 32 , 32
+Evaluating grid at 33 , 32
+f = 43 , Set par to 32 , 32
+Evaluating grid at 33 , 33
+f = 42 , Set par to 32 , 32
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 32 , 33
+Evaluating grid at 31 , 34
+f = 44 , Set par to 32 , 33
+Evaluating grid at 32 , 34
+f = 43 , Set par to 32 , 33
+Evaluating grid at 33 , 34
+f = 42 , Set par to 32 , 33
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 33 , 33
+Evaluating grid at 34 , 32
+f = 44 , Set par to 33 , 33
+Evaluating grid at 34 , 33
+f = 43 , Set par to 33 , 33
+Evaluating grid at 34 , 34
+f = 42 , Set par to 33 , 33
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 33 , 34
+Evaluating grid at 32 , 35
+f = 44 , Set par to 33 , 34
+Evaluating grid at 33 , 35
+f = 43 , Set par to 33 , 34
+Evaluating grid at 34 , 35
+f = 42 , Set par to 33 , 34
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 34 , 34
+Evaluating grid at 35 , 33
+f = 44 , Set par to 34 , 34
+Evaluating grid at 35 , 34
+f = 43 , Set par to 34 , 34
+Evaluating grid at 35 , 35
+f = 42 , Set par to 34 , 34
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 34 , 35
+Evaluating grid at 33 , 36
+f = 44 , Set par to 34 , 35
+Evaluating grid at 34 , 36
+f = 43 , Set par to 34 , 35
+Evaluating grid at 35 , 36
+f = 42 , Set par to 34 , 35
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 35 , 35
+Evaluating grid at 36 , 34
+f = 44 , Set par to 35 , 35
+Evaluating grid at 36 , 35
+f = 43 , Set par to 35 , 35
+Evaluating grid at 36 , 36
+f = 42 , Set par to 35 , 35
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 35 , 36
+Evaluating grid at 34 , 37
+f = 44 , Set par to 35 , 36
+Evaluating grid at 35 , 37
+f = 43 , Set par to 35 , 36
+Evaluating grid at 36 , 37
+f = 42 , Set par to 35 , 36
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 36 , 36
+Evaluating grid at 37 , 35
+f = 44 , Set par to 36 , 36
+Evaluating grid at 37 , 36
+f = 43 , Set par to 36 , 36
+Evaluating grid at 37 , 37
+f = 42 , Set par to 36 , 36
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 36 , 37
+Evaluating grid at 35 , 38
+f = 44 , Set par to 36 , 37
+Evaluating grid at 36 , 38
+f = 43 , Set par to 36 , 37
+Evaluating grid at 37 , 38
+f = 42 , Set par to 36 , 37
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 37 , 37
+Evaluating grid at 38 , 36
+f = 44 , Set par to 37 , 37
+Evaluating grid at 38 , 37
+f = 43 , Set par to 37 , 37
+Evaluating grid at 38 , 38
+f = 42 , Set par to 37 , 37
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 37 , 38
+Evaluating grid at 36 , 39
+f = 44 , Set par to 37 , 38
+Evaluating grid at 37 , 39
+f = 43 , Set par to 37 , 38
+Evaluating grid at 38 , 39
+f = 42 , Set par to 37 , 38
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 38 , 38
+Evaluating grid at 39 , 37
+f = 44 , Set par to 38 , 38
+Evaluating grid at 39 , 38
+f = 43 , Set par to 38 , 38
+Evaluating grid at 39 , 39
+f = 42 , Set par to 38 , 38
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 38 , 39
+Evaluating grid at 37 , 40
+f = 44 , Set par to 38 , 39
+Evaluating grid at 38 , 40
+f = 43 , Set par to 38 , 39
+Evaluating grid at 39 , 40
+f = 42 , Set par to 38 , 39
+-----------------------------------
+-----------------------------------
+Analyzing the neighbors of 39 , 39
+Evaluating grid at 40 , 38
+f = 44 , Set par to 39 , 39
+Evaluating grid at 40 , 39
+f = 43 , Set par to 39 , 39
+Evaluating grid at 40 , 40
+-----------------------------------
+Adding grid at 40 , 40 to the path
+Adding grid at 39 , 39 to the path
+Adding grid at 38 , 38 to the path
+Adding grid at 37 , 37 to the path
+Adding grid at 36 , 36 to the path
+Adding grid at 35 , 35 to the path
+Adding grid at 34 , 34 to the path
+Adding grid at 33 , 33 to the path
+Adding grid at 32 , 32 to the path
+Adding grid at 31 , 31 to the path
+Adding grid at 30 , 30 to the path
+Adding grid at 29 , 29 to the path
+Adding grid at 28 , 28 to the path
+Adding grid at 27 , 27 to the path
+Adding grid at 26 , 26 to the path
+Adding grid at 25 , 25 to the path
+Adding grid at 24 , 24 to the path
+Adding grid at 23 , 23 to the path
+Adding grid at 22 , 22 to the path
+Adding grid at 21 , 21 to the path
+Adding grid at 20 , 21 to the path
+Adding grid at 19 , 20 to the path
+Adding grid at 18 , 19 to the path
+Adding grid at 17 , 18 to the path
+Adding grid at 16 , 17 to the path
+Adding grid at 15 , 16 to the path
+Adding grid at 14 , 15 to the path
+Adding grid at 13 , 16 to the path
+Adding grid at 12 , 15 to the path
+Adding grid at 11 , 14 to the path
+Adding grid at 10 , 13 to the path
+Adding grid at 9 , 12 to the path
+Adding grid at 9 , 11 to the path
+Adding grid at 9 , 10 to the path
+Adding grid at 8 , 9 to the path
+Adding grid at 7 , 8 to the path
+Adding grid at 6 , 7 to the path
+Adding grid at 5 , 6 to the path
+Adding grid at 4 , 5 to the path
+Adding grid at 3 , 4 to the path
+Adding grid at 2 , 3 to the path
+Adding grid at 1 , 2 to the path
 Building System Initialized
 HUD System Initialized
----------------------------------------------
-Mouse Pos is 140 , 323
--------------------------
-Town Center present in chunk: 10
--------------------------
-Grid at 4 , 10 is occupied
----------------------------------------------

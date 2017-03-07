@@ -5,6 +5,7 @@ import (
 	"engo.io/engo"
 	"engo.io/engo/common"
 	"fmt"
+	"image/color"
 	"math"
 	"math/rand"
 )
@@ -100,6 +101,21 @@ func (bs *BuildingSystem) New(w *ecs.World) {
 	bs.AddBuilding("Resource Building", engo.Point{544, 320})
 	bs.AddBuilding("House", engo.Point{768, 320})
 	bs.AddBuilding("Bush", engo.Point{812, 320})
+
+	c := make(chan []grid)
+	s, e := grid{x: 0, y: 3}, grid{x: 40, y: 40}
+	DrawPathBlock(s.x, s.y, color.RGBA{0, 0, 255, 255})
+	go GetPath(s, e, c)
+	res := <-c
+
+	for i, item := range res {
+		if i == len(res)-1 {
+			DrawPathBlock(item.x, item.y, color.RGBA{0, 255, 0, 255})
+		} else {
+			DrawPathBlock(item.x, item.y, color.RGBA{255, 0, 0, 255})
+		}
+
+	}
 
 	fmt.Println("Building System Initialized")
 }

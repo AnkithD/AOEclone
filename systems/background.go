@@ -142,21 +142,6 @@ func (ms *MapSystem) New(w *ecs.World) {
 		}
 	}()
 
-	c := make(chan []grid)
-	s, e := grid{x: 0, y: 3}, grid{x: 7, y: 13}
-	DrawPathBlock(s.x, s.y, color.RGBA{0, 0, 255, 255})
-	go GetPath(s, e, c)
-	res := <-c
-
-	for i, item := range res {
-		if i == len(res)-1 {
-			DrawPathBlock(item.x, item.y, color.RGBA{0, 255, 0, 255})
-		} else {
-			DrawPathBlock(item.x, item.y, color.RGBA{255, 0, 0, 255})
-		}
-
-	}
-
 	fmt.Println("Map System initialized")
 }
 
@@ -301,6 +286,7 @@ func eval(neighbor *grid, block *grid, endgrid *grid, h *gridHeap, list *[][]boo
 	hval := hvalue(neighbor.x, neighbor.y, *endgrid)
 	neighbor.f = hval + neighbor.g
 	neighbor.par = block
+	fmt.Println("f =", neighbor.f, ", Set par to", neighbor.par.x, ",", neighbor.par.y)
 	(*list)[neighbor.x][neighbor.y] = true
 	heap.Push(h, neighbor)
 	return false
@@ -310,6 +296,9 @@ func open(block *grid, h *gridHeap, _list *[][]bool, endgrid *grid) {
 	list := *_list
 
 	if func() bool {
+		fmt.Println("-----------------------------------")
+		defer fmt.Println("-----------------------------------")
+		fmt.Println("Analyzing the neighbors of", block.x, ",", block.y)
 		if block.x-1 >= 0 && block.y-1 >= 0 {
 			if !Grid[block.x-1][block.y-1] {
 				if !list[block.x-1][block.y-1] {
@@ -317,6 +306,7 @@ func open(block *grid, h *gridHeap, _list *[][]bool, endgrid *grid) {
 						x: block.x - 1,
 						y: block.y - 1,
 					}
+					fmt.Println("Evaluating grid at", neighbor.x, ",", neighbor.y)
 					//DrawPathBlock(neighbor.x, neighbor.y)
 					foundend := eval(&neighbor, block, endgrid, h, _list)
 					if foundend {
@@ -332,6 +322,7 @@ func open(block *grid, h *gridHeap, _list *[][]bool, endgrid *grid) {
 						x: block.x,
 						y: block.y - 1,
 					}
+					fmt.Println("Evaluating grid at", neighbor.x, ",", neighbor.y)
 					//DrawPathBlock(neighbor.x, neighbor.y)
 					foundend := eval(&neighbor, block, endgrid, h, _list)
 					if foundend {
@@ -347,6 +338,7 @@ func open(block *grid, h *gridHeap, _list *[][]bool, endgrid *grid) {
 						x: block.x + 1,
 						y: block.y - 1,
 					}
+					fmt.Println("Evaluating grid at", neighbor.x, ",", neighbor.y)
 					//DrawPathBlock(neighbor.x, neighbor.y)
 					foundend := eval(&neighbor, block, endgrid, h, _list)
 					if foundend {
@@ -362,6 +354,7 @@ func open(block *grid, h *gridHeap, _list *[][]bool, endgrid *grid) {
 						x: block.x - 1,
 						y: block.y,
 					}
+					fmt.Println("Evaluating grid at", neighbor.x, ",", neighbor.y)
 					//DrawPathBlock(neighbor.x, neighbor.y)
 					foundend := eval(&neighbor, block, endgrid, h, _list)
 					if foundend {
@@ -377,6 +370,7 @@ func open(block *grid, h *gridHeap, _list *[][]bool, endgrid *grid) {
 						x: block.x + 1,
 						y: block.y,
 					}
+					fmt.Println("Evaluating grid at", neighbor.x, ",", neighbor.y)
 					//DrawPathBlock(neighbor.x, neighbor.y)
 					foundend := eval(&neighbor, block, endgrid, h, _list)
 					if foundend {
@@ -392,6 +386,7 @@ func open(block *grid, h *gridHeap, _list *[][]bool, endgrid *grid) {
 						x: block.x - 1,
 						y: block.y + 1,
 					}
+					fmt.Println("Evaluating grid at", neighbor.x, ",", neighbor.y)
 					//DrawPathBlock(neighbor.x, neighbor.y)
 					foundend := eval(&neighbor, block, endgrid, h, _list)
 					if foundend {
@@ -407,6 +402,7 @@ func open(block *grid, h *gridHeap, _list *[][]bool, endgrid *grid) {
 						x: block.x,
 						y: block.y + 1,
 					}
+					fmt.Println("Evaluating grid at", neighbor.x, ",", neighbor.y)
 					//DrawPathBlock(neighbor.x, neighbor.y)
 					foundend := eval(&neighbor, block, endgrid, h, _list)
 					if foundend {
@@ -422,6 +418,7 @@ func open(block *grid, h *gridHeap, _list *[][]bool, endgrid *grid) {
 						x: block.x + 1,
 						y: block.y + 1,
 					}
+					fmt.Println("Evaluating grid at", neighbor.x, ",", neighbor.y)
 					//DrawPathBlock(neighbor.x, neighbor.y)
 					foundend := eval(&neighbor, block, endgrid, h, _list)
 					if foundend {
@@ -507,7 +504,7 @@ func DrawPathBlock(x, y int, col color.RGBA) {
 			Color:    col,
 		},
 	}
-	myblock.SetZIndex(999)
+	myblock.SetZIndex(70)
 
 	ActiveSystems.RenderSys.Add(&myblock.BasicEntity, &myblock.RenderComponent, &myblock.SpaceComponent)
 }
