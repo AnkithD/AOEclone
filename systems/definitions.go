@@ -179,7 +179,6 @@ func CacheActiveSystems(world *ecs.World) {
 			ActiveSystems.MouseSys = sys
 		case *common.CameraSystem:
 			ActiveSystems.CameraSys = sys
-			fmt.Println("Found Camera System")
 		}
 	}
 

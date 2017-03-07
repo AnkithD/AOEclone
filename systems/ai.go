@@ -1,29 +1,29 @@
 package systems
 
-import (
-	"engo.io/ecs"
-	//"engo.io/engo"
-	"engo.io/engo/common"
-	//"fmt"
-	//"image/color"
-)
+// import (
+// 	"engo.io/ecs"
+// 	//"engo.io/engo"
+// 	"engo.io/engo/common"
+// 	//"fmt"
+// 	//"image/color"
+// )
 
-type AISystem struct {
-	world *ecs.World
-}
+// type AISystem struct {
+// 	world *ecs.World
+// }
 
-func (*AISystem) Update(dt float32)      {}
-func (*AISystem) Remove(ecs.BasicEntity) {}
+// func (*AISystem) Update(dt float32)      {}
+// func (*AISystem) Remove(ecs.BasicEntity) {}
 
-type Human struct {
-	ecs.BasicEntity
-	common.RenderComponent
-	common.SpaceComponent
+// type Human struct {
+// 	ecs.BasicEntity
+// 	common.RenderComponent
+// 	common.SpaceComponent
 
-	Health int
-	Attack int
-}
+// 	Health int
+// 	Attack int
+// }
 
-type Villager struct {
-	Human
-}
+// type Villager struct {
+// 	Human
+// }

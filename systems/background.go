@@ -5,6 +5,7 @@ import (
 	"engo.io/engo"
 	"engo.io/engo/common"
 
+	"container/heap"
 	"fmt"
 	"image/color"
 	"math"
@@ -141,6 +142,14 @@ func (ms *MapSystem) New(w *ecs.World) {
 		}
 	}()
 
+	c := make(chan []grid)
+	go GetPath(grid{x: 0, y: 0}, grid{x: 7, y: 13}, c)
+	res := <-c
+
+	for _, item := range res {
+		DrawPathBlock(item.x, item.y)
+	}
+
 	fmt.Println("Map System initialized")
 }
 
@@ -234,4 +243,275 @@ func (ms *MapSystem) Update(dt float32) {
 			fmt.Println("---------------------------------------------")
 		}
 	}()
+}
+
+//PathFinding Algorithm
+type grid struct {
+	x   int
+	y   int
+	f   int
+	g   int
+	par *grid
+}
+
+type gridHeap []grid
+
+func (h gridHeap) Len() int           { return len(h) }
+func (h gridHeap) Less(i, j int) bool { return h[i].f < h[j].f }
+func (h gridHeap) Swap(i, j int)      { h[i], h[j] = h[j], h[i] }
+
+func (h *gridHeap) Push(x interface{}) {
+	*h = append(*h, x.(grid))
+}
+
+func (h *gridHeap) Pop() interface{} {
+	old := *h
+	n := len(old)
+	x := old[n-1]
+	*h = old[0 : n-1]
+	return x
+}
+
+func hvalue(x, y int, endgrid grid) int {
+	var a, b int
+	X := endgrid.x
+	Y := endgrid.y
+	a = int(math.Abs(float64(X - x)))
+	b = int(math.Abs(float64(Y - y)))
+	if a > b {
+		a, b = b, a
+	}
+	return b
+}
+
+func eval(neighbor *grid, block *grid, endgrid *grid, h *gridHeap, list *[][]bool) bool {
+	if neighbor.x == endgrid.x && neighbor.y == endgrid.y {
+		endgrid.par = block
+		return true
+	}
+	neighbor.g = block.g + 1
+	hval := hvalue(neighbor.x, neighbor.y, *endgrid)
+	neighbor.f = hval + neighbor.g
+	neighbor.par = block
+	fmt.Println("f =", neighbor.f, ", Set par to", neighbor.par.x, ",", neighbor.par.y)
+	(*list)[neighbor.x][neighbor.y] = true
+	heap.Push(h, *neighbor)
+	return false
+}
+
+func open(block grid, h *gridHeap, _list *[][]bool, endgrid *grid) {
+	list := *_list
+
+	if func() bool {
+		fmt.Println("-----------------------------------")
+		defer fmt.Println("-----------------------------------")
+		fmt.Println("Analyzing the neighbors of", block.x, ",", block.y)
+		if block.x-1 >= 0 && block.y-1 >= 0 {
+			if !Grid[block.x-1][block.y-1] {
+				if !list[block.x-1][block.y-1] {
+					neighbor := grid{
+						x: block.x - 1,
+						y: block.y - 1,
+					}
+					fmt.Println("Evaluating grid at", neighbor.x, ",", neighbor.y)
+					//DrawPathBlock(neighbor.x, neighbor.y)
+					foundend := eval(&neighbor, &block, endgrid, h, _list)
+					if foundend {
+						return true
+					}
+				}
+			}
+		}
+		if block.y-1 >= 0 {
+			if !Grid[block.x][block.y-1] {
+				if !list[block.x][block.y-1] {
+					neighbor := grid{
+						x: block.x,
+						y: block.y - 1,
+					}
+					fmt.Println("Evaluating grid at", neighbor.x, ",", neighbor.y)
+					//DrawPathBlock(neighbor.x, neighbor.y)
+					foundend := eval(&neighbor, &block, endgrid, h, _list)
+					if foundend {
+						return true
+					}
+				}
+			}
+		}
+		if block.x+1 < int(engo.GameWidth()*ScaleFactor)/GridSize && block.y-1 >= 0 {
+			if !Grid[block.x+1][block.y-1] {
+				if !list[block.x+1][block.y-1] {
+					neighbor := grid{
+						x: block.x + 1,
+						y: block.y - 1,
+					}
+					fmt.Println("Evaluating grid at", neighbor.x, ",", neighbor.y)
+					//DrawPathBlock(neighbor.x, neighbor.y)
+					foundend := eval(&neighbor, &block, endgrid, h, _list)
+					if foundend {
+						return true
+					}
+				}
+			}
+		}
+		if block.x-1 >= 0 {
+			if !Grid[block.x-1][block.y] {
+				if !list[block.x-1][block.y] {
+					neighbor := grid{
+						x: block.x - 1,
+						y: block.y,
+					}
+					fmt.Println("Evaluating grid at", neighbor.x, ",", neighbor.y)
+					//DrawPathBlock(neighbor.x, neighbor.y)
+					foundend := eval(&neighbor, &block, endgrid, h, _list)
+					if foundend {
+						return true
+					}
+				}
+			}
+		}
+		if block.x+1 < int(engo.GameWidth()*ScaleFactor)/GridSize {
+			if !Grid[block.x+1][block.y] {
+				if !list[block.x+1][block.y] {
+					neighbor := grid{
+						x: block.x + 1,
+						y: block.y,
+					}
+					fmt.Println("Evaluating grid at", neighbor.x, ",", neighbor.y)
+					//DrawPathBlock(neighbor.x, neighbor.y)
+					foundend := eval(&neighbor, &block, endgrid, h, _list)
+					if foundend {
+						return true
+					}
+				}
+			}
+		}
+		if block.x-1 >= 0 && block.y+1 < int(engo.GameHeight()*ScaleFactor)/GridSize {
+			if !Grid[block.x-1][block.y+1] {
+				if !list[block.x-1][block.y+1] {
+					neighbor := grid{
+						x: block.x - 1,
+						y: block.y + 1,
+					}
+					fmt.Println("Evaluating grid at", neighbor.x, ",", neighbor.y)
+					//DrawPathBlock(neighbor.x, neighbor.y)
+					foundend := eval(&neighbor, &block, endgrid, h, _list)
+					if foundend {
+						return true
+					}
+				}
+			}
+		}
+		if block.y+1 < int(engo.GameHeight()*ScaleFactor)/GridSize {
+			if !Grid[block.x][block.y+1] {
+				if !list[block.x][block.y+1] {
+					neighbor := grid{
+						x: block.x,
+						y: block.y + 1,
+					}
+					fmt.Println("Evaluating grid at", neighbor.x, ",", neighbor.y)
+					//DrawPathBlock(neighbor.x, neighbor.y)
+					foundend := eval(&neighbor, &block, endgrid, h, _list)
+					if foundend {
+						return true
+					}
+				}
+			}
+		}
+		if block.x+1 < int(engo.GameWidth()*ScaleFactor)/GridSize && block.y+1 < int(engo.GameHeight()*ScaleFactor)/GridSize {
+			if !Grid[block.x+1][block.y+1] {
+				if !list[block.x+1][block.y+1] {
+					neighbor := grid{
+						x: block.x + 1,
+						y: block.y + 1,
+					}
+					fmt.Println("Evaluating grid at", neighbor.x, ",", neighbor.y)
+					//DrawPathBlock(neighbor.x, neighbor.y)
+					foundend := eval(&neighbor, &block, endgrid, h, _list)
+					if foundend {
+						return true
+					}
+				}
+			}
+		}
+		return false
+	}() {
+		return
+	}
+
+	block = (*h)[0]
+	heap.Pop(h)
+	p := block.x
+	q := block.y
+	list[p][q] = true
+	if len(*h) <= 0 {
+		return
+	}
+	open(block, h, _list, endgrid) //function calling recursively
+}
+
+func ReversePath(slice []grid) []grid {
+	n := len(slice) - 1
+	res := make([]grid, n+1)
+
+	for i, item := range slice {
+		res[n-i] = item
+	}
+
+	return res
+}
+
+func GetPath(startgrid grid, endgrid grid, c chan []grid) {
+
+	x1 := startgrid.x
+	y1 := startgrid.y
+	h := &gridHeap{}
+	heap.Init(h)
+	startgrid.par = &startgrid
+	startgrid.g = 0
+
+	list := make([][]bool, int(engo.WindowWidth()*ScaleFactor)/GridSize)
+	for i, _ := range list {
+		list[i] = make([]bool, int(engo.WindowHeight()*ScaleFactor)/GridSize)
+	}
+	list[x1][y1] = true
+
+	open(startgrid, h, &list, &endgrid)
+
+	var path []grid
+
+	temp := endgrid
+	path = append(path, temp)
+	fmt.Println("Adding grid at", temp.x, ",", temp.y, "to the path")
+	for temp.par != &startgrid {
+		prevtemp := temp
+		temp = *temp.par
+		fmt.Println("Adding grid at", temp.x, ",", temp.y, "to the path")
+		path = append(path, temp)
+		if prevtemp.x == temp.x && prevtemp.y == temp.y {
+			fmt.Println("No change from ", prevtemp.x, ",", prevtemp.y, "and", temp.x, ",", temp.y)
+			c <- make([]grid, 0)
+		}
+	}
+	path = append(path, temp)
+	c <- ReversePath(path)
+
+}
+
+func DrawPathBlock(x, y int) {
+	myblock := GridEntity{
+		BasicEntity: ecs.NewBasic(),
+		SpaceComponent: common.SpaceComponent{
+			Position: engo.Point{float32(x * GridSize), float32(y * GridSize)},
+			Width:    float32(GridSize - 10),
+			Height:   float32(GridSize - 10),
+		},
+		RenderComponent: common.RenderComponent{
+			Drawable: common.Rectangle{},
+			Color:    color.RGBA{255, 0, 0, 255},
+		},
+	}
+	myblock.SetZIndex(999)
+
+	ActiveSystems.RenderSys.Add(&myblock.BasicEntity, &myblock.RenderComponent, &myblock.SpaceComponent)
 }
