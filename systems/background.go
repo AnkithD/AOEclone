@@ -37,6 +37,7 @@ type GridEntity struct {
 }
 
 var PathBlocks []*GridEntity
+var PathBlocksMutex sync.Mutex
 
 // When system is created this func is executed
 // Initialze the world variable and assign tab to toggle the grid
@@ -243,6 +244,7 @@ func (ms *MapSystem) Update(dt float32) {
 	// Make path blocks fade
 	func() {
 		ShouldDelete := make([]bool, len(PathBlocks))
+
 		for i, _ := range PathBlocks {
 			r, g, b, a := PathBlocks[i].RenderComponent.Color.RGBA()
 			A := float32(a) / 255
@@ -270,6 +272,34 @@ func (ms *MapSystem) Update(dt float32) {
 			if i >= len(PathBlocks) {
 				break
 			}
+		}
+	}()
+
+	mx, my := GetAdjustedMousePos(false)
+
+	// A* Visualization
+	func() {
+		if engo.Input.Button(ShiftKey).JustReleased() && ShowDebugPathfinding {
+
+			s, e := grid{x: 19, y: 15}, grid{x: int(mx) / GridSize, y: int(my) / GridSize}
+			if (e.x < GridMaxX) && (e.y < GridMaxY) && !Grid[e.x][e.y] {
+				DrawPathBlock(s.x, s.y, color.RGBA{0, 0, 255, 255})
+				go GetPath(s, e, PathChannel)
+			} else {
+				fmt.Println(e.x, e.y, GridMaxX, GridMaxY)
+			}
+		}
+
+		select {
+		case res := <-PathChannel:
+			for i, item := range res {
+				if i == len(res)-1 {
+					DrawPathBlock(item.x, item.y, color.RGBA{0, 255, 0, 255})
+				} else {
+					DrawPathBlock(item.x, item.y, color.RGBA{255, 0, 0, 255})
+				}
+			}
+		default:
 		}
 	}()
 }

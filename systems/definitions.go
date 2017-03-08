@@ -51,6 +51,8 @@ var (
 
 	GridMaxX int
 	GridMaxY int
+
+	ShowDebugPathfinding bool
 )
 
 // Message Structs
@@ -194,6 +196,8 @@ func InitializeVariables() {
 	PlayerFood = 100
 	PlayerWood = 50
 	PlayerPop = 0
+
+	ShowDebugPathfinding = false
 
 	ScaleFactor = 2
 

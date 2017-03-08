@@ -5,7 +5,6 @@ import (
 	"engo.io/engo"
 	"engo.io/engo/common"
 	"fmt"
-	"image/color"
 	"math"
 	"math/rand"
 )
@@ -138,33 +137,6 @@ func (bs *BuildingSystem) Update(dt float32) {
 	if engo.Input.Button(SpaceButton).JustReleased() {
 		bs.Buildings[int(math.Floor(rand.Float64()*float64(len(bs.Buildings))))].Health -= 10
 	}
-
-	// A* Visualization
-	func() {
-
-		if engo.Input.Button(ShiftKey).JustReleased() {
-
-			s, e := grid{x: 19, y: 15}, grid{x: int(mx) / GridSize, y: int(my) / GridSize}
-			if (e.x < GridMaxX) && (e.y < GridMaxY) && !Grid[e.x][e.y] {
-				DrawPathBlock(s.x, s.y, color.RGBA{0, 0, 255, 255})
-				go GetPath(s, e, PathChannel)
-			} else {
-				fmt.Println(e.x, e.y, GridMaxX, GridMaxY)
-			}
-		}
-
-		select {
-		case res := <-PathChannel:
-			for i, item := range res {
-				if i == len(res)-1 {
-					DrawPathBlock(item.x, item.y, color.RGBA{0, 255, 0, 255})
-				} else {
-					DrawPathBlock(item.x, item.y, color.RGBA{255, 0, 0, 255})
-				}
-			}
-		default:
-		}
-	}()
 }
 
 func (bs *BuildingSystem) AddBuilding(_Name string, Pos engo.Point) {
