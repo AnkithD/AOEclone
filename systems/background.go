@@ -152,6 +152,22 @@ func (ms *MapSystem) New(w *ecs.World) {
 
 func (ms *MapSystem) Update(dt float32) {
 
+	/*
+		For Placing Bushes and trees
+	*/
+	mx, my := GetAdjustedMousePos(false)
+
+	item_tobe_placed :=
+
+		func() {
+			if engo.Input.Button(RightClick).JustPressed() {
+				item_tobe_placed = !item_tobe_placed
+			}
+			if engo.Input.Button(LeftClick).JustPressed() {
+				engo.Mailbox.Dispatch(message)
+			}
+		}()
+
 	//Rendering the Gridlines and Chunk Boxes
 	func() {
 		// Toggle the hidden attribute of every grid line's render component
@@ -274,8 +290,6 @@ func (ms *MapSystem) Update(dt float32) {
 			}
 		}
 	}()
-
-	mx, my := GetAdjustedMousePos(false)
 
 	// A* Visualization
 	func() {

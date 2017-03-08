@@ -14,6 +14,8 @@ var (
 	VertAxis    = "vertAxis"
 	SpaceButton = "SpaceButton"
 	ShiftKey    = "shiftkey"
+	RightClick  = "RightClick"
+	LeftClick   = "LeftClick"
 )
 
 type ActiveSystemsStruct struct {
@@ -173,6 +175,8 @@ func RegisterButtons() {
 	engo.Input.RegisterButton(ShiftKey, engo.LeftShift)
 	engo.Input.RegisterAxis(HorAxis, engo.AxisKeyPair{engo.A, engo.D})
 	engo.Input.RegisterAxis(VertAxis, engo.AxisKeyPair{engo.W, engo.S})
+	engo.Input.RegisterButton(RightClick, engo.MouseButtonLeft)
+	engo.Input.RegisterButton(LeftClick, engo.MouseButtonRight)
 
 	fmt.Println("Registered Buttons")
 }
