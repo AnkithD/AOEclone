@@ -247,6 +247,7 @@ func (ms *MapSystem) Update(dt float32) {
 			A := float32(a)
 			A -= (255 * dt) / 3
 			if A > 0 {
+				A = float32(math.Floor(float64(A)))
 				PathBlocks[i].RenderComponent.Color = color.RGBA{uint8(r), uint8(g), uint8(b), uint8(A)}
 			}
 		}
@@ -254,7 +255,6 @@ func (ms *MapSystem) Update(dt float32) {
 		for len(PathBlocks) > 0 {
 			_, _, _, a := PathBlocks[i].RenderComponent.Color.RGBA()
 			A := float32(a)
-			A -= (255 * dt) / 3
 			if A <= 0 {
 				ActiveSystems.RenderSys.Remove(PathBlocks[i].BasicEntity)
 				//Fast delete from slice
@@ -277,8 +277,8 @@ func (ms *MapSystem) Update(dt float32) {
 type grid struct {
 	x   int
 	y   int
-	f   int
-	g   int
+	f   float32
+	g   float32
 	par *grid
 }
 
@@ -300,8 +300,10 @@ func (h *gridHeap) Pop() interface{} {
 	return x
 }
 
-func hvalue(x, y int, endgrid grid) int {
-	diagCost, sideCost := 1.415, 1.01
+func hvalue(x, y int, endgrid grid) float32 {
+	var diagCost, sideCost float32
+	diagCost, sideCost = 1.414, 1
+
 	var a, b int
 	X := endgrid.x
 	Y := endgrid.y
@@ -310,7 +312,7 @@ func hvalue(x, y int, endgrid grid) int {
 	if a > b {
 		a, b = b, a
 	}
-	return int(float32(b) - float32(a)*float32(diagCost-sideCost))
+	return (float32(b) - float32(a)*(diagCost-sideCost))
 	//return b
 }
 
@@ -320,7 +322,11 @@ func eval(neighbor *grid, block *grid, endgrid *grid, h *gridHeap, list *[][]boo
 		(*list)[endgrid.x][endgrid.y] = true
 		return true
 	}
-	neighbor.g = block.g + 1
+	if neighbor.x == block.x || neighbor.y == block.y {
+		neighbor.g = block.g + 1
+	} else {
+		neighbor.g = block.g + 1.414
+	}
 	hval := hvalue(neighbor.x, neighbor.y, *endgrid)
 	neighbor.f = hval + neighbor.g
 	neighbor.par = block

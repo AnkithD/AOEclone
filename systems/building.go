@@ -143,10 +143,14 @@ func (bs *BuildingSystem) Update(dt float32) {
 	func() {
 
 		if engo.Input.Button(ShiftKey).JustReleased() {
+
 			s, e := grid{x: 19, y: 15}, grid{x: int(mx) / GridSize, y: int(my) / GridSize}
-			if !Grid[e.x][e.y] {
+			if (e.x < GridMaxX) && (e.y < GridMaxY) && !Grid[e.x][e.y] {
 				DrawPathBlock(s.x, s.y, color.RGBA{0, 0, 255, 255})
 				go GetPath(s, e, PathChannel)
+				fmt.Println("Pathfinding")
+			} else {
+				fmt.Println(e.x, e.y, GridMaxX, GridMaxY)
 			}
 		}
 

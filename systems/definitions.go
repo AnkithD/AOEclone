@@ -48,6 +48,9 @@ var (
 	Chunks        [][]StaticEntity
 	ChunkSize     int
 	Grid          [][]bool
+
+	GridMaxX int
+	GridMaxY int
 )
 
 // Message Structs
@@ -199,11 +202,12 @@ func InitializeVariables() {
 	GridSize = 32
 
 	// Camera bounds is ScaleFactor times window size, also Go defaults to false
-	rows := int(engo.WindowWidth()*ScaleFactor) / GridSize
-	cols := int(engo.WindowHeight()*ScaleFactor) / GridSize
-	Grid = make([][]bool, rows)
+	GridMaxX = int(engo.WindowWidth()*ScaleFactor) / GridSize
+	GridMaxY = int(engo.WindowHeight()*ScaleFactor) / GridSize
+	fmt.Println("Grid max", GridMaxX, ",", GridMaxY)
+	Grid = make([][]bool, GridMaxX)
 	for i, _ := range Grid {
-		Grid[i] = make([]bool, cols)
+		Grid[i] = make([]bool, GridMaxY)
 	}
 
 	// Chunks used to Cache Static Entities
