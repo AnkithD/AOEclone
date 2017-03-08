@@ -14,6 +14,8 @@ var (
 	BuildingDetailsMap map[string]BuildingDetails
 
 	SetHUD = "setHUD"
+
+	PathChannel chan []grid
 )
 
 type BuildingSystem struct {
@@ -26,6 +28,7 @@ func (bs *BuildingSystem) Remove(ecs.BasicEntity) {}
 func (bs *BuildingSystem) New(w *ecs.World) {
 	rand.Seed(16548161)
 	bs.world = w
+	PathChannel = make(chan []grid)
 
 	//Building Definitions (For loop to be able to collapse it)
 	BuildingDetailsMap = make(map[string]BuildingDetails)
@@ -102,21 +105,6 @@ func (bs *BuildingSystem) New(w *ecs.World) {
 	bs.AddBuilding("House", engo.Point{768, 320})
 	bs.AddBuilding("Bush", engo.Point{812, 320})
 
-	c := make(chan []grid)
-	s, e := grid{x: 0, y: 3}, grid{x: 40, y: 40}
-	DrawPathBlock(s.x, s.y, color.RGBA{0, 0, 255, 255})
-	go GetPath(s, e, c)
-	res := <-c
-
-	for i, item := range res {
-		if i == len(res)-1 {
-			DrawPathBlock(item.x, item.y, color.RGBA{0, 255, 0, 255})
-		} else {
-			DrawPathBlock(item.x, item.y, color.RGBA{255, 0, 0, 255})
-		}
-
-	}
-
 	fmt.Println("Building System Initialized")
 }
 
@@ -125,28 +113,53 @@ func (bs *BuildingSystem) Update(dt float32) {
 	mx, my := GetAdjustedMousePos(false)
 	mp := engo.Point{mx, my}
 
-	if engo.Input.Mouse.Action == engo.Press && engo.Input.Mouse.Button == engo.MouseButtonLeft {
-		ChunkRef, _ := GetChunkFromPos(mx, my)
-		Chunk := *ChunkRef
+	// Debug info with middle mouse click
+	func() {
+		if engo.Input.Mouse.Action == engo.Press && engo.Input.Mouse.Button == engo.MouseButtonLeft {
+			ChunkRef, _ := GetChunkFromPos(mx, my)
+			Chunk := *ChunkRef
 
-		if len(Chunk) > 0 {
-			//fmt.Println("-------------------------")
-			for _, item := range Chunk {
-				sc := item.GetStaticComponent()
-				if sc.Contains(mp) {
-					engo.Mailbox.Dispatch(BuildingMessage{ID: sc.BasicEntity.ID(), Name: sc.Name, Index: 0})
+			if len(Chunk) > 0 {
+				//fmt.Println("-------------------------")
+				for _, item := range Chunk {
+					sc := item.GetStaticComponent()
+					if sc.Contains(mp) {
+						engo.Mailbox.Dispatch(BuildingMessage{ID: sc.BasicEntity.ID(), Name: sc.Name, Index: 0})
+					}
+					//fmt.Println(item.GetStaticComponent().Name, "present in chunk:", ChunkIndex)
 				}
-				//fmt.Println(item.GetStaticComponent().Name, "present in chunk:", ChunkIndex)
+				//fmt.Println("-------------------------")
+			} else {
+				//fmt.Println("Chunk", ChunkIndex, "Empty")
 			}
-			//fmt.Println("-------------------------")
-		} else {
-			//fmt.Println("Chunk", ChunkIndex, "Empty")
 		}
-	}
+	}()
 
 	if engo.Input.Button(SpaceButton).JustReleased() {
 		bs.Buildings[int(math.Floor(rand.Float64()*float64(len(bs.Buildings))))].Health -= 10
 	}
+
+	// A* Visualization
+	func() {
+
+		if engo.Input.Button(ShiftKey).JustPressed() {
+			s, e := grid{x: 0, y: 3}, grid{x: int(mx) / GridSize, y: int(my) / GridSize}
+			DrawPathBlock(s.x, s.y, color.RGBA{0, 0, 255, 255})
+			go GetPath(s, e, PathChannel)
+		}
+
+		select {
+		case res := <-PathChannel:
+			for i, item := range res {
+				if i == len(res)-1 {
+					DrawPathBlock(item.x, item.y, color.RGBA{0, 255, 0, 255})
+				} else {
+					DrawPathBlock(item.x, item.y, color.RGBA{255, 0, 0, 255})
+				}
+			}
+		default:
+		}
+	}()
 }
 
 func (bs *BuildingSystem) AddBuilding(_Name string, Pos engo.Point) {

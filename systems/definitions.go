@@ -13,6 +13,7 @@ var (
 	HorAxis     = "horAxis"
 	VertAxis    = "vertAxis"
 	SpaceButton = "SpaceButton"
+	ShiftKey    = "shiftkey"
 )
 
 type ActiveSystemsStruct struct {
@@ -164,6 +165,7 @@ func FillGrid(f Fillable) {
 func RegisterButtons() {
 	engo.Input.RegisterButton(GridToggle, engo.Tab)
 	engo.Input.RegisterButton(SpaceButton, engo.Space)
+	engo.Input.RegisterButton(ShiftKey, engo.LeftShift)
 	engo.Input.RegisterAxis(HorAxis, engo.AxisKeyPair{engo.A, engo.D})
 	engo.Input.RegisterAxis(VertAxis, engo.AxisKeyPair{engo.W, engo.S})
 

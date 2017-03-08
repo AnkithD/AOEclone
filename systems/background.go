@@ -36,6 +36,8 @@ type GridEntity struct {
 	common.SpaceComponent
 }
 
+var PathBlocks []*GridEntity
+
 // When system is created this func is executed
 // Initialze the world variable and assign tab to toggle the grid
 func (ms *MapSystem) New(w *ecs.World) {
@@ -45,6 +47,8 @@ func (ms *MapSystem) New(w *ecs.World) {
 	ms.LinePrevYOffset = 0
 	ms.BoxPrevXOffset = 0
 	ms.BoxPrevYOffset = 0
+
+	PathBlocks = make([]*GridEntity, 0)
 
 	// Initializes the Grid lines
 	func() {
@@ -235,6 +239,38 @@ func (ms *MapSystem) Update(dt float32) {
 			fmt.Println("---------------------------------------------")
 		}
 	}()
+
+	// Make path blocks fade
+	func() {
+		for i, _ := range PathBlocks {
+			r, g, b, a := PathBlocks[i].RenderComponent.Color.RGBA()
+			A := float32(a)
+			A -= (255 * dt) / 5
+			if A > 0 {
+				PathBlocks[i].RenderComponent.Color = color.RGBA{uint8(r), uint8(g), uint8(b), uint8(A)}
+			}
+		}
+		i := 0
+		for len(PathBlocks) > 0 {
+			_, _, _, a := PathBlocks[i].RenderComponent.Color.RGBA()
+			A := float32(a)
+			A -= (255 * dt) / 3
+			if A <= 0 {
+				ActiveSystems.RenderSys.Remove(PathBlocks[i].BasicEntity)
+				//Fast delete from slice
+				PathBlocks[i] = PathBlocks[len(PathBlocks)-1]
+				PathBlocks = PathBlocks[:len(PathBlocks)-1]
+			} else {
+				if i < len(PathBlocks) {
+					i++
+				}
+			}
+
+			if i >= len(PathBlocks) {
+				break
+			}
+		}
+	}()
 }
 
 //PathFinding Algorithm
@@ -286,7 +322,7 @@ func eval(neighbor *grid, block *grid, endgrid *grid, h *gridHeap, list *[][]boo
 	hval := hvalue(neighbor.x, neighbor.y, *endgrid)
 	neighbor.f = hval + neighbor.g
 	neighbor.par = block
-	fmt.Println("f =", neighbor.f, ", Set par to", neighbor.par.x, ",", neighbor.par.y)
+	//fmt.Println("f =", neighbor.f, ", Set par to", neighbor.par.x, ",", neighbor.par.y)
 	(*list)[neighbor.x][neighbor.y] = true
 	heap.Push(h, neighbor)
 	return false
@@ -296,9 +332,9 @@ func open(block *grid, h *gridHeap, _list *[][]bool, endgrid *grid) {
 	list := *_list
 
 	if func() bool {
-		fmt.Println("-----------------------------------")
-		defer fmt.Println("-----------------------------------")
-		fmt.Println("Analyzing the neighbors of", block.x, ",", block.y)
+		//fmt.Println("-----------------------------------")
+		//defer fmt.Println("-----------------------------------")
+		//fmt.Println("Analyzing the neighbors of", block.x, ",", block.y)
 		if block.x-1 >= 0 && block.y-1 >= 0 {
 			if !Grid[block.x-1][block.y-1] {
 				if !list[block.x-1][block.y-1] {
@@ -306,7 +342,7 @@ func open(block *grid, h *gridHeap, _list *[][]bool, endgrid *grid) {
 						x: block.x - 1,
 						y: block.y - 1,
 					}
-					fmt.Println("Evaluating grid at", neighbor.x, ",", neighbor.y)
+					//fmt.Println("Evaluating grid at", neighbor.x, ",", neighbor.y)
 					//DrawPathBlock(neighbor.x, neighbor.y)
 					foundend := eval(&neighbor, block, endgrid, h, _list)
 					if foundend {
@@ -322,7 +358,7 @@ func open(block *grid, h *gridHeap, _list *[][]bool, endgrid *grid) {
 						x: block.x,
 						y: block.y - 1,
 					}
-					fmt.Println("Evaluating grid at", neighbor.x, ",", neighbor.y)
+					//fmt.Println("Evaluating grid at", neighbor.x, ",", neighbor.y)
 					//DrawPathBlock(neighbor.x, neighbor.y)
 					foundend := eval(&neighbor, block, endgrid, h, _list)
 					if foundend {
@@ -338,7 +374,7 @@ func open(block *grid, h *gridHeap, _list *[][]bool, endgrid *grid) {
 						x: block.x + 1,
 						y: block.y - 1,
 					}
-					fmt.Println("Evaluating grid at", neighbor.x, ",", neighbor.y)
+					//fmt.Println("Evaluating grid at", neighbor.x, ",", neighbor.y)
 					//DrawPathBlock(neighbor.x, neighbor.y)
 					foundend := eval(&neighbor, block, endgrid, h, _list)
 					if foundend {
@@ -354,7 +390,7 @@ func open(block *grid, h *gridHeap, _list *[][]bool, endgrid *grid) {
 						x: block.x - 1,
 						y: block.y,
 					}
-					fmt.Println("Evaluating grid at", neighbor.x, ",", neighbor.y)
+					//fmt.Println("Evaluating grid at", neighbor.x, ",", neighbor.y)
 					//DrawPathBlock(neighbor.x, neighbor.y)
 					foundend := eval(&neighbor, block, endgrid, h, _list)
 					if foundend {
@@ -370,7 +406,7 @@ func open(block *grid, h *gridHeap, _list *[][]bool, endgrid *grid) {
 						x: block.x + 1,
 						y: block.y,
 					}
-					fmt.Println("Evaluating grid at", neighbor.x, ",", neighbor.y)
+					//fmt.Println("Evaluating grid at", neighbor.x, ",", neighbor.y)
 					//DrawPathBlock(neighbor.x, neighbor.y)
 					foundend := eval(&neighbor, block, endgrid, h, _list)
 					if foundend {
@@ -386,7 +422,7 @@ func open(block *grid, h *gridHeap, _list *[][]bool, endgrid *grid) {
 						x: block.x - 1,
 						y: block.y + 1,
 					}
-					fmt.Println("Evaluating grid at", neighbor.x, ",", neighbor.y)
+					//fmt.Println("Evaluating grid at", neighbor.x, ",", neighbor.y)
 					//DrawPathBlock(neighbor.x, neighbor.y)
 					foundend := eval(&neighbor, block, endgrid, h, _list)
 					if foundend {
@@ -402,7 +438,7 @@ func open(block *grid, h *gridHeap, _list *[][]bool, endgrid *grid) {
 						x: block.x,
 						y: block.y + 1,
 					}
-					fmt.Println("Evaluating grid at", neighbor.x, ",", neighbor.y)
+					//fmt.Println("Evaluating grid at", neighbor.x, ",", neighbor.y)
 					//DrawPathBlock(neighbor.x, neighbor.y)
 					foundend := eval(&neighbor, block, endgrid, h, _list)
 					if foundend {
@@ -418,7 +454,7 @@ func open(block *grid, h *gridHeap, _list *[][]bool, endgrid *grid) {
 						x: block.x + 1,
 						y: block.y + 1,
 					}
-					fmt.Println("Evaluating grid at", neighbor.x, ",", neighbor.y)
+					//fmt.Println("Evaluating grid at", neighbor.x, ",", neighbor.y)
 					//DrawPathBlock(neighbor.x, neighbor.y)
 					foundend := eval(&neighbor, block, endgrid, h, _list)
 					if foundend {
@@ -475,14 +511,14 @@ func GetPath(startgrid grid, endgrid grid, c chan []grid) {
 
 	temp := endgrid
 	path = append(path, temp)
-	fmt.Println("Adding grid at", temp.x, ",", temp.y, "to the path")
+	//fmt.Println("Adding grid at", temp.x, ",", temp.y, "to the path")
 	for temp.par != &startgrid {
 		prevtemp := temp
 		temp = *(temp.par)
-		fmt.Println("Adding grid at", temp.x, ",", temp.y, "to the path")
+		//fmt.Println("Adding grid at", temp.x, ",", temp.y, "to the path")
 		path = append(path, temp)
 		if prevtemp.x == temp.x && prevtemp.y == temp.y {
-			fmt.Println("No change from ", prevtemp.x, ",", prevtemp.y, "and", temp.x, ",", temp.y)
+			//fmt.Println("No change from ", prevtemp.x, ",", prevtemp.y, "and", temp.x, ",", temp.y)
 			c <- make([]grid, 0)
 		}
 	}
@@ -505,6 +541,8 @@ func DrawPathBlock(x, y int, col color.RGBA) {
 		},
 	}
 	myblock.SetZIndex(70)
+
+	PathBlocks = append(PathBlocks, &myblock)
 
 	ActiveSystems.RenderSys.Add(&myblock.BasicEntity, &myblock.RenderComponent, &myblock.SpaceComponent)
 }
