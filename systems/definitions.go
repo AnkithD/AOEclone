@@ -168,8 +168,28 @@ func GetGridAtPos(x, y float32) bool {
 func WithinGameWindow(x, y float32) bool {
 	CamSys := ActiveSystems.CameraSys
 	cx, cy := CamSys.X()-engo.WindowWidth()/2, CamSys.Y()-engo.WindowHeight()/2
+	ymin := cy + 64
+	ymax := cy + engo.WindowHeight() - 160
 
-	return (cx <= x && x <= cx+engo.WindowWidth() && cy <= y && y <= cy+engo.WindowHeight())
+	return (cx <= x && x <= cx+engo.WindowWidth() && ymin <= y && y <= ymax)
+}
+
+// Returns mouse over object?, given button pressed?, given button released?
+func StaticMouseCollision(obj *StaticEntity, mb engo.MouseButton) (bool, bool, bool) {
+	mx, my := GetAdjustedMousePos(false)
+	mp := engo.Point{mx, my}
+	if WithinGameWindow(mx, my) {
+		Chunk, _ := GetChunkFromPos(mx, my)
+		for i, _ := range *Chunk {
+			if (*Chunk)[i].GetStaticComponent().Contains(mp) {
+				pressed := engo.Input.Mouse.Action == engo.Press
+				button_matched := engo.Input.Mouse.Button == mb
+				released := engo.Input.Mouse.Action == engo.Release
+				return true, (pressed && button_matched), (released && button_matched)
+			}
+		}
+	}
+	return false, false, false
 }
 
 // Mark the solids in the Grid
