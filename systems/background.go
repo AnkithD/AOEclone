@@ -157,16 +157,28 @@ func (ms *MapSystem) Update(dt float32) {
 	*/
 	mx, my := GetAdjustedMousePos(false)
 
-	item_tobe_placed :=
+	item_tobe_placed := true
 
-		func() {
-			if engo.Input.Button(RightClick).JustPressed() {
-				item_tobe_placed = !item_tobe_placed
+	func() {
+		if engo.Input.Mouse.Action == engo.Press && engo.Input.Mouse.Button == engo.MouseButtonRight {
+			fmt.Println("Here i am")
+			item_tobe_placed = !item_tobe_placed
+		}
+		if engo.Input.Mouse.Action == engo.Press && engo.Input.Mouse.Button == engo.MouseButtonLeft {
+			var BuildingName string
+			fmt.Println("Here i am 2")
+			if item_tobe_placed {
+				BuildingName = "Tree"
+			} else {
+				BuildingName = "Bush"
 			}
-			if engo.Input.Button(LeftClick).JustPressed() {
-				engo.Mailbox.Dispatch(message)
+			if WithinGameWindow(mx, my) {
+				fmt.Println("Here i am 3")
+				engo.Mailbox.Dispatch(CreateBuildingMessage{Name: BuildingName, Position: engo.Point{mx, my}})
+
 			}
-		}()
+		}
+	}()
 
 	//Rendering the Gridlines and Chunk Boxes
 	func() {
