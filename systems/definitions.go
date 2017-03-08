@@ -167,7 +167,7 @@ func GetGridAtPos(x, y float32) bool {
 
 func WithinGameWindow(x, y float32) bool {
 	CamSys := ActiveSystems.CameraSys
-	cx, cy := CamSys.X()-engo.WindowWidth()/2, CamSys.Y()-engo.WindowHeight()
+	cx, cy := CamSys.X()-engo.WindowWidth()/2, CamSys.Y()-engo.WindowHeight()/2
 
 	return (cx <= x && x <= cx+engo.WindowWidth() && cy <= y && y <= cy+engo.WindowHeight())
 }
