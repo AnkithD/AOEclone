@@ -187,7 +187,10 @@ func (ms *MapSystem) Update(dt float32) {
 			}
 		}
 		if engo.Input.Button(R_remove).JustPressed() {
-
+			se := GetStaticHover()
+			if se != nil {
+				engo.Mailbox.Dispatch(DestroyBuildingMessage{obj: GetStaticHover()})
+			}
 		}
 	}()
 

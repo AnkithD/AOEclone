@@ -265,6 +265,20 @@ func GetStaticClicked() StaticEntity {
 	return nil
 }
 
+func GetStaticHover() StaticEntity {
+	mx, my := GetAdjustedMousePos(false)
+	mp := engo.Point{mx, my}
+	if WithinGameWindow(mx, my) {
+		Chunk, _ := GetChunkFromPos(mx, my)
+		for i, _ := range *Chunk {
+			if (*Chunk)[i].GetStaticComponent().Contains(mp) {
+				return (*Chunk)[i]
+			}
+		}
+	}
+	return nil
+}
+
 // Mark the solids in the Grid
 func FillGrid(f Fillable, val bool) {
 	x, y := f.GetPos()
@@ -281,6 +295,7 @@ func RegisterButtons() {
 	engo.Input.RegisterButton(GridToggle, engo.Tab)
 	engo.Input.RegisterButton(SpaceButton, engo.Space)
 	engo.Input.RegisterButton(ShiftKey, engo.LeftShift)
+	engo.Input.RegisterButton(R_remove, engo.R)
 	engo.Input.RegisterAxis(HorAxis, engo.AxisKeyPair{engo.A, engo.D})
 	engo.Input.RegisterAxis(VertAxis, engo.AxisKeyPair{engo.W, engo.S})
 
