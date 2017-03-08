@@ -103,7 +103,7 @@ func (bs *BuildingSystem) New(w *ecs.World) {
 	bs.AddBuilding("Military Block", engo.Point{320, 320})
 	bs.AddBuilding("Resource Building", engo.Point{544, 320})
 	bs.AddBuilding("House", engo.Point{768, 320})
-	bs.AddBuilding("Bush", engo.Point{812, 320})
+	bs.AddBuilding("Bush", engo.Point{832, 320})
 
 	fmt.Println("Building System Initialized")
 }
@@ -143,9 +143,11 @@ func (bs *BuildingSystem) Update(dt float32) {
 	func() {
 
 		if engo.Input.Button(ShiftKey).JustPressed() {
-			s, e := grid{x: 0, y: 3}, grid{x: int(mx) / GridSize, y: int(my) / GridSize}
-			DrawPathBlock(s.x, s.y, color.RGBA{0, 0, 255, 255})
-			go GetPath(s, e, PathChannel)
+			s, e := grid{x: 0, y: 10}, grid{x: int(mx) / GridSize, y: int(my) / GridSize}
+			if !Grid[e.x][e.y] {
+				DrawPathBlock(s.x, s.y, color.RGBA{0, 0, 255, 255})
+				go GetPath(s, e, PathChannel)
+			}
 		}
 
 		select {

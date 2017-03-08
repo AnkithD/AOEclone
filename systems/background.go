@@ -309,6 +309,7 @@ func hvalue(x, y int, endgrid grid) int {
 	if a > b {
 		a, b = b, a
 	}
+	//return int(float32(b) - float32(a)*0.7)
 	return b
 }
 
