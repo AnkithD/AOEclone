@@ -119,6 +119,15 @@ func (bs *BuildingSystem) New(w *ecs.World) {
 		bs.AddBuilding(msg.Name, msg.Position)
 	})
 
+	engo.Mailbox.Listen("DestroyBuildingMessage", func(_msg engo.Message) {
+		msg, ok := _msg.(DestroyBuildingMessage)
+		if !ok {
+			panic("Building System expected DestroyBuildingMessage, instead got unexpected")
+		}
+
+		bs.RemoveBuilding(msg.obj)
+	})
+
 	bs.AddBuilding("Town Center", engo.Point{96, 320})
 	bs.AddBuilding("Military Block", engo.Point{320, 320})
 	bs.AddBuilding("Resource Building", engo.Point{544, 320})
@@ -176,6 +185,7 @@ func (bs *BuildingSystem) AddBuilding(_Name string, Pos engo.Point) {
 				Position: Pos,
 				Width:    tex.Width(),
 				Height:   tex.Height(),
+				Rotation: 90 * float32(math.Floor(4*rand.Float64())),
 			},
 			Name:   _Name,
 			Width:  tex.Width(),
@@ -186,9 +196,23 @@ func (bs *BuildingSystem) AddBuilding(_Name string, Pos engo.Point) {
 
 	bs.Buildings = append(bs.Buildings, new_building)
 	CacheInChunks(new_building)
-	FillGrid(new_building)
+	FillGrid(new_building, true)
 
 	ActiveSystems.RenderSys.Add(&new_building.BasicEntity, &new_building.RenderComponent, &new_building.SpaceComponent)
+}
+
+func (bs *BuildingSystem) RemoveBuilding(obj StaticEntity) {
+	ActiveSystems.RenderSys.Remove(obj.GetStaticComponent().BasicEntity)
+
+	for i, _ := range bs.Buildings {
+		building := bs.Buildings[i]
+		if building.ID() == obj.GetStaticComponent().ID() {
+			bs.Buildings[i] = bs.Buildings[len(bs.Buildings)-1]
+			bs.Buildings = bs.Buildings[:len(bs.Buildings)-1]
+		}
+	}
+	UnCacheInChunks(obj)
+	FillGrid(obj, false)
 }
 
 type StaticComponent struct {

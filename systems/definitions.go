@@ -78,6 +78,14 @@ func (CreateBuildingMessage) Type() string {
 	return "CreateBuildingMessage"
 }
 
+type DestroyBuildingMessage struct {
+	obj StaticEntity
+}
+
+func (DestroyBuildingMessage) Type() string {
+	return "DestroyBuildingMessage"
+}
+
 type HealthEnquiryMessage struct {
 	ID uint64
 }
@@ -162,6 +170,55 @@ func CacheInChunks(se StaticEntity) {
 	}
 }
 
+func UnCacheInChunks(se StaticEntity) {
+	x, y := se.GetPos()
+	X, Y := se.GetSize()
+	X = X + x
+	Y = Y + y
+
+	chunk1, _ := GetChunkFromPos(x, y)
+	for i, _ := range *chunk1 {
+		entity := (*chunk1)[i]
+		if entity.GetStaticComponent().ID() == se.GetStaticComponent().ID() {
+			(*chunk1)[i] = (*chunk1)[len(*chunk1)-1]
+			*chunk1 = (*chunk1)[:len(*chunk1)-1]
+		}
+	}
+
+	chunk2, _ := GetChunkFromPos(X, y)
+	if chunk1 != chunk2 {
+		for i, _ := range *chunk2 {
+			entity := (*chunk2)[i]
+			if entity.GetStaticComponent().ID() == se.GetStaticComponent().ID() {
+				(*chunk2)[i] = (*chunk2)[len(*chunk2)-1]
+				*chunk2 = (*chunk2)[:len(*chunk2)-1]
+			}
+		}
+	}
+
+	chunk3, _ := GetChunkFromPos(x, Y)
+	if chunk1 != chunk3 {
+		for i, _ := range *chunk3 {
+			entity := (*chunk3)[i]
+			if entity.GetStaticComponent().ID() == se.GetStaticComponent().ID() {
+				(*chunk3)[i] = (*chunk3)[len(*chunk3)-1]
+				*chunk3 = (*chunk3)[:len(*chunk3)-1]
+			}
+		}
+	}
+
+	chunk4, _ := GetChunkFromPos(X, Y)
+	if chunk4 != chunk2 && chunk4 != chunk3 {
+		for i, _ := range *chunk4 {
+			entity := (*chunk4)[i]
+			if entity.GetStaticComponent().ID() == se.GetStaticComponent().ID() {
+				(*chunk4)[i] = (*chunk4)[len(*chunk4)-1]
+				*chunk4 = (*chunk4)[:len(*chunk4)-1]
+			}
+		}
+	}
+}
+
 func GetGridAtPos(x, y float32) bool {
 	return Grid[int(x)/GridSize][int(y)/GridSize]
 }
@@ -176,7 +233,21 @@ func WithinGameWindow(x, y float32) bool {
 }
 
 // Returns mouse over object?, given button pressed?, given button released?
-func StaticMouseCollision(obj *StaticEntity, mb engo.MouseButton) (bool, bool, bool) {
+func StaticMouseCollision(obj StaticEntity, mb engo.MouseButton) (bool, bool, bool) {
+	mx, my := GetAdjustedMousePos(false)
+	mp := engo.Point{mx, my}
+	if WithinGameWindow(mx, my) {
+		if obj.GetStaticComponent().Contains(mp) {
+			pressed := engo.Input.Mouse.Action == engo.Press
+			button_matched := engo.Input.Mouse.Button == mb
+			released := engo.Input.Mouse.Action == engo.Release
+			return true, (pressed && button_matched), (released && button_matched)
+		}
+	}
+	return false, false, false
+}
+
+func GetStaticClicked() StaticEntity {
 	mx, my := GetAdjustedMousePos(false)
 	mp := engo.Point{mx, my}
 	if WithinGameWindow(mx, my) {
@@ -184,23 +255,24 @@ func StaticMouseCollision(obj *StaticEntity, mb engo.MouseButton) (bool, bool, b
 		for i, _ := range *Chunk {
 			if (*Chunk)[i].GetStaticComponent().Contains(mp) {
 				pressed := engo.Input.Mouse.Action == engo.Press
-				button_matched := engo.Input.Mouse.Button == mb
-				released := engo.Input.Mouse.Action == engo.Release
-				return true, (pressed && button_matched), (released && button_matched)
+				button_matched := engo.Input.Mouse.Button == engo.MouseButtonLeft
+				if pressed && button_matched {
+					return (*Chunk)[i]
+				}
 			}
 		}
 	}
-	return false, false, false
+	return nil
 }
 
 // Mark the solids in the Grid
-func FillGrid(f Fillable) {
+func FillGrid(f Fillable, val bool) {
 	x, y := f.GetPos()
 	w, h := f.GetSize()
 
 	for i := int(x) / GridSize; i < int(x+w)/GridSize; i += 1 {
 		for j := int(y) / GridSize; j < int(y+h)/GridSize; j += 1 {
-			Grid[i][j] = true
+			Grid[i][j] = val
 		}
 	}
 }
