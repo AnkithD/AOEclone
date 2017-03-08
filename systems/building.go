@@ -185,7 +185,6 @@ func (bs *BuildingSystem) AddBuilding(_Name string, Pos engo.Point) {
 				Position: Pos,
 				Width:    tex.Width(),
 				Height:   tex.Height(),
-				Rotation: 90 * float32(math.Floor(4*rand.Float64())),
 			},
 			Name:   _Name,
 			Width:  tex.Width(),
