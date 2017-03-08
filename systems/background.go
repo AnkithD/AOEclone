@@ -245,7 +245,7 @@ func (ms *MapSystem) Update(dt float32) {
 		for i, _ := range PathBlocks {
 			r, g, b, a := PathBlocks[i].RenderComponent.Color.RGBA()
 			A := float32(a)
-			A -= (255 * dt) / 5
+			A -= (255 * dt) / 3
 			if A > 0 {
 				PathBlocks[i].RenderComponent.Color = color.RGBA{uint8(r), uint8(g), uint8(b), uint8(A)}
 			}
@@ -301,6 +301,7 @@ func (h *gridHeap) Pop() interface{} {
 }
 
 func hvalue(x, y int, endgrid grid) int {
+	diagCost, sideCost := 1.415, 1.01
 	var a, b int
 	X := endgrid.x
 	Y := endgrid.y
@@ -309,8 +310,8 @@ func hvalue(x, y int, endgrid grid) int {
 	if a > b {
 		a, b = b, a
 	}
-	//return int(float32(b) - float32(a)*0.7)
-	return b
+	return int(float32(b) - float32(a)*float32(diagCost-sideCost))
+	//return b
 }
 
 func eval(neighbor *grid, block *grid, endgrid *grid, h *gridHeap, list *[][]bool) bool {
