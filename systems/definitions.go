@@ -14,6 +14,7 @@ var (
 	VertAxis    = "vertAxis"
 	SpaceButton = "SpaceButton"
 	ShiftKey    = "shiftkey"
+	R_remove    = "R_remove"
 )
 
 type ActiveSystemsStruct struct {

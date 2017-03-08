@@ -19,15 +19,15 @@ type AISystem struct {
 func (ais *AISystem) New(w *ecs.World) {
 	ais.world = w
 
-	WarriorDetails := HumanDetails{
-		Name:      "Warrior",
-		Texture:   common.Circle{},
-		Color:     color.RGBA{0, 0, 255, 255},
-		Width:     float32(GridSize - 5),
-		Height:    float32(GridSize - 5),
-		MaxHealth: 100,
-		Attack:    10,
-	}
+	// WarriorDetails := HumanDetails{
+	// 	Name:      "Warrior",
+	// 	Texture:   common.Circle{},
+	// 	Color:     color.RGBA{0, 0, 255, 255},
+	// 	Width:     float32(GridSize - 5),
+	// 	Height:    float32(GridSize - 5),
+	// 	MaxHealth: 100,
+	// 	Attack:    10,
+	// }
 
 	fmt.Println("AI System Initialized")
 }
