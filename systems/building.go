@@ -142,7 +142,7 @@ func (bs *BuildingSystem) Update(dt float32) {
 	// A* Visualization
 	func() {
 
-		if engo.Input.Button(ShiftKey).JustPressed() {
+		if engo.Input.Button(ShiftKey).JustReleased() {
 			s, e := grid{x: 19, y: 15}, grid{x: int(mx) / GridSize, y: int(my) / GridSize}
 			if !Grid[e.x][e.y] {
 				DrawPathBlock(s.x, s.y, color.RGBA{0, 0, 255, 255})
