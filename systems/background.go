@@ -39,6 +39,7 @@ type GridEntity struct {
 var PathBlocks []*GridEntity
 var PathBlocksMutex sync.Mutex
 var item_tobe_placed bool = true
+var mouseheld bool = false
 
 // When system is created this func is executed
 // Initialze the world variable and assign tab to toggle the grid
@@ -164,6 +165,12 @@ func (ms *MapSystem) Update(dt float32) {
 			item_tobe_placed = !item_tobe_placed
 		}
 		if engo.Input.Mouse.Action == engo.Press && engo.Input.Mouse.Button == engo.MouseButtonLeft {
+			mouseheld = true
+		}
+		if engo.Input.Mouse.Action == engo.Release && engo.Input.Mouse.Button == engo.MouseButtonLeft {
+			mouseheld = false
+		}
+		if mouseheld {
 			var BuildingName string
 
 			if item_tobe_placed {
