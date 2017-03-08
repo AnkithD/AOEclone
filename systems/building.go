@@ -76,6 +76,16 @@ func (bs *BuildingSystem) New(w *ecs.World) {
 			Name: "Bush", MaxHealth: 50, Texture: BushTexture,
 		}
 		BuildingDetailsMap[BushDetails.Name] = BushDetails
+
+		TreeTexture, err := common.LoadedSprite(TreeSprite)
+		if err != nil {
+			fmt.Println(err.Error())
+		}
+		TreeDetails := BuildingDetails{
+			Name: "Tree", MaxHealth: 30, Texture: TreeTexture,
+		}
+		BuildingDetailsMap[TreeDetails.Name] = TreeDetails
+
 	}()
 
 	engo.Mailbox.Listen("HealthEnquiryMessage", func(_msg engo.Message) {
@@ -89,11 +99,22 @@ func (bs *BuildingSystem) New(w *ecs.World) {
 				switch item.Name {
 				case "Bush":
 					HealthEnquiryResponse.ResourceName = "Food"
+				case "Tree":
+					HealthEnquiryResponse.ResourceName = "Wood"
 				}
 				HealthEnquiryResponse.set = true
 				return
 			}
 		}
+
+		engo.Mailbox.Listen("CreateBuildingMessage", func(_msg engo.Message) {
+			msg, ok := _msg.(CreateBuildingMessage)
+			if !ok {
+				panic("Building System expected CreateBuildingMessage, instead got unexpected")
+			}
+
+			bs.AddBuilding(msg.Name, msg.Position)
+		})
 
 		panic("Health Enquiry for unkown building")
 	})
@@ -103,6 +124,7 @@ func (bs *BuildingSystem) New(w *ecs.World) {
 	bs.AddBuilding("Resource Building", engo.Point{544, 320})
 	bs.AddBuilding("House", engo.Point{768, 320})
 	bs.AddBuilding("Bush", engo.Point{832, 320})
+	bs.AddBuilding("Tree", engo.Point{896, 320})
 
 	fmt.Println("Building System Initialized")
 }
@@ -161,8 +183,8 @@ func (bs *BuildingSystem) AddBuilding(_Name string, Pos engo.Point) {
 		},
 		Health: BuildingDetailsMap[_Name].MaxHealth,
 	}
+
 	bs.Buildings = append(bs.Buildings, new_building)
-	fmt.Println("Filling Graph for", _Name)
 	CacheInChunks(new_building)
 	FillGrid(new_building)
 
@@ -202,5 +224,5 @@ func (be *BuildingEntity) GetDetails() BuildingDetails {
 type BuildingDetails struct {
 	Name      string
 	MaxHealth int
-	Texture   *common.Texture
+	Texture   common.Drawable
 }
