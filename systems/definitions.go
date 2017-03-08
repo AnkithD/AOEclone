@@ -229,7 +229,6 @@ func InitializeVariables() {
 	// Camera bounds is ScaleFactor times window size, also Go defaults to false
 	GridMaxX = int(engo.WindowWidth()*ScaleFactor) / GridSize
 	GridMaxY = int(engo.WindowHeight()*ScaleFactor) / GridSize
-	fmt.Println("Grid max", GridMaxX, ",", GridMaxY)
 	Grid = make([][]bool, GridMaxX)
 	for i, _ := range Grid {
 		Grid[i] = make([]bool, GridMaxY)

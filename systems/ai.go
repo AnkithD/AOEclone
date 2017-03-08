@@ -1,29 +1,67 @@
 package systems
 
-// import (
-// 	"engo.io/ecs"
-// 	//"engo.io/engo"
-// 	"engo.io/engo/common"
-// 	//"fmt"
-// 	//"image/color"
-// )
+import (
+	"engo.io/ecs"
+	"engo.io/engo"
+	"engo.io/engo/common"
+	"fmt"
+	"image/color"
+)
 
-// type AISystem struct {
-// 	world *ecs.World
-// }
+var (
+	HumanDetailsMap map[string]HumanDetails
+)
 
-// func (*AISystem) Update(dt float32)      {}
-// func (*AISystem) Remove(ecs.BasicEntity) {}
+type AISystem struct {
+	world *ecs.World
+}
 
-// type Human struct {
-// 	ecs.BasicEntity
-// 	common.RenderComponent
-// 	common.SpaceComponent
+func (ais *AISystem) New(w *ecs.World) {
+	ais.world = w
 
-// 	Health int
-// 	Attack int
-// }
+	WarriorDetails := HumanDetails{
+		Name:      "Warrior",
+		Texture:   common.Circle{},
+		Color:     color.RGBA{0, 0, 255, 255},
+		Width:     float32(GridSize - 5),
+		Height:    float32(GridSize - 5),
+		MaxHealth: 100,
+		Attack:    10,
+	}
 
-// type Villager struct {
-// 	Human
-// }
+	fmt.Println("AI System Initialized")
+}
+func (*AISystem) Update(dt float32)      {}
+func (*AISystem) Remove(ecs.BasicEntity) {}
+
+type Human struct {
+	ecs.BasicEntity
+	common.RenderComponent
+	common.SpaceComponent
+	AIComponent
+
+	Name   string
+	Health int
+	Attack int
+}
+
+type AIComponent struct {
+	StartPoint  engo.Point
+	EndPoint    engo.Point
+	CurrentPath []grid
+	State       string
+}
+
+type HumanDetails struct {
+	Name      string
+	MaxHealth int
+	Attack    int
+	Texture   common.Drawable
+	Color     color.RGBA
+	Width     float32
+	Height    float32
+}
+
+func CreateHuman(_Name string, Position engo.Point) {
+
+}

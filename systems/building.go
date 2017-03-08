@@ -107,16 +107,16 @@ func (bs *BuildingSystem) New(w *ecs.World) {
 			}
 		}
 
-		engo.Mailbox.Listen("CreateBuildingMessage", func(_msg engo.Message) {
-			msg, ok := _msg.(CreateBuildingMessage)
-			if !ok {
-				panic("Building System expected CreateBuildingMessage, instead got unexpected")
-			}
-
-			bs.AddBuilding(msg.Name, msg.Position)
-		})
-
 		panic("Health Enquiry for unkown building")
+	})
+
+	engo.Mailbox.Listen("CreateBuildingMessage", func(_msg engo.Message) {
+		msg, ok := _msg.(CreateBuildingMessage)
+		if !ok {
+			panic("Building System expected CreateBuildingMessage, instead got unexpected")
+		}
+
+		bs.AddBuilding(msg.Name, msg.Position)
 	})
 
 	bs.AddBuilding("Town Center", engo.Point{96, 320})
