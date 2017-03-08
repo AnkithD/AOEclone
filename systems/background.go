@@ -242,21 +242,21 @@ func (ms *MapSystem) Update(dt float32) {
 
 	// Make path blocks fade
 	func() {
+		ShouldDelete := make([]bool, len(PathBlocks))
 		for i, _ := range PathBlocks {
 			r, g, b, a := PathBlocks[i].RenderComponent.Color.RGBA()
 			A := float32(a) / 255
-			A -= (255 * dt)
-			fmt.Println(dt, 255*dt)
+			A -= (255 * dt) / 2
 			if A > 0 {
 				A = float32(math.Floor(float64(A)))
 				PathBlocks[i].RenderComponent.Color = color.RGBA{uint8(r), uint8(g), uint8(b), uint8(A)}
+			} else {
+				ShouldDelete[i] = true
 			}
 		}
 		i := 0
 		for len(PathBlocks) > 0 {
-			_, _, _, a := PathBlocks[i].RenderComponent.Color.RGBA()
-			A := float32(a) / 255
-			if A <= 0 {
+			if ShouldDelete[i] {
 				ActiveSystems.RenderSys.Remove(PathBlocks[i].BasicEntity)
 				//Fast delete from slice
 				PathBlocks[i] = PathBlocks[len(PathBlocks)-1]
@@ -271,8 +271,6 @@ func (ms *MapSystem) Update(dt float32) {
 				break
 			}
 		}
-
-		fmt.Println("Length:", len(PathBlocks))
 	}()
 }
 

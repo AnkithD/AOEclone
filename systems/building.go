@@ -148,7 +148,6 @@ func (bs *BuildingSystem) Update(dt float32) {
 			if (e.x < GridMaxX) && (e.y < GridMaxY) && !Grid[e.x][e.y] {
 				DrawPathBlock(s.x, s.y, color.RGBA{0, 0, 255, 255})
 				go GetPath(s, e, PathChannel)
-				fmt.Println("Pathfinding")
 			} else {
 				fmt.Println(e.x, e.y, GridMaxX, GridMaxY)
 			}
