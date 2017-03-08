@@ -143,7 +143,7 @@ func (bs *BuildingSystem) Update(dt float32) {
 	func() {
 
 		if engo.Input.Button(ShiftKey).JustPressed() {
-			s, e := grid{x: 0, y: 10}, grid{x: int(mx) / GridSize, y: int(my) / GridSize}
+			s, e := grid{x: 19, y: 15}, grid{x: int(mx) / GridSize, y: int(my) / GridSize}
 			if !Grid[e.x][e.y] {
 				DrawPathBlock(s.x, s.y, color.RGBA{0, 0, 255, 255})
 				go GetPath(s, e, PathChannel)
