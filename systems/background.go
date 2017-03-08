@@ -38,6 +38,7 @@ type GridEntity struct {
 
 var PathBlocks []*GridEntity
 var PathBlocksMutex sync.Mutex
+var item_tobe_placed bool = true
 
 // When system is created this func is executed
 // Initialze the world variable and assign tab to toggle the grid
@@ -157,26 +158,29 @@ func (ms *MapSystem) Update(dt float32) {
 	*/
 	mx, my := GetAdjustedMousePos(false)
 
-	item_tobe_placed := true
-
 	func() {
 		if engo.Input.Mouse.Action == engo.Press && engo.Input.Mouse.Button == engo.MouseButtonRight {
-			fmt.Println("Here i am")
+			fmt.Println(item_tobe_placed)
 			item_tobe_placed = !item_tobe_placed
 		}
 		if engo.Input.Mouse.Action == engo.Press && engo.Input.Mouse.Button == engo.MouseButtonLeft {
 			var BuildingName string
-			fmt.Println("Here i am 2")
+
 			if item_tobe_placed {
 				BuildingName = "Tree"
 			} else {
 				BuildingName = "Bush"
 			}
 			if WithinGameWindow(mx, my) {
-				fmt.Println("Here i am 3")
-				engo.Mailbox.Dispatch(CreateBuildingMessage{Name: BuildingName, Position: engo.Point{mx, my}})
-
+				pik := float32(math.Floor(float64(mx)/float64(GridSize)) * float64(GridSize))
+				cik := float32(math.Floor(float64(my)/float64(GridSize)) * float64(GridSize))
+				if !Grid[int(pik/32)][int(cik/32)] {
+					engo.Mailbox.Dispatch(CreateBuildingMessage{Name: BuildingName, Position: engo.Point{X: pik, Y: cik}})
+				}
 			}
+		}
+		if engo.Input.Button(R_remove).JustPressed() {
+
 		}
 	}()
 
