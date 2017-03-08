@@ -244,8 +244,9 @@ func (ms *MapSystem) Update(dt float32) {
 	func() {
 		for i, _ := range PathBlocks {
 			r, g, b, a := PathBlocks[i].RenderComponent.Color.RGBA()
-			A := float32(a)
-			A -= (255 * dt) / 3
+			A := float32(a) / 255
+			A -= (255 * dt)
+			fmt.Println(dt, 255*dt)
 			if A > 0 {
 				A = float32(math.Floor(float64(A)))
 				PathBlocks[i].RenderComponent.Color = color.RGBA{uint8(r), uint8(g), uint8(b), uint8(A)}
@@ -254,7 +255,7 @@ func (ms *MapSystem) Update(dt float32) {
 		i := 0
 		for len(PathBlocks) > 0 {
 			_, _, _, a := PathBlocks[i].RenderComponent.Color.RGBA()
-			A := float32(a)
+			A := float32(a) / 255
 			if A <= 0 {
 				ActiveSystems.RenderSys.Remove(PathBlocks[i].BasicEntity)
 				//Fast delete from slice
@@ -270,6 +271,8 @@ func (ms *MapSystem) Update(dt float32) {
 				break
 			}
 		}
+
+		fmt.Println("Length:", len(PathBlocks))
 	}()
 }
 
@@ -302,7 +305,7 @@ func (h *gridHeap) Pop() interface{} {
 
 func hvalue(x, y int, endgrid grid) float32 {
 	var diagCost, sideCost float32
-	diagCost, sideCost = 1.414, 1
+	diagCost, sideCost = 1, 1
 
 	var a, b int
 	X := endgrid.x
