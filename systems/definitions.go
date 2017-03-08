@@ -36,6 +36,7 @@ var (
 	HouseSprite             = "house1.png"
 	EHouseSprite            = "house2.png"
 	BushSprite              = "bush.png"
+	TreeSprite              = "tree.png"
 	BuildingSprites         = []string{TownCenterSprite, ETownCenterSprite, MilitaryBlockSprite, EMilitaryBlockSprite, ResourceBuildingSprite, EResourceBuildingSprite, HouseSprite, EHouseSprite, BushSprite}
 )
 
@@ -67,6 +68,15 @@ type BuildingMessage struct {
 
 func (BuildingMessage) Type() string {
 	return "BuildingMessage"
+}
+
+type CreateBuildingMessage struct {
+	Name     string
+	Position engo.Point
+}
+
+func (CreateBuildingMessage) Type() string {
+	return "CreateBuildingMessage"
 }
 
 type HealthEnquiryMessage struct {
@@ -155,6 +165,13 @@ func CacheInChunks(se StaticEntity) {
 
 func GetGridAtPos(x, y float32) bool {
 	return Grid[int(x)/GridSize][int(y)/GridSize]
+}
+
+func WithinGameWindow(x, y float32) bool {
+	CamSys := ActiveSystems.CameraSys
+	cx, cy := CamSys.X()-engo.WindowWidth()/2, CamSys.Y()-engo.WindowHeight()
+
+	return (cx <= x && x <= cx+engo.WindowWidth() && cy <= y && y <= cy+engo.WindowHeight())
 }
 
 // Mark the solids in the Grid

@@ -318,7 +318,7 @@ func (ms *MapSystem) Update(dt float32) {
 	}()
 }
 
-//PathFinding Algorithm
+//---------------------------------------------PathFinding Algorithm------------------------------------------------
 type grid struct {
 	x   int
 	y   int
