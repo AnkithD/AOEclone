@@ -72,9 +72,6 @@ func (ais *AISystem) New(w *ecs.World) {
 		HumanDetailsMap[EWarriorDetails.Name] = EWarriorDetails
 	}()
 
-	ais.CreateHuman("Warrior", engo.Point{516, 484})
-	ais.CreateHuman("Enemy", engo.Point{516, 516})
-
 	fmt.Println("AI System Initialized")
 }
 func (ais *AISystem) Update(dt float32) {
