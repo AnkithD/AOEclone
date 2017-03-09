@@ -228,6 +228,7 @@ func (bs *BuildingSystem) RemoveBuilding(obj StaticEntity) {
 
 func (bs *BuildingSystem) SaveMap(Fname string) {
 	fmt.Print("Saving Map! ... ")
+	_ = os.Remove(Fname)
 	file, err := os.OpenFile(Fname, os.O_WRONLY|os.O_CREATE, 0777)
 	defer file.Close()
 
