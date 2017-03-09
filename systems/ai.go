@@ -90,6 +90,7 @@ func (*AISystem) Update(dt float32) {
 			timer = 0
 		}
 	}()
+
 	func() {
 		if f {
 			var x []int

@@ -243,6 +243,11 @@ func (bs *BuildingSystem) SaveMap(Fname string) {
 			panic(e)
 		}
 	}
+	err = Writer.Flush()
+	if err != nil {
+		panic(err)
+	}
+
 	fmt.Println("Saved!")
 }
 
