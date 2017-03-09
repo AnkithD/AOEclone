@@ -1,11 +1,39 @@
-Town Center,480,480
-Military Block,640,544
-House,608,640
-House,672,640
-House,736,640
-House,800,640
-House,608,704
-House,672,704
-House,736,704
-House,800,704
-Resource Building, 608, 832
+Town Center,576,384
+House,960,384
+House,832,320
+House,896,320
+House,960,320
+House,832,384
+House,896,384
+Military Block,832,512
+Resource Building,576,768
+Tree,448,832
+Tree,448,896
+Tree,512,896
+Tree,480,864
+Tree,448,864
+Tree,480,928
+Tree,544,896
+Tree,544,864
+Tree,640,864
+Tree,608,928
+Tree,576,928
+Tree,608,896
+Tree,576,864
+Tree,672,928
+Tree,704,928
+Tree,704,832
+Tree,640,896
+Tree,704,864
+Tree,704,896
+Bush,288,736
+Bush,288,704
+Bush,352,704
+Bush,320,736
+Bush,320,704
+Bush,288,672
+Bush,352,736
+Bush,320,672
+Bush,320,768
+Bush,352,768
+Bush,384,768

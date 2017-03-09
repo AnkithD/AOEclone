@@ -34,7 +34,7 @@ type GridEntity struct {
 	common.SpaceComponent
 }
 
-var item_tobe_placed bool = true
+var item_tobe_placed int = 0
 var mouseheld bool = false
 
 // When system is created this func is executed
@@ -154,7 +154,27 @@ func (ms *MapSystem) Update(dt float32) {
 	func() {
 		if engo.Input.Mouse.Action == engo.Press && engo.Input.Mouse.Button == engo.MouseButtonRight {
 			fmt.Println(item_tobe_placed)
-			item_tobe_placed = !item_tobe_placed
+			item_tobe_placed += 1
+			var BuildingName string
+
+			switch item_tobe_placed % 6 {
+			case 0:
+				BuildingName = "Tree"
+			case 1:
+				BuildingName = "Bush"
+			case 2:
+				BuildingName = "House"
+			case 3:
+				BuildingName = "Town Center"
+			case 4:
+				BuildingName = "Military Block"
+			case 5:
+				BuildingName = "Resource Building"
+			default:
+				panic("Math is broken!")
+			}
+
+			fmt.Println("Left Click Now places", BuildingName)
 		}
 		if engo.Input.Mouse.Action == engo.Press && engo.Input.Mouse.Button == engo.MouseButtonLeft {
 			mouseheld = true
@@ -165,10 +185,21 @@ func (ms *MapSystem) Update(dt float32) {
 		if engo.Input.Mouse.Action == engo.Press && engo.Input.Mouse.Button == engo.MouseButtonLeft && mouseheld {
 			var BuildingName string
 
-			if item_tobe_placed {
+			switch item_tobe_placed % 6 {
+			case 0:
 				BuildingName = "Tree"
-			} else {
+			case 1:
 				BuildingName = "Bush"
+			case 2:
+				BuildingName = "House"
+			case 3:
+				BuildingName = "Town Center"
+			case 4:
+				BuildingName = "Military Block"
+			case 5:
+				BuildingName = "Resource Building"
+			default:
+				panic("Math is broken!")
 			}
 			if WithinGameWindow(mx, my) {
 				pik := float32(math.Floor(float64(mx)/float64(GridSize)) * float64(GridSize))
