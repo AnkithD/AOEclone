@@ -5,7 +5,7 @@ House,896,320
 House,960,320
 House,832,384
 House,896,384
-Military Block,832,512
+Bush,384,768
 Resource Building,576,768
 Tree,448,832
 Tree,448,896
@@ -36,4 +36,3 @@ Bush,352,736
 Bush,320,672
 Bush,320,768
 Bush,352,768
-Bush,384,768
