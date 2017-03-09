@@ -162,7 +162,7 @@ func (ms *MapSystem) Update(dt float32) {
 		if engo.Input.Mouse.Action == engo.Release && engo.Input.Mouse.Button == engo.MouseButtonLeft {
 			mouseheld = false
 		}
-		if mouseheld {
+		if engo.Input.Mouse.Action == engo.Press && engo.Input.Mouse.Button == engo.MouseButtonLeft && mouseheld {
 			var BuildingName string
 
 			if item_tobe_placed {
@@ -173,8 +173,11 @@ func (ms *MapSystem) Update(dt float32) {
 			if WithinGameWindow(mx, my) {
 				pik := float32(math.Floor(float64(mx)/float64(GridSize)) * float64(GridSize))
 				cik := float32(math.Floor(float64(my)/float64(GridSize)) * float64(GridSize))
-				if !Grid[int(pik/32)][int(cik/32)] {
-					engo.Mailbox.Dispatch(CreateBuildingMessage{Name: BuildingName, Position: engo.Point{X: pik, Y: cik}})
+				pik = float32(math.Floor(float64(pik / float32(GridSize))))
+				cik = float32(math.Floor(float64(cik / float32(GridSize))))
+				if !Grid[int(pik)][int(cik)] {
+					engo.Mailbox.Dispatch(CreateBuildingMessage{Name: BuildingName, Position: engo.Point{X: pik * float32(GridSize), Y: cik * float32(GridSize)}})
+				} else {
 				}
 			}
 		}

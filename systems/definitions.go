@@ -341,10 +341,15 @@ func GetStaticHover() StaticEntity {
 func FillGrid(f Fillable, val bool) {
 	x, y := f.GetPos()
 	w, h := f.GetSize()
+	minx, miny := (int(x) / GridSize), (int(y) / GridSize)
+	maxx, maxy := int(x+w)/GridSize, int(y+h)/GridSize
 
-	for i := int(x) / GridSize; i < int(x+w)/GridSize; i += 1 {
-		for j := int(y) / GridSize; j < int(y+h)/GridSize; j += 1 {
+	Grid[minx][miny] = val
+
+	for i := minx + 1; i < maxx; i += 1 {
+		for j := miny + 1; j < maxy; j += 1 {
 			Grid[i][j] = val
+			fmt.Println(i, j)
 		}
 	}
 }
