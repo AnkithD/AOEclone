@@ -171,6 +171,8 @@ type LabelGroup struct {
 
 	ActionLabels   [][]Label
 	ActionHandlers [][]ActionHandler
+
+	ID uint64
 }
 
 var (
@@ -641,6 +643,18 @@ func (hs *HUDSystem) New(w *ecs.World) {
 		}
 	})
 
+	engo.Mailbox.Listen("CheckAndRemoveHUDMessage", func(_msg engo.Message) {
+		msg, ok := _msg.(CheckAndRemoveHUDMessage)
+
+		if !ok {
+			panic("HUD System expected CheckAndRemoveHUD Message, instead got unexpected")
+		}
+
+		if hs.CurrentActiveLabel != nil && hs.CurrentActiveLabel.ID == msg.ID {
+			hs.RemoveCurrentBottomHUDLabel()
+		}
+	})
+
 	fmt.Println("HUD System Initialized")
 }
 
@@ -767,6 +781,7 @@ func (hs *HUDSystem) Update(dt float32) {
 
 func (hs *HUDSystem) SetBottomHUD(Name string, Index int, ID uint64) {
 	LabelToSet := LabelGroupMap[Name]
+	LabelToSet.ID = ID
 
 	// fmt.Println("----------------------------")
 	// fmt.Printf("Name: %v, Index: %v\n", Name, Index)

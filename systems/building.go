@@ -214,12 +214,14 @@ func (bs *BuildingSystem) AddBuilding(_Name string, Pos engo.Point) {
 
 func (bs *BuildingSystem) RemoveBuilding(obj StaticEntity) {
 	ActiveSystems.RenderSys.Remove(obj.GetStaticComponent().BasicEntity)
+	engo.Mailbox.Dispatch(CheckAndRemoveHUDMessage{ID: obj.GetStaticComponent().ID()})
 
 	for i, _ := range bs.Buildings {
 		building := bs.Buildings[i]
 		if building.ID() == obj.GetStaticComponent().ID() {
 			bs.Buildings[i] = bs.Buildings[len(bs.Buildings)-1]
 			bs.Buildings = bs.Buildings[:len(bs.Buildings)-1]
+			break
 		}
 	}
 	UnCacheInChunks(obj)
@@ -237,8 +239,7 @@ func (bs *BuildingSystem) SaveMap(Fname string) {
 
 	Writer := bufio.NewWriter(file)
 	for _, item := range bs.Buildings {
-		n, e := Writer.WriteString(item.Name + "," + strconv.Itoa(int(item.Position.X)) + "," + strconv.Itoa(int(item.Position.Y)))
-		fmt.Println(n)
+		_, e := Writer.WriteString(item.Name + "," + strconv.Itoa(int(item.Position.X)) + "," + strconv.Itoa(int(item.Position.Y)) + "\n")
 		if e != nil {
 			panic(e)
 		}
