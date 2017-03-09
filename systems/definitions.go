@@ -115,6 +115,14 @@ func (SaveMapMessage) Type() string {
 	return "SaveMapMessage"
 }
 
+type CheckAndRemoveHUDMessage struct {
+	ID uint64
+}
+
+func (CheckAndRemoveHUDMessage) Type() string {
+	return "CheckAndRemoveHUDMessage"
+}
+
 //Other types
 
 type Fillable interface {
@@ -195,6 +203,7 @@ func UnCacheInChunks(se StaticEntity) {
 		if entity.GetStaticComponent().ID() == se.GetStaticComponent().ID() {
 			(*chunk1)[i] = (*chunk1)[len(*chunk1)-1]
 			*chunk1 = (*chunk1)[:len(*chunk1)-1]
+			break
 		}
 	}
 
@@ -205,6 +214,7 @@ func UnCacheInChunks(se StaticEntity) {
 			if entity.GetStaticComponent().ID() == se.GetStaticComponent().ID() {
 				(*chunk2)[i] = (*chunk2)[len(*chunk2)-1]
 				*chunk2 = (*chunk2)[:len(*chunk2)-1]
+				break
 			}
 		}
 	}
@@ -216,6 +226,7 @@ func UnCacheInChunks(se StaticEntity) {
 			if entity.GetStaticComponent().ID() == se.GetStaticComponent().ID() {
 				(*chunk3)[i] = (*chunk3)[len(*chunk3)-1]
 				*chunk3 = (*chunk3)[:len(*chunk3)-1]
+				break
 			}
 		}
 	}
@@ -227,6 +238,7 @@ func UnCacheInChunks(se StaticEntity) {
 			if entity.GetStaticComponent().ID() == se.GetStaticComponent().ID() {
 				(*chunk4)[i] = (*chunk4)[len(*chunk4)-1]
 				*chunk4 = (*chunk4)[:len(*chunk4)-1]
+				break
 			}
 		}
 	}
@@ -260,6 +272,7 @@ func UnCacheInSectors(he *HumanEntity) {
 		if entity.ID() == he.ID() {
 			(sector)[i] = (sector)[len(sector)-1]
 			sector = (sector)[:len(sector)-1]
+			break
 		}
 	}
 }

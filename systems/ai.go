@@ -8,13 +8,13 @@ import (
 	"fmt"
 	"image/color"
 	"math"
-	// "math/rand"
+	"math/rand"
 )
 
 var (
 	HumanDetailsMap map[string]HumanDetails
 
-	// timer float32
+	timer float32
 
 	n int
 
@@ -77,28 +77,29 @@ func (ais *AISystem) New(w *ecs.World) {
 
 	fmt.Println("AI System Initialized")
 }
-func (*AISystem) Update(dt float32) {
+func (ais *AISystem) Update(dt float32) {
 
-	// func() {
-	// 	timer = timer + dt
-	// 	if timer >= float32(5) {
-	// 		n = n + 2
-	// 		fmt.Println("soldiers have started at the coordinates:\n")
-	// 		timer = 0
-	// 		var x []int
-	// 		var y []int
-	// 		var p, q int
-	// 		for i := 0; i < n; i++ {
-	// 			p = rand.Intn(7) + GridMaxX - ChunkSize
-	// 			q = rand.Intn(7) + GridMaxY - ChunkSize
-	// 			x = append(x, p)
-	// 			y = append(y, q)
-	// 		}
-	// 		for i := 0; i < n; i++ {
-	// 			fmt.Printf("x=%d,y=%d\n", x[i], y[i])
-	// 		}
-	// 	}
-	// }()
+	func() {
+		timer = timer + dt
+		if timer >= float32(50000) {
+			n = n + 2
+			fmt.Println("soldiers have started at the coordinates:\n")
+			timer = 0
+			var x []int
+			var y []int
+			var p, q int
+			for i := 0; i < n; i++ {
+				p = rand.Intn(7) + GridMaxX - 2*ChunkSize
+				q = rand.Intn(7) + GridMaxY - 2*ChunkSize
+				x = append(x, p)
+				y = append(y, q)
+			}
+			for i := 0; i < n; i++ {
+				fmt.Printf("x=%d,y=%d\n", x[i], y[i])
+				ais.CreateHuman("Enemy", engo.Point{float32(x[i] * GridSize), float32(y[i] * GridSize)})
+			}
+		}
+	}()
 
 	// Make path blocks fade
 	func() {
