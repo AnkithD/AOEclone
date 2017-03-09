@@ -209,7 +209,7 @@ type AIComponent struct {
 func (aic *AIComponent) MoveTo(To engo.Point) {}
 
 func (aic *AIComponent) Update(dt float32) {
-	if aic.State == "Waiting" {
+	if aic.State == StateWaiting {
 
 	}
 }
