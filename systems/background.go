@@ -4,8 +4,6 @@ import (
 	"engo.io/ecs"
 	"engo.io/engo"
 	"engo.io/engo/common"
-
-	"container/heap"
 	"fmt"
 	"image/color"
 	"math"
@@ -36,8 +34,6 @@ type GridEntity struct {
 	common.SpaceComponent
 }
 
-var PathBlocks []*GridEntity
-var PathBlocksMutex sync.Mutex
 var item_tobe_placed bool = true
 var mouseheld bool = false
 
@@ -50,8 +46,6 @@ func (ms *MapSystem) New(w *ecs.World) {
 	ms.LinePrevYOffset = 0
 	ms.BoxPrevXOffset = 0
 	ms.BoxPrevYOffset = 0
-
-	PathBlocks = make([]*GridEntity, 0)
 
 	// Initializes the Grid lines
 	func() {
@@ -154,11 +148,9 @@ func (ms *MapSystem) New(w *ecs.World) {
 
 func (ms *MapSystem) Update(dt float32) {
 
-	/*
-		For Placing Bushes and trees
-	*/
 	mx, my := GetAdjustedMousePos(false)
 
+	// Map editing code
 	func() {
 		if engo.Input.Mouse.Action == engo.Press && engo.Input.Mouse.Button == engo.MouseButtonRight {
 			fmt.Println(item_tobe_placed)
@@ -191,6 +183,10 @@ func (ms *MapSystem) Update(dt float32) {
 			if se != nil {
 				engo.Mailbox.Dispatch(DestroyBuildingMessage{obj: GetStaticHover()})
 			}
+		}
+
+		if engo.Input.Button(SaveKey).JustReleased() {
+			engo.Mailbox.Dispatch(SaveMapMessage{Fname: "World.mapfile"})
 		}
 	}()
 
@@ -282,346 +278,4 @@ func (ms *MapSystem) Update(dt float32) {
 			fmt.Println("---------------------------------------------")
 		}
 	}()
-
-	// Make path blocks fade
-	func() {
-		ShouldDelete := make([]bool, len(PathBlocks))
-
-		for i, _ := range PathBlocks {
-			r, g, b, a := PathBlocks[i].RenderComponent.Color.RGBA()
-			A := float32(a) / 255
-			A -= (255 * dt) / 2
-			if A > 0 {
-				A = float32(math.Floor(float64(A)))
-				PathBlocks[i].RenderComponent.Color = color.RGBA{uint8(r), uint8(g), uint8(b), uint8(A)}
-			} else {
-				ShouldDelete[i] = true
-			}
-		}
-		i := 0
-		for len(PathBlocks) > 0 {
-			if ShouldDelete[i] {
-				ActiveSystems.RenderSys.Remove(PathBlocks[i].BasicEntity)
-				//Fast delete from slice
-				PathBlocks[i] = PathBlocks[len(PathBlocks)-1]
-				PathBlocks = PathBlocks[:len(PathBlocks)-1]
-			} else {
-				if i < len(PathBlocks) {
-					i++
-				}
-			}
-
-			if i >= len(PathBlocks) {
-				break
-			}
-		}
-	}()
-
-	// A* Visualization
-	func() {
-		if engo.Input.Button(ShiftKey).JustReleased() && ShowDebugPathfinding {
-
-			s, e := grid{x: 19, y: 15}, grid{x: int(mx) / GridSize, y: int(my) / GridSize}
-			if (e.x < GridMaxX) && (e.y < GridMaxY) && !Grid[e.x][e.y] {
-				DrawPathBlock(s.x, s.y, color.RGBA{0, 0, 255, 255})
-				go GetPath(s, e, PathChannel)
-			} else {
-				fmt.Println(e.x, e.y, GridMaxX, GridMaxY)
-			}
-		}
-
-		select {
-		case res := <-PathChannel:
-			for i, item := range res {
-				if i == len(res)-1 {
-					DrawPathBlock(item.x, item.y, color.RGBA{0, 255, 0, 255})
-				} else {
-					DrawPathBlock(item.x, item.y, color.RGBA{255, 0, 0, 255})
-				}
-			}
-		default:
-		}
-	}()
-}
-
-//---------------------------------------------PathFinding Algorithm------------------------------------------------
-type grid struct {
-	x   int
-	y   int
-	f   float32
-	g   float32
-	par *grid
-}
-
-type gridHeap []*grid
-
-func (h gridHeap) Len() int           { return len(h) }
-func (h gridHeap) Less(i, j int) bool { return (h)[i].f < (h)[j].f }
-func (h gridHeap) Swap(i, j int)      { h[i], h[j] = h[j], h[i] }
-
-func (h *gridHeap) Push(x interface{}) {
-	*h = append(*h, x.(*grid))
-}
-
-func (h *gridHeap) Pop() interface{} {
-	old := *h
-	n := len(old)
-	x := old[n-1]
-	*h = old[0 : n-1]
-	return x
-}
-
-func hvalue(x, y int, endgrid grid) float32 {
-	var diagCost, sideCost float32
-	diagCost, sideCost = 1, 1
-
-	var a, b int
-	X := endgrid.x
-	Y := endgrid.y
-	a = int(math.Abs(float64(X - x)))
-	b = int(math.Abs(float64(Y - y)))
-	if a > b {
-		a, b = b, a
-	}
-	return (float32(b) - float32(a)*(diagCost-sideCost))
-	//return b
-}
-
-func eval(neighbor *grid, block *grid, endgrid *grid, h *gridHeap, list *[][]bool) bool {
-	if neighbor.x == endgrid.x && neighbor.y == endgrid.y {
-		endgrid.par = block
-		(*list)[endgrid.x][endgrid.y] = true
-		return true
-	}
-	if neighbor.x == block.x || neighbor.y == block.y {
-		neighbor.g = block.g + 1
-	} else {
-		neighbor.g = block.g + 1.414
-	}
-	hval := hvalue(neighbor.x, neighbor.y, *endgrid)
-	neighbor.f = hval + neighbor.g
-	neighbor.par = block
-	//fmt.Println("f =", neighbor.f, ", Set par to", neighbor.par.x, ",", neighbor.par.y)
-	(*list)[neighbor.x][neighbor.y] = true
-	heap.Push(h, neighbor)
-	return false
-}
-
-func open(block *grid, h *gridHeap, _list *[][]bool, endgrid *grid) {
-	list := *_list
-
-	if func() bool {
-		//fmt.Println("-----------------------------------")
-		//defer fmt.Println("-----------------------------------")
-		//fmt.Println("Analyzing the neighbors of", block.x, ",", block.y)
-		if block.x-1 >= 0 && block.y-1 >= 0 {
-			if !Grid[block.x-1][block.y-1] {
-				if !list[block.x-1][block.y-1] {
-					neighbor := grid{
-						x: block.x - 1,
-						y: block.y - 1,
-					}
-					//fmt.Println("Evaluating grid at", neighbor.x, ",", neighbor.y)
-					//DrawPathBlock(neighbor.x, neighbor.y)
-					foundend := eval(&neighbor, block, endgrid, h, _list)
-					if foundend {
-						return true
-					}
-				}
-			}
-		}
-		if block.y-1 >= 0 {
-			if !Grid[block.x][block.y-1] {
-				if !list[block.x][block.y-1] {
-					neighbor := grid{
-						x: block.x,
-						y: block.y - 1,
-					}
-					//fmt.Println("Evaluating grid at", neighbor.x, ",", neighbor.y)
-					//DrawPathBlock(neighbor.x, neighbor.y)
-					foundend := eval(&neighbor, block, endgrid, h, _list)
-					if foundend {
-						return true
-					}
-				}
-			}
-		}
-		if block.x+1 < int(engo.GameWidth()*ScaleFactor)/GridSize && block.y-1 >= 0 {
-			if !Grid[block.x+1][block.y-1] {
-				if !list[block.x+1][block.y-1] {
-					neighbor := grid{
-						x: block.x + 1,
-						y: block.y - 1,
-					}
-					//fmt.Println("Evaluating grid at", neighbor.x, ",", neighbor.y)
-					//DrawPathBlock(neighbor.x, neighbor.y)
-					foundend := eval(&neighbor, block, endgrid, h, _list)
-					if foundend {
-						return true
-					}
-				}
-			}
-		}
-		if block.x-1 >= 0 {
-			if !Grid[block.x-1][block.y] {
-				if !list[block.x-1][block.y] {
-					neighbor := grid{
-						x: block.x - 1,
-						y: block.y,
-					}
-					//fmt.Println("Evaluating grid at", neighbor.x, ",", neighbor.y)
-					//DrawPathBlock(neighbor.x, neighbor.y)
-					foundend := eval(&neighbor, block, endgrid, h, _list)
-					if foundend {
-						return true
-					}
-				}
-			}
-		}
-		if block.x+1 < int(engo.GameWidth()*ScaleFactor)/GridSize {
-			if !Grid[block.x+1][block.y] {
-				if !list[block.x+1][block.y] {
-					neighbor := grid{
-						x: block.x + 1,
-						y: block.y,
-					}
-					//fmt.Println("Evaluating grid at", neighbor.x, ",", neighbor.y)
-					//DrawPathBlock(neighbor.x, neighbor.y)
-					foundend := eval(&neighbor, block, endgrid, h, _list)
-					if foundend {
-						return true
-					}
-				}
-			}
-		}
-		if block.x-1 >= 0 && block.y+1 < int(engo.GameHeight()*ScaleFactor)/GridSize {
-			if !Grid[block.x-1][block.y+1] {
-				if !list[block.x-1][block.y+1] {
-					neighbor := grid{
-						x: block.x - 1,
-						y: block.y + 1,
-					}
-					//fmt.Println("Evaluating grid at", neighbor.x, ",", neighbor.y)
-					//DrawPathBlock(neighbor.x, neighbor.y)
-					foundend := eval(&neighbor, block, endgrid, h, _list)
-					if foundend {
-						return true
-					}
-				}
-			}
-		}
-		if block.y+1 < int(engo.GameHeight()*ScaleFactor)/GridSize {
-			if !Grid[block.x][block.y+1] {
-				if !list[block.x][block.y+1] {
-					neighbor := grid{
-						x: block.x,
-						y: block.y + 1,
-					}
-					//fmt.Println("Evaluating grid at", neighbor.x, ",", neighbor.y)
-					//DrawPathBlock(neighbor.x, neighbor.y)
-					foundend := eval(&neighbor, block, endgrid, h, _list)
-					if foundend {
-						return true
-					}
-				}
-			}
-		}
-		if block.x+1 < int(engo.GameWidth()*ScaleFactor)/GridSize && block.y+1 < int(engo.GameHeight()*ScaleFactor)/GridSize {
-			if !Grid[block.x+1][block.y+1] {
-				if !list[block.x+1][block.y+1] {
-					neighbor := grid{
-						x: block.x + 1,
-						y: block.y + 1,
-					}
-					//fmt.Println("Evaluating grid at", neighbor.x, ",", neighbor.y)
-					//DrawPathBlock(neighbor.x, neighbor.y)
-					foundend := eval(&neighbor, block, endgrid, h, _list)
-					if foundend {
-						return true
-					}
-				}
-			}
-		}
-		return false
-	}() {
-		return
-	}
-
-	block = heap.Pop(h).(*grid)
-	p := block.x
-	q := block.y
-	(*_list)[p][q] = true
-	if len(*h) <= 0 {
-		return
-	}
-
-	open(block, h, _list, endgrid) //function calling recursively
-}
-
-func ReversePath(slice []grid) []grid {
-	n := len(slice) - 1
-	res := make([]grid, n+1)
-
-	for i, item := range slice {
-		res[n-i] = item
-	}
-
-	return res
-}
-
-func GetPath(startgrid grid, endgrid grid, c chan []grid) {
-
-	x1 := startgrid.x
-	y1 := startgrid.y
-	h := &gridHeap{}
-	heap.Init(h)
-	startgrid.par = &startgrid
-	startgrid.g = 0
-
-	list := make([][]bool, int(engo.WindowWidth()*ScaleFactor)/GridSize)
-	for i, _ := range list {
-		list[i] = make([]bool, int(engo.WindowHeight()*ScaleFactor)/GridSize)
-	}
-	list[x1][y1] = true
-
-	open(&startgrid, h, &list, &endgrid)
-
-	var path []grid
-
-	temp := endgrid
-	path = append(path, temp)
-	//fmt.Println("Adding grid at", temp.x, ",", temp.y, "to the path")
-	for temp.par != &startgrid {
-		prevtemp := temp
-		temp = *(temp.par)
-		//fmt.Println("Adding grid at", temp.x, ",", temp.y, "to the path")
-		path = append(path, temp)
-		if prevtemp.x == temp.x && prevtemp.y == temp.y {
-			//fmt.Println("No change from ", prevtemp.x, ",", prevtemp.y, "and", temp.x, ",", temp.y)
-			c <- make([]grid, 0)
-		}
-	}
-	path = append(path, temp)
-	c <- ReversePath(path)
-
-}
-
-func DrawPathBlock(x, y int, col color.RGBA) {
-	myblock := GridEntity{
-		BasicEntity: ecs.NewBasic(),
-		SpaceComponent: common.SpaceComponent{
-			Position: engo.Point{float32(x * GridSize), float32(y * GridSize)},
-			Width:    float32(GridSize - 10),
-			Height:   float32(GridSize - 10),
-		},
-		RenderComponent: common.RenderComponent{
-			Drawable: common.Rectangle{},
-			Color:    col,
-		},
-	}
-	myblock.SetZIndex(70)
-
-	PathBlocks = append(PathBlocks, &myblock)
-
-	ActiveSystems.RenderSys.Add(&myblock.BasicEntity, &myblock.RenderComponent, &myblock.SpaceComponent)
 }

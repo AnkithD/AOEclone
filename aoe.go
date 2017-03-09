@@ -17,7 +17,8 @@ func (*myScene) Type() string { return "myGame" }
 
 func (*myScene) Preload() {
 	err := engo.Files.Load(
-		"Roboto-Regular.ttf", "Deselect_button.png", "bush.png", "tree.png",
+		"Roboto-Regular.ttf", "Deselect_button.png", "bush.png", "tree.png", "warrior.png",
+		"Ewarrior.png",
 	)
 	if err != nil {
 		panic(err)
@@ -41,6 +42,7 @@ func (*myScene) Setup(world *ecs.World) {
 	world.AddSystem(&systems.MapSystem{})
 	world.AddSystem(&systems.BuildingSystem{})
 	world.AddSystem(&systems.HUDSystem{})
+	world.AddSystem(&systems.AISystem{})
 
 	common.SetBackground(color.RGBA{182, 204, 104, 255})
 }
