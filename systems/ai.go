@@ -16,8 +16,6 @@ var (
 
 	timer float32
 
-	f bool
-
 	n int
 
 	PathBlocks []*GridEntity
@@ -83,15 +81,10 @@ func (*AISystem) Update(dt float32) {
 
 	func() {
 		timer = timer + dt
-		if timer >= float32(2) {
-			f = true
+		if timer >= float32(5) {
 			n = n + 2
-			fmt.Println("soldiers have started at the coordinates: ")
+			fmt.Println("soldiers have started at the coordinates:\n ")
 			timer = 0
-		}
-	}()
-	func() {
-		if f {
 			var x []int
 			var y []int
 			var p, q int
@@ -102,7 +95,7 @@ func (*AISystem) Update(dt float32) {
 				y = append(y, q)
 			}
 			for i := 0; i < n; i++ {
-				fmt.Printf("%d,%d", x[i], y[i])
+				fmt.Printf("x=%d,y=%d\n", x[i], y[i])
 			}
 		}
 	}()
