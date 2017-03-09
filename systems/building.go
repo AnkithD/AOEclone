@@ -10,6 +10,7 @@ import (
 	"math/rand"
 	"os"
 	"strconv"
+	"strings"
 )
 
 var (
@@ -141,12 +142,9 @@ func (bs *BuildingSystem) New(w *ecs.World) {
 		bs.SaveMap(msg.Fname)
 	})
 
-	fmt.Println("Building System Initialized")
+	bs.LoadMap("World.mapfile")
 
-	// for i := 0; i < 4; i++ {
-	// 	time.Sleep(2 * time.Second)
-	// 	fmt.Println("%d th batch soldiers are ready", i)
-	// }
+	fmt.Println("Building System Initialized")
 }
 
 func (bs *BuildingSystem) Update(dt float32) {
@@ -250,6 +248,32 @@ func (bs *BuildingSystem) SaveMap(Fname string) {
 	}
 
 	fmt.Println("Saved!")
+}
+
+func (bs *BuildingSystem) LoadMap(Fname string) {
+	fmt.Print("Loading Map! ... ")
+	file, err := os.Open(Fname)
+	defer file.Close()
+
+	if err != nil {
+		panic(err)
+	}
+
+	Scanner := bufio.NewScanner(file)
+
+	for Scanner.Scan() {
+		line := Scanner.Text()
+		args := strings.Split(line, ",")
+
+		x, errx := strconv.ParseFloat(args[1], 32)
+		y, erry := strconv.ParseFloat(args[2], 32)
+		if errx != nil || erry != nil {
+			panic("Could not convert " + args[1] + "," + args[2])
+		}
+
+		bs.AddBuilding(args[0], engo.Point{float32(x), float32(y)})
+	}
+
 }
 
 type StaticComponent struct {
