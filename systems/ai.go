@@ -6,10 +6,17 @@ import (
 	"engo.io/engo/common"
 	"fmt"
 	"image/color"
+	"math/rand"
 )
 
 var (
 	HumanDetailsMap map[string]HumanDetails
+
+	timer float32
+
+	f bool
+
+	n int
 )
 
 type AISystem struct {
@@ -31,7 +38,34 @@ func (ais *AISystem) New(w *ecs.World) {
 
 	fmt.Println("AI System Initialized")
 }
-func (*AISystem) Update(dt float32)      {}
+func (*AISystem) Update(dt float32) {
+
+	func() {
+		timer = timer + dt
+		if timer >= float32(2) {
+			f = true
+			n = n + 2
+			fmt.Println("soldiers have started at the coordinates: ")
+			timer = 0
+		}
+	}()
+	func() {
+		if f {
+			var x []int
+			var y []int
+			var p, q int
+			for i := 0; i < n; i++ {
+				p = rand.Intn(7)
+				q = rand.Intn(7)
+				x = append(x, p)
+				y = append(y, q)
+			}
+			for i := 0; i < n; i++ {
+				fmt.Printf("%d,%d", x[i], y[i])
+			}
+		}
+	}()
+}
 func (*AISystem) Remove(ecs.BasicEntity) {}
 
 type Human struct {

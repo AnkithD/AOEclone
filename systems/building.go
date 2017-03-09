@@ -136,6 +136,11 @@ func (bs *BuildingSystem) New(w *ecs.World) {
 	bs.AddBuilding("Tree", engo.Point{896, 320})
 
 	fmt.Println("Building System Initialized")
+
+	// for i := 0; i < 4; i++ {
+	// 	time.Sleep(2 * time.Second)
+	// 	fmt.Println("%d th batch soldiers are ready", i)
+	// }
 }
 
 func (bs *BuildingSystem) Update(dt float32) {
@@ -168,6 +173,7 @@ func (bs *BuildingSystem) Update(dt float32) {
 	if engo.Input.Button(SpaceButton).JustReleased() {
 		bs.Buildings[int(math.Floor(rand.Float64()*float64(len(bs.Buildings))))].Health -= 10
 	}
+
 }
 
 func (bs *BuildingSystem) AddBuilding(_Name string, Pos engo.Point) {
