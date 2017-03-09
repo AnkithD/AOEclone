@@ -15,6 +15,7 @@ var (
 	SpaceButton = "SpaceButton"
 	ShiftKey    = "shiftkey"
 	R_remove    = "R_remove"
+	SaveKey     = "savekey"
 )
 
 type ActiveSystemsStruct struct {
@@ -36,6 +37,8 @@ var (
 	EHouseSprite            = "house2.png"
 	BushSprite              = "bush.png"
 	TreeSprite              = "tree.png"
+	WarriorSprite           = "warrior.png"
+	EWarriorSprite          = "Ewarrior.png"
 	BuildingSprites         = []string{TownCenterSprite, ETownCenterSprite, MilitaryBlockSprite, EMilitaryBlockSprite, ResourceBuildingSprite, EResourceBuildingSprite, HouseSprite, EHouseSprite, BushSprite}
 )
 
@@ -47,6 +50,8 @@ var (
 	PlayerPop     int
 	GridSize      int
 	ScaleFactor   float32 // Ratio of Game World size with respect to Window Size
+	Sectors       [][]*HumanEntity
+	SectorSize    int
 	Chunks        [][]StaticEntity
 	ChunkSize     int
 	Grid          [][]bool
@@ -101,6 +106,14 @@ type HealthEnquiryResponseStruct struct {
 }
 
 var HealthEnquiryResponse HealthEnquiryResponseStruct
+
+type SaveMapMessage struct {
+	Fname string
+}
+
+func (SaveMapMessage) Type() string {
+	return "SaveMapMessage"
+}
 
 //Other types
 
@@ -219,6 +232,38 @@ func UnCacheInChunks(se StaticEntity) {
 	}
 }
 
+func GetSectorFromPos(x, y float32) ([]*HumanEntity, int) {
+	rownum := int(engo.WindowWidth()*ScaleFactor) / (GridSize * ChunkSize)
+	X := int(x) / (GridSize * SectorSize)
+	Y := int(y) / (GridSize * SectorSize)
+
+	//fmt.Println("Chunk of index", X, ",", Y)
+	//fmt.Println("Row number is", rownum)
+
+	return Sectors[Y*rownum+X], (Y*rownum + X)
+}
+
+// Store Static objects in respective Chunk(s)
+func CacheInSectors(he *HumanEntity) {
+	x, y := he.Position.X, he.Position.Y
+
+	sector, _ := GetSectorFromPos(x, y)
+	sector = append(sector, he)
+}
+
+func UnCacheInSectors(he *HumanEntity) {
+	x, y := he.Position.X, he.Position.Y
+
+	sector, _ := GetSectorFromPos(x, y)
+	for i, _ := range sector {
+		entity := (sector)[i]
+		if entity.ID() == he.ID() {
+			(sector)[i] = (sector)[len(sector)-1]
+			sector = (sector)[:len(sector)-1]
+		}
+	}
+}
+
 func GetGridAtPos(x, y float32) bool {
 	return Grid[int(x)/GridSize][int(y)/GridSize]
 }
@@ -265,6 +310,20 @@ func GetStaticClicked() StaticEntity {
 	return nil
 }
 
+func GetStaticHover() StaticEntity {
+	mx, my := GetAdjustedMousePos(false)
+	mp := engo.Point{mx, my}
+	if WithinGameWindow(mx, my) {
+		Chunk, _ := GetChunkFromPos(mx, my)
+		for i, _ := range *Chunk {
+			if (*Chunk)[i].GetStaticComponent().Contains(mp) {
+				return (*Chunk)[i]
+			}
+		}
+	}
+	return nil
+}
+
 // Mark the solids in the Grid
 func FillGrid(f Fillable, val bool) {
 	x, y := f.GetPos()
@@ -281,6 +340,8 @@ func RegisterButtons() {
 	engo.Input.RegisterButton(GridToggle, engo.Tab)
 	engo.Input.RegisterButton(SpaceButton, engo.Space)
 	engo.Input.RegisterButton(ShiftKey, engo.LeftShift)
+	engo.Input.RegisterButton(R_remove, engo.R)
+	engo.Input.RegisterButton(SaveKey, engo.M)
 	engo.Input.RegisterAxis(HorAxis, engo.AxisKeyPair{engo.A, engo.D})
 	engo.Input.RegisterAxis(VertAxis, engo.AxisKeyPair{engo.W, engo.S})
 
@@ -330,5 +391,14 @@ func InitializeVariables() {
 	Chunks = make([][]StaticEntity, ChunkNum)
 	for i, _ := range Chunks {
 		Chunks[i] = make([]StaticEntity, 0)
+	}
+
+	// Sectors used to keep track of moving entities(i.e. humans)
+	SectorSize = 8
+	SectorNum := (int(engo.WindowHeight()*ScaleFactor) / (GridSize * SectorSize)) * (int(engo.WindowWidth()*ScaleFactor) / (GridSize * SectorSize))
+
+	Sectors = make([][]*HumanEntity, SectorNum)
+	for i, _ := range Sectors {
+		Sectors[i] = make([]*HumanEntity, 0)
 	}
 }

@@ -1,12 +1,15 @@
 package systems
 
 import (
+	"bufio"
 	"engo.io/ecs"
 	"engo.io/engo"
 	"engo.io/engo/common"
 	"fmt"
 	"math"
 	"math/rand"
+	"os"
+	"strconv"
 )
 
 var (
@@ -128,12 +131,15 @@ func (bs *BuildingSystem) New(w *ecs.World) {
 		bs.RemoveBuilding(msg.obj)
 	})
 
-	bs.AddBuilding("Town Center", engo.Point{96, 320})
-	bs.AddBuilding("Military Block", engo.Point{320, 320})
-	bs.AddBuilding("Resource Building", engo.Point{544, 320})
-	bs.AddBuilding("House", engo.Point{768, 320})
-	bs.AddBuilding("Bush", engo.Point{832, 320})
-	bs.AddBuilding("Tree", engo.Point{896, 320})
+	engo.Mailbox.Listen("SaveMapMessage", func(_msg engo.Message) {
+		msg, ok := _msg.(SaveMapMessage)
+
+		if !ok {
+			panic("Building System expected SaveMapMessage, instead got unexpected")
+		}
+
+		bs.SaveMap(msg.Fname)
+	})
 
 	fmt.Println("Building System Initialized")
 
@@ -218,6 +224,26 @@ func (bs *BuildingSystem) RemoveBuilding(obj StaticEntity) {
 	}
 	UnCacheInChunks(obj)
 	FillGrid(obj, false)
+}
+
+func (bs *BuildingSystem) SaveMap(Fname string) {
+	fmt.Print("Saving Map! ... ")
+	file, err := os.OpenFile(Fname, os.O_WRONLY|os.O_CREATE, 0777)
+	defer file.Close()
+
+	if err != nil {
+		panic(err)
+	}
+
+	Writer := bufio.NewWriter(file)
+	for _, item := range bs.Buildings {
+		n, e := Writer.WriteString(item.Name + "," + strconv.Itoa(int(item.Position.X)) + "," + strconv.Itoa(int(item.Position.Y)))
+		fmt.Println(n)
+		if e != nil {
+			panic(e)
+		}
+	}
+	fmt.Println("Saved!")
 }
 
 type StaticComponent struct {
