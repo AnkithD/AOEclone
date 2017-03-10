@@ -21,6 +21,7 @@ var (
 	PlacingHuman *HumanIcon
 
 	PathBlocks []*GridEntity
+	timeMax    float32
 )
 
 type AISystem struct {
@@ -42,6 +43,7 @@ func (ais *AISystem) New(w *ecs.World) {
 	ais.Humans = make([]*HumanEntity, 0)
 	ais.HumanChannels = make(chan HumanComStruct, 100)
 
+	timeMax = 30
 	PlacingHuman = nil
 	PathBlocks = make([]*GridEntity, 0)
 	HumanDetailsMap = make(map[string]HumanDetails)
@@ -78,8 +80,6 @@ func (ais *AISystem) New(w *ecs.World) {
 		HumanDetailsMap[WarriorDetails.Name] = WarriorDetails
 		HumanDetailsMap[EWarriorDetails.Name] = EWarriorDetails
 	}()
-
-	ais.CreateHuman("Warrior", engo.Point{float32(GridSize * 19), float32(GridSize * 9)})
 
 	engo.Mailbox.Listen("HumanHealthEnquiryMessage", func(_msg engo.Message) {
 		msg, ok := _msg.(HumanHealthEnquiryMessage)
@@ -144,9 +144,10 @@ func (ais *AISystem) Update(dt float32) {
 	// Enemy Spawning
 	func() {
 		timer = timer + dt
-		if timer >= float32(50000) {
+		if timer >= timeMax {
+			timeMax = 180
 			n = n + 2
-			fmt.Println("soldiers have started at the coordinates:\n")
+			//fmt.Println("soldiers have started at the coordinates:\n")
 			timer = 0
 			var x []int
 			var y []int
@@ -154,11 +155,15 @@ func (ais *AISystem) Update(dt float32) {
 			for i := 0; i < n; i++ {
 				p = rand.Intn(7) + GridMaxX - 2*ChunkSize
 				q = rand.Intn(7) + GridMaxY - 2*ChunkSize
+				if Grid[p][q] {
+					i--
+					continue
+				}
 				x = append(x, p)
 				y = append(y, q)
 			}
 			for i := 0; i < n; i++ {
-				fmt.Printf("x=%d,y=%d\n", x[i], y[i])
+				//fmt.Printf("x=%d,y=%d\n", x[i], y[i])
 				ais.CreateHuman("Enemy", engo.Point{float32(x[i] * GridSize), float32(y[i] * GridSize)})
 			}
 		}
@@ -171,7 +176,12 @@ func (ais *AISystem) Update(dt float32) {
 		for i, _ := range PathBlocks {
 			r, g, b, a := PathBlocks[i].RenderComponent.Color.RGBA()
 			A := float32(a) / 255
-			A -= (255 * dt) / 4
+			if ((255 * dt) / 2) < 1 {
+				A -= 1
+			} else {
+				A -= ((255 * dt) / 2)
+			}
+
 			if A > 0 {
 				A = float32(math.Floor(float64(A)))
 				PathBlocks[i].RenderComponent.Color = color.RGBA{uint8(r), uint8(g), uint8(b), uint8(A)}
@@ -201,6 +211,7 @@ func (ais *AISystem) Update(dt float32) {
 
 	mx, my := GetAdjustedMousePos(false)
 	mp := engo.Point{mx, my}
+
 	// A* Visualization
 	func() {
 		if engo.Input.Button(ShiftKey).JustReleased() && ShowDebugPathfinding {
@@ -307,6 +318,7 @@ func (ais *AISystem) CreateHuman(_Name string, Pos engo.Point) {
 	Grid[new_human.LastGridPos.x][new_human.LastGridPos.y] = true
 
 	ActiveSystems.RenderSys.Add(&new_human.BasicEntity, &new_human.RenderComponent, &new_human.SpaceComponent)
+	new_human.Update(0, ais.HumanChannels)
 }
 
 func (*AISystem) Remove(ecs.BasicEntity) {}
@@ -356,12 +368,17 @@ func (he *HumanEntity) Update(dt float32, ComChannel chan HumanComStruct) {
 
 	switch he.State {
 	case StateWaiting:
-		if engo.Input.Mouse.Action == engo.Press && engo.Input.Mouse.Button == engo.MouseButtonRight {
+		if he.Name == "Enemy" && dt == 0 {
+			he.MoveTo(engo.Point{X: float32(32 * GridSize), Y: float32(21 * GridSize)})
+		}
+
+		if engo.Input.Mouse.Action == engo.Press && engo.Input.Mouse.Button == engo.MouseButtonRight &&
+			ActiveHUDLabel != nil && ActiveHUDLabel.ID == he.ID() && he.Name == "Warrior" {
 			mx, my := GetAdjustedMousePos(false)
 			mp := engo.Point{mx, my}
 			x, y := int(mx)/GridSize, int(my)/GridSize
-			fmt.Println(x != int(he.Position.X)/GridSize, y != int(he.Position.Y)/GridSize,
-				WithinGameWindow(mx, my), !Grid[x][y])
+			// fmt.Println(x != int(he.Position.X)/GridSize, y != int(he.Position.Y)/GridSize,
+			// 	WithinGameWindow(mx, my), !Grid[x][y])
 			if !(x == int(he.Position.X)/GridSize && y == int(he.Position.Y)/GridSize) &&
 				WithinGameWindow(mx, my) && !Grid[x][y] {
 				DrawPathBlock(x, y, color.RGBA{194, 24, 7, 150})
@@ -372,17 +389,16 @@ func (he *HumanEntity) Update(dt float32, ComChannel chan HumanComStruct) {
 		speed := float32(3 * GridSize)
 		TargetLocation := engo.Point{float32(he.CurrentPath[0].x * GridSize), float32(he.CurrentPath[0].y * GridSize)}
 		if he.Direction == -1 {
-			fmt.Println("Getting new Direction")
 			he.Direction = he.GetDirection(TargetLocation)
 		}
 		x := float32((he.Direction%10)-1) * speed * dt
 		y := float32(((he.Direction/10)%10)-1) * speed * dt
 
-		fmt.Println(float32((he.Direction%10)-1), float32(((he.Direction/10)%10)-1))
+		//fmt.Println(float32((he.Direction%10)-1), float32(((he.Direction/10)%10)-1))
 
 		he.Position.Add(engo.Point{x, y})
 		//fmt.Println(he.Position.PointDistance(TargetLocation))
-		if he.Position.PointDistance(TargetLocation) < 1 {
+		if he.Position.PointDistance(TargetLocation) < 2 {
 			he.Position = TargetLocation
 			i, j := int(he.Position.X)/GridSize, int(he.Position.Y)/GridSize
 			I, J := he.LastGridPos.x, he.LastGridPos.y
@@ -428,7 +444,7 @@ func (he *HumanEntity) GetDirection(To engo.Point) int {
 	if dir == 11 {
 		panic("To path same as prev!")
 	}
-	fmt.Println(x, ",", y, "|", X, ",", Y, "||", dir)
+	//fmt.Println(x, ",", y, "|", X, ",", Y, "||", dir)
 	return dir
 }
 

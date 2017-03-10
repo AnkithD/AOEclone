@@ -192,7 +192,8 @@ var (
 
 	LabelGroupMap map[string]LabelGroup
 
-	LabelFont *common.Font
+	LabelFont      *common.Font
+	ActiveHUDLabel *LabelGroup
 )
 
 func (hs *HUDSystem) New(w *ecs.World) {
@@ -611,7 +612,7 @@ func (hs *HUDSystem) New(w *ecs.World) {
 		}
 
 		if hs.CurrentActiveLabel == nil ||
-			(hs.CurrentActiveLabel.Name != msg.Name || hs.CurrentLabelIndex != msg.Index) {
+			(msg.ID != hs.CurrentActiveLabel.ID || hs.CurrentLabelIndex != msg.Index) {
 			hs.SetBottomHUD(msg.Name, msg.Index, msg.ID)
 		}
 	})
@@ -750,6 +751,8 @@ func (hs *HUDSystem) Update(dt float32) {
 			}
 		}
 	}()
+
+	ActiveHUDLabel = hs.CurrentActiveLabel
 }
 
 func (hs *HUDSystem) SetBottomHUD(Name string, Index int, ID uint64) {

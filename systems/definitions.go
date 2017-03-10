@@ -369,8 +369,8 @@ func FillGrid(f Fillable, val bool) {
 
 	Grid[minx][miny] = val
 
-	for i := minx + 1; i < maxx; i += 1 {
-		for j := miny + 1; j < maxy; j += 1 {
+	for i := minx; i < maxx; i += 1 {
+		for j := miny; j < maxy; j += 1 {
 			Grid[i][j] = val
 		}
 	}
