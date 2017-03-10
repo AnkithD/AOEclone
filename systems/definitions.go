@@ -63,15 +63,15 @@ var (
 )
 
 // Message Structs
-type BuildingMessage struct {
+type SetBottomHUDMessage struct {
 	Action string
 	Name   string
 	Index  int
 	ID     uint64
 }
 
-func (BuildingMessage) Type() string {
-	return "BuildingMessage"
+func (SetBottomHUDMessage) Type() string {
+	return "SetBottomHUDMessage"
 }
 
 type CreateBuildingMessage struct {
@@ -91,12 +91,20 @@ func (DestroyBuildingMessage) Type() string {
 	return "DestroyBuildingMessage"
 }
 
-type HealthEnquiryMessage struct {
+type BuildingHealthEnquiryMessage struct {
 	ID uint64
 }
 
-func (HealthEnquiryMessage) Type() string {
-	return "HealthEnquiryMessage"
+func (BuildingHealthEnquiryMessage) Type() string {
+	return "BuildingHealthEnquiryMessage"
+}
+
+type HumanHealthEnquiryMessage struct {
+	ID uint64
+}
+
+func (HumanHealthEnquiryMessage) Type() string {
+	return "HumanHealthEnquiryMessage"
 }
 
 type HealthEnquiryResponseStruct struct {
@@ -121,6 +129,14 @@ type CheckAndRemoveHUDMessage struct {
 
 func (CheckAndRemoveHUDMessage) Type() string {
 	return "CheckAndRemoveHUDMessage"
+}
+
+type CreateHumanMessage struct {
+	Name string
+}
+
+func (CreateHumanMessage) Type() string {
+	return "CreateHumanMessage"
 }
 
 //Other types
@@ -244,7 +260,7 @@ func UnCacheInChunks(se StaticEntity) {
 	}
 }
 
-func GetSectorFromPos(x, y float32) ([]*HumanEntity, int) {
+func GetSectorFromPos(x, y float32) (*[]*HumanEntity, int) {
 	rownum := int(engo.WindowWidth()*ScaleFactor) / (GridSize * ChunkSize)
 	X := int(x) / (GridSize * SectorSize)
 	Y := int(y) / (GridSize * SectorSize)
@@ -252,7 +268,7 @@ func GetSectorFromPos(x, y float32) ([]*HumanEntity, int) {
 	//fmt.Println("Chunk of index", X, ",", Y)
 	//fmt.Println("Row number is", rownum)
 
-	return Sectors[Y*rownum+X], (Y*rownum + X)
+	return &Sectors[Y*rownum+X], (Y*rownum + X)
 }
 
 // Store Static objects in respective Chunk(s)
@@ -260,18 +276,19 @@ func CacheInSectors(he *HumanEntity) {
 	x, y := he.Position.X, he.Position.Y
 
 	sector, _ := GetSectorFromPos(x, y)
-	sector = append(sector, he)
+	//fmt.Println("Appending a", he.Name, "in Sec ", si)
+	*sector = append(*sector, he)
 }
 
-func UnCacheInSectors(he *HumanEntity) {
-	x, y := he.Position.X, he.Position.Y
+func UnCacheInSectors(he *HumanEntity, pos engo.Point) {
+	x, y := pos.X, pos.Y
 
 	sector, _ := GetSectorFromPos(x, y)
-	for i, _ := range sector {
-		entity := (sector)[i]
+	for i, _ := range *sector {
+		entity := (*sector)[i]
 		if entity.ID() == he.ID() {
-			(sector)[i] = (sector)[len(sector)-1]
-			sector = (sector)[:len(sector)-1]
+			(*sector)[i] = (*sector)[len(*sector)-1]
+			*sector = (*sector)[:len(*sector)-1]
 			break
 		}
 	}

@@ -148,82 +148,82 @@ func (ms *MapSystem) New(w *ecs.World) {
 
 func (ms *MapSystem) Update(dt float32) {
 
-	mx, my := GetAdjustedMousePos(false)
+	//mx, my := GetAdjustedMousePos(false)
 
-	// Map editing code
-	func() {
-		if engo.Input.Mouse.Action == engo.Press && engo.Input.Mouse.Button == engo.MouseButtonRight {
-			fmt.Println(item_tobe_placed)
-			item_tobe_placed += 1
-			var BuildingName string
+	// // Map editing code
+	// func() {
+	// 	if engo.Input.Mouse.Action == engo.Press && engo.Input.Mouse.Button == engo.MouseButtonRight {
+	// 		fmt.Println(item_tobe_placed)
+	// 		item_tobe_placed += 1
+	// 		var BuildingName string
 
-			switch item_tobe_placed % 6 {
-			case 0:
-				BuildingName = "Tree"
-			case 1:
-				BuildingName = "Bush"
-			case 2:
-				BuildingName = "House"
-			case 3:
-				BuildingName = "Town Center"
-			case 4:
-				BuildingName = "Military Block"
-			case 5:
-				BuildingName = "Resource Building"
-			default:
-				panic("Math is broken!")
-			}
+	// 		switch item_tobe_placed % 6 {
+	// 		case 0:
+	// 			BuildingName = "Tree"
+	// 		case 1:
+	// 			BuildingName = "Bush"
+	// 		case 2:
+	// 			BuildingName = "House"
+	// 		case 3:
+	// 			BuildingName = "Town Center"
+	// 		case 4:
+	// 			BuildingName = "Military Block"
+	// 		case 5:
+	// 			BuildingName = "Resource Building"
+	// 		default:
+	// 			panic("Math is broken!")
+	// 		}
 
-			fmt.Println("Left Click Now places", BuildingName)
-		}
-		if engo.Input.Mouse.Action == engo.Press && engo.Input.Mouse.Button == engo.MouseButtonLeft {
-			mouseheld = true
-		}
-		if engo.Input.Mouse.Action == engo.Release && engo.Input.Mouse.Button == engo.MouseButtonLeft {
-			mouseheld = false
-		}
-		if mouseheld {
-			var BuildingName string
+	// 		fmt.Println("Left Click Now places", BuildingName)
+	// 	}
+	// 	if engo.Input.Mouse.Action == engo.Press && engo.Input.Mouse.Button == engo.MouseButtonLeft {
+	// 		mouseheld = true
+	// 	}
+	// 	if engo.Input.Mouse.Action == engo.Release && engo.Input.Mouse.Button == engo.MouseButtonLeft {
+	// 		mouseheld = false
+	// 	}
+	// 	if mouseheld {
+	// 		var BuildingName string
 
-			switch item_tobe_placed % 6 {
-			case 0:
-				BuildingName = "Tree"
-			case 1:
-				BuildingName = "Bush"
-			case 2:
-				BuildingName = "House"
-			case 3:
-				BuildingName = "Town Center"
-			case 4:
-				BuildingName = "Military Block"
-			case 5:
-				BuildingName = "Resource Building"
-			default:
-				panic("Math is broken!")
-			}
-			if WithinGameWindow(mx, my) {
-				pik := float32(math.Floor(float64(mx)/float64(GridSize)) * float64(GridSize))
-				cik := float32(math.Floor(float64(my)/float64(GridSize)) * float64(GridSize))
-				pik = float32(math.Floor(float64(pik / float32(GridSize))))
-				cik = float32(math.Floor(float64(cik / float32(GridSize))))
-				if !Grid[int(pik)][int(cik)] {
-					engo.Mailbox.Dispatch(CreateBuildingMessage{Name: BuildingName, Position: engo.Point{X: pik * float32(GridSize), Y: cik * float32(GridSize)}})
-					fmt.Println("Create")
-				} else {
-				}
-			}
-		}
-		if engo.Input.Button(R_remove).Down() {
-			se := GetStaticHover()
-			if se != nil {
-				engo.Mailbox.Dispatch(DestroyBuildingMessage{obj: GetStaticHover()})
-			}
-		}
+	// 		switch item_tobe_placed % 6 {
+	// 		case 0:
+	// 			BuildingName = "Tree"
+	// 		case 1:
+	// 			BuildingName = "Bush"
+	// 		case 2:
+	// 			BuildingName = "House"
+	// 		case 3:
+	// 			BuildingName = "Town Center"
+	// 		case 4:
+	// 			BuildingName = "Military Block"
+	// 		case 5:
+	// 			BuildingName = "Resource Building"
+	// 		default:
+	// 			panic("Math is broken!")
+	// 		}
+	// 		if WithinGameWindow(mx, my) {
+	// 			pik := float32(math.Floor(float64(mx)/float64(GridSize)) * float64(GridSize))
+	// 			cik := float32(math.Floor(float64(my)/float64(GridSize)) * float64(GridSize))
+	// 			pik = float32(math.Floor(float64(pik / float32(GridSize))))
+	// 			cik = float32(math.Floor(float64(cik / float32(GridSize))))
+	// 			if !Grid[int(pik)][int(cik)] {
+	// 				engo.Mailbox.Dispatch(CreateBuildingMessage{Name: BuildingName, Position: engo.Point{X: pik * float32(GridSize), Y: cik * float32(GridSize)}})
+	// 				fmt.Println("Create")
+	// 			} else {
+	// 			}
+	// 		}
+	// 	}
+	// 	if engo.Input.Button(R_remove).Down() {
+	// 		se := GetStaticHover()
+	// 		if se != nil {
+	// 			engo.Mailbox.Dispatch(DestroyBuildingMessage{obj: GetStaticHover()})
+	// 		}
+	// 	}
 
-		if engo.Input.Button(SaveKey).JustReleased() {
-			engo.Mailbox.Dispatch(SaveMapMessage{Fname: "World.mapfile"})
-		}
-	}()
+	// 	if engo.Input.Button(SaveKey).JustReleased() {
+	// 		engo.Mailbox.Dispatch(SaveMapMessage{Fname: "World.mapfile"})
+	// 	}
+	// }()
 
 	//Rendering the Gridlines and Chunk Boxes
 	func() {
@@ -291,19 +291,28 @@ func (ms *MapSystem) Update(dt float32) {
 
 		if engo.Input.Mouse.Action == engo.Press && engo.Input.Mouse.Button == engo.MouseButtonMiddle {
 			fmt.Println("---------------------------------------------")
-			fmt.Println("Mouse Pos is", mx, ",", my)
+			fmt.Println("Mouse Pos is", mx, "(", int(mx)/GridSize, "),", my, "(", int(my)/GridSize, ")")
 			ChunkRef, ChunkIndex := GetChunkFromPos(mx, my)
 			Chunk := *ChunkRef
+			Sector, SectorIndex := GetSectorFromPos(mx, my)
 
 			if len(Chunk) > 0 {
 				fmt.Println("-------------------------")
 				for _, item := range Chunk {
 					fmt.Println(item.GetStaticComponent().Name, "present in chunk:", ChunkIndex)
 				}
-				fmt.Println("-------------------------")
 			} else {
 				fmt.Println("Chunk", ChunkIndex, "Empty")
 			}
+			fmt.Println("-------------------------")
+			if len(*Sector) > 0 {
+				for _, item := range *Sector {
+					fmt.Println(item.Name, "present in chunk:", SectorIndex)
+				}
+			} else {
+				fmt.Println("Sector", ChunkIndex, "Empty")
+			}
+			fmt.Println("-------------------------")
 
 			if GetGridAtPos(mx, my) {
 				fmt.Println("Grid at", int(mx)/GridSize, ",", int(my)/GridSize, "is occupied")

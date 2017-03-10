@@ -92,10 +92,10 @@ func (bs *BuildingSystem) New(w *ecs.World) {
 
 	}()
 
-	engo.Mailbox.Listen("HealthEnquiryMessage", func(_msg engo.Message) {
-		msg, ok := _msg.(HealthEnquiryMessage)
+	engo.Mailbox.Listen("BuildingHealthEnquiryMessage", func(_msg engo.Message) {
+		msg, ok := _msg.(BuildingHealthEnquiryMessage)
 		if !ok {
-			panic("Building System expected HealthEnquiryMessage, instead got unexpected")
+			panic("Building System expected BuildingHealthEnquiryMessage, instead got unexpected")
 		}
 		for _, item := range bs.Buildings {
 			if item.BasicEntity.ID() == msg.ID {
@@ -152,9 +152,8 @@ func (bs *BuildingSystem) Update(dt float32) {
 	mx, my := GetAdjustedMousePos(false)
 	mp := engo.Point{mx, my}
 
-	// Debug info with middle mouse click
 	func() {
-		if engo.Input.Mouse.Action == engo.Press && engo.Input.Mouse.Button == engo.MouseButtonLeft {
+		if engo.Input.Mouse.Action == engo.Press && engo.Input.Mouse.Button == engo.MouseButtonLeft && PlacingHuman == nil {
 			ChunkRef, _ := GetChunkFromPos(mx, my)
 			Chunk := *ChunkRef
 
@@ -163,7 +162,7 @@ func (bs *BuildingSystem) Update(dt float32) {
 				for _, item := range Chunk {
 					sc := item.GetStaticComponent()
 					if sc.Contains(mp) {
-						engo.Mailbox.Dispatch(BuildingMessage{ID: sc.BasicEntity.ID(), Name: sc.Name, Index: 0})
+						engo.Mailbox.Dispatch(SetBottomHUDMessage{ID: sc.BasicEntity.ID(), Name: sc.Name, Index: 0})
 					}
 					//fmt.Println(item.GetStaticComponent().Name, "present in chunk:", ChunkIndex)
 				}
@@ -275,6 +274,7 @@ func (bs *BuildingSystem) LoadMap(Fname string) {
 		bs.AddBuilding(args[0], engo.Point{float32(x), float32(y)})
 	}
 
+	fmt.Println("Loaded!")
 }
 
 type StaticComponent struct {

@@ -65,6 +65,7 @@ type HealthLabel struct {
 	Health    int
 	MaxHealth int
 	OwnerID   uint64
+	Type      string
 }
 
 func (hl *HealthLabel) SetSecondField(val interface{}) {
@@ -80,7 +81,11 @@ func (hl *HealthLabel) GetRenderComponent() *common.RenderComponent {
 }
 
 func (hl *HealthLabel) UpdateDrawable() {
-	engo.Mailbox.Dispatch(HealthEnquiryMessage{ID: hl.OwnerID})
+	if hl.Type == "Building" {
+		engo.Mailbox.Dispatch(BuildingHealthEnquiryMessage{ID: hl.OwnerID})
+	} else {
+		engo.Mailbox.Dispatch(HumanHealthEnquiryMessage{ID: hl.OwnerID})
+	}
 	if HealthEnquiryResponse.set {
 		HealthEnquiryResponse.set = false
 		if HealthEnquiryResponse.HealthResult != hl.Health {
@@ -116,6 +121,7 @@ type ResourceLabel struct {
 	Resource     int
 	ResourceType string
 	OwnerID      uint64
+	Type         string
 }
 
 func (rl *ResourceLabel) GetSpaceComponent() *common.SpaceComponent {
@@ -131,7 +137,11 @@ func (rl *ResourceLabel) SetSecondField(val interface{}) {
 }
 
 func (rl *ResourceLabel) UpdateDrawable() {
-	engo.Mailbox.Dispatch(HealthEnquiryMessage{ID: rl.OwnerID})
+	if rl.Type == "Building" {
+		engo.Mailbox.Dispatch(BuildingHealthEnquiryMessage{ID: rl.OwnerID})
+	} else {
+		engo.Mailbox.Dispatch(HumanHealthEnquiryMessage{ID: rl.OwnerID})
+	}
 	if HealthEnquiryResponse.set {
 		HealthEnquiryResponse.set = false
 		if HealthEnquiryResponse.HealthResult != rl.Resource {
@@ -177,7 +187,8 @@ type LabelGroup struct {
 
 var (
 	TownCenterLabels, MilitaryBlockLabels, ResourceBuildingLabels,
-	HouseLabels, VillagerLabels, BushLabels, TreeLabels LabelGroup
+	HouseLabels, VillagerLabels, BushLabels, TreeLabels,
+	WarriorLabels LabelGroup
 
 	LabelGroupMap map[string]LabelGroup
 
@@ -440,7 +451,7 @@ func (hs *HUDSystem) New(w *ecs.World) {
 			fmt.Println("Create Villager Button Clicked!")
 		}
 
-		temp3 = &HealthLabel{BasicEntity: ecs.NewBasic()}
+		temp3 = &HealthLabel{BasicEntity: ecs.NewBasic(), Type: "Building"}
 		temp3.SetSecondField(BuildingDetailsMap["Town Center"].MaxHealth)
 		*temp3.GetSpaceComponent() = common.SpaceComponent{Position: engo.Point{temp1.SpaceComponent.Position.X, temp1.SpaceComponent.Position.Y + 32}}
 		temp3.GetRenderComponent().SetShader(common.TextHUDShader)
@@ -462,7 +473,7 @@ func (hs *HUDSystem) New(w *ecs.World) {
 		temp1.SetShader(common.TextHUDShader)
 		temp1.SetZIndex(250)
 
-		temp3 = &HealthLabel{BasicEntity: ecs.NewBasic()}
+		temp3 = &HealthLabel{BasicEntity: ecs.NewBasic(), Type: "Building"}
 		temp3.SetSecondField(BuildingDetailsMap["House"].MaxHealth)
 		*temp3.GetSpaceComponent() = common.SpaceComponent{Position: engo.Point{temp1.SpaceComponent.Position.X, temp1.SpaceComponent.Position.Y + 32}}
 		temp3.GetRenderComponent().SetShader(common.TextHUDShader)
@@ -487,10 +498,12 @@ func (hs *HUDSystem) New(w *ecs.World) {
 		temp2.SetZIndex(250)
 
 		tempA = func() {
-			fmt.Println("Create Warrior Clicked!")
+			if PlacingHuman == nil {
+				engo.Mailbox.Dispatch(CreateHumanMessage{Name: "Warrior"})
+			}
 		}
 
-		temp3 = &HealthLabel{BasicEntity: ecs.NewBasic()}
+		temp3 = &HealthLabel{BasicEntity: ecs.NewBasic(), Type: "Building"}
 		temp3.SetSecondField(BuildingDetailsMap["Military Block"].MaxHealth)
 		*temp3.GetSpaceComponent() = common.SpaceComponent{Position: engo.Point{temp1.SpaceComponent.Position.X, temp1.SpaceComponent.Position.Y + 32}}
 		temp3.GetRenderComponent().SetShader(common.TextHUDShader)
@@ -512,7 +525,7 @@ func (hs *HUDSystem) New(w *ecs.World) {
 		temp1.SetShader(common.TextHUDShader)
 		temp1.SetZIndex(250)
 
-		temp3 = &HealthLabel{BasicEntity: ecs.NewBasic()}
+		temp3 = &HealthLabel{BasicEntity: ecs.NewBasic(), Type: "Building"}
 		temp3.SetSecondField(BuildingDetailsMap["Resource Building"].MaxHealth)
 		*temp3.GetSpaceComponent() = common.SpaceComponent{Position: engo.Point{temp1.SpaceComponent.Position.X, temp1.SpaceComponent.Position.Y + 32}}
 		temp3.GetRenderComponent().SetShader(common.TextHUDShader)
@@ -530,7 +543,7 @@ func (hs *HUDSystem) New(w *ecs.World) {
 		temp1.SetShader(common.TextHUDShader)
 		temp1.SetZIndex(250)
 
-		temp3 = &ResourceLabel{BasicEntity: ecs.NewBasic()}
+		temp3 = &ResourceLabel{BasicEntity: ecs.NewBasic(), Type: "Building"}
 		*temp3.GetSpaceComponent() = common.SpaceComponent{Position: engo.Point{temp1.SpaceComponent.Position.X, temp1.SpaceComponent.Position.Y + 32}}
 		temp3.GetRenderComponent().SetShader(common.TextHUDShader)
 		temp3.GetRenderComponent().SetZIndex(250)
@@ -547,7 +560,7 @@ func (hs *HUDSystem) New(w *ecs.World) {
 		temp1.SetShader(common.TextHUDShader)
 		temp1.SetZIndex(250)
 
-		temp3 = &ResourceLabel{BasicEntity: ecs.NewBasic()}
+		temp3 = &ResourceLabel{BasicEntity: ecs.NewBasic(), Type: "Building"}
 		*temp3.GetSpaceComponent() = common.SpaceComponent{Position: engo.Point{temp1.SpaceComponent.Position.X, temp1.SpaceComponent.Position.Y + 32}}
 		temp3.GetRenderComponent().SetShader(common.TextHUDShader)
 		temp3.GetRenderComponent().SetZIndex(250)
@@ -558,6 +571,24 @@ func (hs *HUDSystem) New(w *ecs.World) {
 
 		// -----------------------------------------------------------------------------------------------------
 
+		temp1 = Label{BasicEntity: ecs.NewBasic()}
+		temp1.SpaceComponent = common.SpaceComponent{Position: engo.Point{DescriptionRect.SpaceComponent.Position.X + 48, DescriptionRect.SpaceComponent.Position.Y + 32}}
+		temp1.RenderComponent.Drawable = common.Text{Font: fnt, Text: "Warrior"}
+		temp1.SetShader(common.TextHUDShader)
+		temp1.SetZIndex(250)
+
+		temp3 = &HealthLabel{BasicEntity: ecs.NewBasic(), Type: "Human"}
+		temp3.SetSecondField(HumanDetailsMap["Warrior"].MaxHealth)
+		*temp3.GetSpaceComponent() = common.SpaceComponent{Position: engo.Point{temp1.SpaceComponent.Position.X, temp1.SpaceComponent.Position.Y + 32}}
+		temp3.GetRenderComponent().SetShader(common.TextHUDShader)
+		temp3.GetRenderComponent().SetZIndex(250)
+
+		WarriorLabels = LabelGroup{Name: "Warrior"}
+		WarriorLabels.DescriptionLabel = temp1
+		WarriorLabels.DynamicLabels = append(make([]DynamicLabel, 0), temp3)
+
+		// -----------------------------------------------------------------------------------------------------
+
 		LabelGroupMap = make(map[string]LabelGroup)
 		LabelGroupMap["Town Center"] = TownCenterLabels
 		LabelGroupMap["Military Block"] = MilitaryBlockLabels
@@ -565,6 +596,7 @@ func (hs *HUDSystem) New(w *ecs.World) {
 		LabelGroupMap["House"] = HouseLabels
 		LabelGroupMap["Bush"] = BushLabels
 		LabelGroupMap["Tree"] = TreeLabels
+		LabelGroupMap["Warrior"] = WarriorLabels
 
 	}()
 
@@ -572,69 +604,10 @@ func (hs *HUDSystem) New(w *ecs.World) {
 	// -----------------------------------------------------------------------------------------------------
 	// -----------------------------------------------------------------------------------------------------
 
-	// Uncomment when proper items were implemented
-	for {
-		// temp1 = Label{BasicEntity: ecs.NewBasic()}
-		// temp1.SpaceComponent = common.SpaceComponent{Position: engo.Point{DescriptionRect.SpaceComponent.Position.X + 48, DescriptionRect.SpaceComponent.Position.Y + 32}}
-		// temp1.RenderComponent.Drawable = common.Text{Font: fnt, Text: "VILLAGER\n\n\nHealth : XX/YY"}
-		// temp1.SetShader(common.TextHUDShader)
-		// temp1.SetZIndex(250)
-
-		// temp2 = Label{BasicEntity: ecs.NewBasic()}
-		// temp2.SpaceComponent = common.SpaceComponent{Position: engo.Point{Action1Rect.SpaceComponent.Position.X + 16, Action1Rect.SpaceComponent.Position.Y + 16}}
-		// temp2.RenderComponent.Drawable = common.Text{Font: fnt, Text: "Build"}
-		// temp2.SetShader(common.TextHUDShader)
-		// temp2.SetZIndex(250)
-
-		// temp3 = Label{BasicEntity: ecs.NewBasic()}
-		// temp3.SpaceComponent = common.SpaceComponent{Position: engo.Point{Action2Rect.SpaceComponent.Position.X + 16, Action2Rect.SpaceComponent.Position.Y + 16}}
-		// temp3.RenderComponent.Drawable = common.Text{Font: fnt, Text: "Repair"}
-		// temp3.SetShader(common.TextHUDShader)
-		// temp3.SetZIndex(250)
-
-		// VillagerLabels = LabelGroup{Name: "Villager"}
-		// VillagerLabels.DescriptionLabel = temp1
-		// VillagerLabels.ActionLabels = append(VillagerLabels.ActionLabels, temp2)
-		// VillagerLabels.ActionLabels = append(VillagerLabels.ActionLabels, temp3)
-
-		// lab15 := Label{BasicEntity: ecs.NewBasic()}
-		// lab15.SpaceComponent = common.SpaceComponent{Position: engo.Point{DescriptionRect.SpaceComponent.Position.X + 48, DescriptionRect.SpaceComponent.Position.Y + 32}}
-		// lab15.RenderComponent.Drawable = common.Text{Font: fnt, Text: "Warrior"}
-		// lab15.SetShader(common.TextHUDShader)
-		// lab15.SetZIndex(250)
-
-		// //If clicked on Build Then the following options are displayed
-
-		// lab11 := Label{BasicEntity: ecs.NewBasic()}
-		// lab11.SpaceComponent = common.SpaceComponent{Position: engo.Point{Action1Rect.SpaceComponent.Position.X + 16, Action1Rect.SpaceComponent.Position.Y + 16}}
-		// lab11.RenderComponent.Drawable = common.Text{Font: fnt, Text: "House"}
-		// lab11.SetShader(common.TextHUDShader)
-		// lab11.SetZIndex(250)
-
-		// lab12 := Label{BasicEntity: ecs.NewBasic()}
-		// lab12.SpaceComponent = common.SpaceComponent{Position: engo.Point{Action2Rect.SpaceComponent.Position.X + 16, Action2Rect.SpaceComponent.Position.Y + 16}}
-		// lab12.RenderComponent.Drawable = common.Text{Font: fnt, Text: "Military Camp"}
-		// lab12.SetShader(common.TextHUDShader)
-		// lab12.SetZIndex(250)
-
-		// lab13 := Label{BasicEntity: ecs.NewBasic()}
-		// lab13.SpaceComponent = common.SpaceComponent{Position: engo.Point{Action3Rect.SpaceComponent.Position.X + 16, Action3Rect.SpaceComponent.Position.Y + 16}}
-		// lab13.RenderComponent.Drawable = common.Text{Font: fnt, Text: "Resource"}
-		// lab13.SetShader(common.TextHUDShader)
-		// lab13.SetZIndex(250)
-
-		// lab14 := Label{BasicEntity: ecs.NewBasic()}
-		// lab14.SpaceComponent = common.SpaceComponent{Position: engo.Point{Action4Rect.SpaceComponent.Position.X + 16, Action4Rect.SpaceComponent.Position.Y + 16}}
-		// lab14.RenderComponent.Drawable = common.Text{Font: fnt, Text: "Go Back"}
-		// lab14.SetShader(common.TextHUDShader)
-		// lab14.SetZIndex(250)
-		break
-	}
-
-	engo.Mailbox.Listen("BuildingMessage", func(_msg engo.Message) {
-		msg, ok := _msg.(BuildingMessage)
+	engo.Mailbox.Listen("SetBottomHUDMessage", func(_msg engo.Message) {
+		msg, ok := _msg.(SetBottomHUDMessage)
 		if !ok {
-			panic("HUD System expected BuildingMessage Message, instead got unexpected")
+			panic("HUD System expected SetBottomHUDMessage Message, instead got unexpected")
 		}
 
 		if hs.CurrentActiveLabel == nil ||

@@ -9,15 +9,16 @@ import (
 	"image/color"
 	"math"
 	"math/rand"
-	"sync"
+	"runtime"
+	//"sync"
 )
 
 var (
 	HumanDetailsMap map[string]HumanDetails
 
-	timer float32
-
-	n int
+	timer        float32
+	n            int
+	PlacingHuman *HumanIcon
 
 	PathBlocks []*GridEntity
 )
@@ -25,8 +26,9 @@ var (
 type AISystem struct {
 	world *ecs.World
 
-	Humans        []HumanEntity
+	Humans        []*HumanEntity
 	HumanChannels chan HumanComStruct
+	FChannelNum   bool
 }
 
 const (
@@ -37,9 +39,12 @@ const (
 
 func (ais *AISystem) New(w *ecs.World) {
 	ais.world = w
+	ais.Humans = make([]*HumanEntity, 0)
+	ais.HumanChannels = make(chan HumanComStruct, 100)
+
+	PlacingHuman = nil
 	PathBlocks = make([]*GridEntity, 0)
 	HumanDetailsMap = make(map[string]HumanDetails)
-
 	// Defining Human Entities
 	func() {
 		tex, err := common.LoadedSprite(WarriorSprite)
@@ -74,10 +79,69 @@ func (ais *AISystem) New(w *ecs.World) {
 		HumanDetailsMap[EWarriorDetails.Name] = EWarriorDetails
 	}()
 
-	fmt.Println("AI System Initialized")
+	ais.CreateHuman("Warrior", engo.Point{float32(GridSize * 19), float32(GridSize * 9)})
+
+	engo.Mailbox.Listen("HumanHealthEnquiryMessage", func(_msg engo.Message) {
+		msg, ok := _msg.(HumanHealthEnquiryMessage)
+		if !ok {
+			panic("AI System expected HumanHealthEnquiryMessage, instead got unexpected")
+		}
+		for _, item := range ais.Humans {
+			if item.BasicEntity.ID() == msg.ID {
+				HealthEnquiryResponse.HealthResult = item.Health
+				// switch item.Name {
+				// case "Bush":
+				// 	HealthEnquiryResponse.ResourceName = "Food"
+				// case "Tree":
+				// 	HealthEnquiryResponse.ResourceName = "Wood"
+				// }
+				HealthEnquiryResponse.set = true
+				return
+			}
+		}
+
+		panic("Health Enquiry for unkown building")
+	})
+
+	engo.Mailbox.Listen("CreateHumanMessage", func(_msg engo.Message) {
+		fmt.Println("Got message")
+		msg, ok := _msg.(CreateHumanMessage)
+		if !ok {
+			panic("AI System wants Create human message!")
+		}
+
+		mx, my := GetAdjustedMousePos(false)
+		mp := engo.Point{mx, my}
+		detail := HumanDetailsMap[msg.Name]
+		PlacingHuman = &HumanIcon{
+			BasicEntity: ecs.NewBasic(),
+			SpaceComponent: common.SpaceComponent{
+				Position: mp,
+				Width:    detail.Width,
+				Height:   detail.Height,
+			},
+			RenderComponent: common.RenderComponent{
+				Drawable: detail.Texture,
+				Color:    color.RGBA{255, 255, 255, 150},
+			},
+			Name: msg.Name,
+		}
+
+		ActiveSystems.RenderSys.Add(
+			&PlacingHuman.BasicEntity,
+			&PlacingHuman.RenderComponent,
+			&PlacingHuman.SpaceComponent,
+		)
+	})
+	for i, _ := range ais.Humans {
+		go ais.Humans[i].Update(0, ais.HumanChannels)
+	}
+
+	fmt.Println("AI System Initialized: Note", runtime.GOMAXPROCS(0), "Physical Threads available")
 }
 func (ais *AISystem) Update(dt float32) {
 
+	// Enemy Spawning
 	func() {
 		timer = timer + dt
 		if timer >= float32(50000) {
@@ -107,10 +171,11 @@ func (ais *AISystem) Update(dt float32) {
 		for i, _ := range PathBlocks {
 			r, g, b, a := PathBlocks[i].RenderComponent.Color.RGBA()
 			A := float32(a) / 255
-			A -= (255 * dt) / 2
+			A -= (255 * dt) / 4
 			if A > 0 {
 				A = float32(math.Floor(float64(A)))
 				PathBlocks[i].RenderComponent.Color = color.RGBA{uint8(r), uint8(g), uint8(b), uint8(A)}
+				ShouldDelete[i] = false
 			} else {
 				ShouldDelete[i] = true
 			}
@@ -135,6 +200,7 @@ func (ais *AISystem) Update(dt float32) {
 	}()
 
 	mx, my := GetAdjustedMousePos(false)
+	mp := engo.Point{mx, my}
 	// A* Visualization
 	func() {
 		if engo.Input.Button(ShiftKey).JustReleased() && ShowDebugPathfinding {
@@ -160,6 +226,62 @@ func (ais *AISystem) Update(dt float32) {
 		default:
 		}
 	}()
+
+	// Comunications with Humans
+	func() {
+	ReadMessage:
+		for {
+			select {
+			case msg := <-ais.HumanChannels:
+				for i, _ := range ais.Humans {
+					if ais.Humans[i].ID() == msg.ID {
+						go ais.Humans[i].Update(dt, ais.HumanChannels)
+					}
+				}
+			default:
+				break ReadMessage
+			}
+		}
+
+		// for i, _ := range ais.Humans {
+		// 	ais.Humans[i].Update(dt, ais.HumanChannels)
+		// }
+	}()
+
+	// Handling of Mouse click on human
+	func() {
+		if engo.Input.Mouse.Action == engo.Press && engo.Input.Mouse.Button == engo.MouseButtonLeft && PlacingHuman == nil {
+			Sector, _ := GetSectorFromPos(mx, my)
+
+			if len(*Sector) > 0 {
+				//fmt.Println("-------------------------")
+				for _, item := range *Sector {
+					if item.SpaceComponent.Contains(mp) {
+						engo.Mailbox.Dispatch(SetBottomHUDMessage{ID: item.ID(), Name: item.Name, Index: 0})
+					}
+					//fmt.Println(item.GetStaticComponent().Name, "present in chunk:", ChunkIndex)
+				}
+				//fmt.Println("-------------------------")
+			} else {
+				//fmt.Println("Chunk", ChunkIndex, "Empty")
+			}
+		}
+	}()
+
+	// Placing Human code
+	func() {
+		if PlacingHuman != nil {
+			PlacingHuman.SpaceComponent.Position = mp
+			if engo.Input.Mouse.Action == engo.Press && engo.Input.Mouse.Button == engo.MouseButtonLeft &&
+				WithinGameWindow(mx, my) && !GetGridAtPos(mx, my) {
+				pos := engo.Point{X: float32((int(mx) / GridSize) * GridSize), Y: float32((int(my) / GridSize) * GridSize)}
+				ActiveSystems.RenderSys.Remove(PlacingHuman.BasicEntity)
+				ais.CreateHuman(PlacingHuman.Name, pos)
+				PlacingHuman = nil
+			}
+		}
+	}()
+
 }
 
 func (ais *AISystem) CreateHuman(_Name string, Pos engo.Point) {
@@ -172,21 +294,29 @@ func (ais *AISystem) CreateHuman(_Name string, Pos engo.Point) {
 		},
 		AIComponent: AIComponent{
 			State:          StateWaiting,
-			LastGridPos:    engo.Point{X: float32(math.Floor(float64(Pos.X / float32(GridSize)))), Y: float32(math.Floor(float64(Pos.Y / float32(GridSize))))},
-			SpaceComponent: common.SpaceComponent{Position: Pos},
+			LastGridPos:    grid{x: int(Pos.X) / GridSize, y: int(Pos.Y) / GridSize},
+			SpaceComponent: common.SpaceComponent{Position: Pos, Width: details.Width, Height: details.Height},
+			Direction:      -1,
 		},
 		Health: details.MaxHealth,
 		Name:   _Name,
 	}
 
-	ais.Humans = append(ais.Humans, new_human)
+	ais.Humans = append(ais.Humans, &new_human)
 	CacheInSectors(&new_human)
-	Grid[int(new_human.LastGridPos.X)][int(new_human.LastGridPos.Y)] = true
+	Grid[new_human.LastGridPos.x][new_human.LastGridPos.y] = true
 
 	ActiveSystems.RenderSys.Add(&new_human.BasicEntity, &new_human.RenderComponent, &new_human.SpaceComponent)
 }
 
 func (*AISystem) Remove(ecs.BasicEntity) {}
+
+type HumanIcon struct {
+	ecs.BasicEntity
+	common.RenderComponent
+	common.SpaceComponent
+	Name string
+}
 
 type HumanEntity struct {
 	ecs.BasicEntity
@@ -202,31 +332,104 @@ type AIComponent struct {
 	EndPoint    engo.Point
 	CurrentPath []grid
 	State       int
-	LastGridPos engo.Point
+	LastGridPos grid
+	Direction   int
+
 	common.SpaceComponent
 }
 
-func (aic *AIComponent) MoveTo(To engo.Point) {
+func (he *HumanEntity) MoveTo(To engo.Point) {
 	if WithinGameWindow(To.X, To.Y) {
 		c := make(chan []grid)
-		GetPath(PointToGrid(aic.Position), PointToGrid(To), c)
-		aic.CurrentPath = <-c
+		go GetPath(PointToGrid(he.Position), PointToGrid(To), c)
+		he.CurrentPath = <-c
+		he.Direction = -1
+		he.State = StateMoving
+		// for _, item := range he.CurrentPath {
+		// 	DrawPathBlock(item.x, item.y, color.RGBA{0, 0, 255, 255})
+		// }
+		return
 	}
 }
 
-func (aic *AIComponent) Update(dt float32) {
-	switch aic.State {
+func (he *HumanEntity) Update(dt float32, ComChannel chan HumanComStruct) {
+
+	switch he.State {
 	case StateWaiting:
-		aic.MoveTo(engo.Point{X: float32(GridSize * 30), Y: float32(GridSize * 30)})
-		aic.State = StateMoving
+		if engo.Input.Mouse.Action == engo.Press && engo.Input.Mouse.Button == engo.MouseButtonRight {
+			mx, my := GetAdjustedMousePos(false)
+			mp := engo.Point{mx, my}
+			x, y := int(mx)/GridSize, int(my)/GridSize
+			fmt.Println(x != int(he.Position.X)/GridSize, y != int(he.Position.Y)/GridSize,
+				WithinGameWindow(mx, my), !Grid[x][y])
+			if !(x == int(he.Position.X)/GridSize && y == int(he.Position.Y)/GridSize) &&
+				WithinGameWindow(mx, my) && !Grid[x][y] {
+				DrawPathBlock(x, y, color.RGBA{194, 24, 7, 150})
+				he.MoveTo(mp)
+			}
+		}
 	case StateMoving:
-		TargetLocation := GetCenterOfGrid(aic.CurrentPath[0].x, aic.CurrentPath[0].y)
-		x := (TargetLocation.X - aic.Position.X) * dt
-		y := (TargetLocation.Y - aic.Position.Y) * dt
+		speed := float32(3 * GridSize)
+		TargetLocation := engo.Point{float32(he.CurrentPath[0].x * GridSize), float32(he.CurrentPath[0].y * GridSize)}
+		if he.Direction == -1 {
+			fmt.Println("Getting new Direction")
+			he.Direction = he.GetDirection(TargetLocation)
+		}
+		x := float32((he.Direction%10)-1) * speed * dt
+		y := float32(((he.Direction/10)%10)-1) * speed * dt
 
-		aic.Position.Add(engo.Point{x, y})
+		fmt.Println(float32((he.Direction%10)-1), float32(((he.Direction/10)%10)-1))
 
+		he.Position.Add(engo.Point{x, y})
+		//fmt.Println(he.Position.PointDistance(TargetLocation))
+		if he.Position.PointDistance(TargetLocation) < 1 {
+			he.Position = TargetLocation
+			i, j := int(he.Position.X)/GridSize, int(he.Position.Y)/GridSize
+			I, J := he.LastGridPos.x, he.LastGridPos.y
+
+			Grid[I][J] = false
+			Grid[i][j] = true
+
+			_, prevsec := GetSectorFromPos(float32(i*GridSize), float32(j*GridSize))
+			_, thissec := GetSectorFromPos(float32(I*GridSize), float32(J*GridSize))
+			if prevsec != thissec {
+				UnCacheInSectors(he, engo.Point{float32(I * GridSize), float32(J * GridSize)})
+				CacheInSectors(he)
+			}
+
+			he.Direction = -1
+			if len(he.CurrentPath) > 1 {
+				he.CurrentPath = he.CurrentPath[1:]
+			} else {
+				he.State = StateWaiting
+			}
+		}
 	}
+	ComChannel <- HumanComStruct{ID: he.BasicEntity.ID()}
+}
+
+func (he *HumanEntity) GetDirection(To engo.Point) int {
+	x, y := int(he.Position.X)/GridSize, int(he.Position.Y)/GridSize
+	X, Y := int(To.X)/GridSize, int(To.Y)/GridSize
+
+	dir := 0
+	if X > x {
+		dir += 2
+	} else if X == x {
+		dir += 1
+	}
+
+	if Y > y {
+		dir += 20
+	} else if Y == y {
+		dir += 10
+	}
+
+	if dir == 11 {
+		panic("To path same as prev!")
+	}
+	fmt.Println(x, ",", y, "|", X, ",", Y, "||", dir)
+	return dir
 }
 
 type HumanDetails struct {
@@ -239,14 +442,8 @@ type HumanDetails struct {
 }
 
 type HumanComStruct struct {
-	FinishedUpdate bool
-	RW_Mutex       sync.Mutex
-}
-
-func (hcs *HumanComStruct) ReadUpdateStatus() bool {
-	hcs.RW_Mutex.Lock()
-	defer hcs.RW_Mutex.Unlock()
-	return hcs.FinishedUpdate
+	RunUpdate bool
+	ID        uint64
 }
 
 func PointToGrid(p engo.Point) grid {
@@ -281,8 +478,8 @@ func (h *gridHeap) Pop() interface{} {
 }
 
 func hvalue(x, y int, endgrid grid) float32 {
-	var diagCost, sideCost float32
-	diagCost, sideCost = 1, 1
+	// var diagCost, sideCost float32
+	// diagCost, sideCost = 1, 1
 
 	var a, b int
 	X := endgrid.x
@@ -292,7 +489,7 @@ func hvalue(x, y int, endgrid grid) float32 {
 	if a > b {
 		a, b = b, a
 	}
-	return (float32(b) - float32(a)*(diagCost-sideCost))
+	return float32(a + b)
 	//return b
 }
 
@@ -303,9 +500,9 @@ func eval(neighbor *grid, block *grid, endgrid *grid, h *gridHeap, list *[][]boo
 		return true
 	}
 	if neighbor.x == block.x || neighbor.y == block.y {
-		neighbor.g = block.g + 1
+		neighbor.g = block.g + 10
 	} else {
-		neighbor.g = block.g + 1.414
+		neighbor.g = block.g + 14
 	}
 	hval := hvalue(neighbor.x, neighbor.y, *endgrid)
 	neighbor.f = hval + neighbor.g
@@ -479,7 +676,6 @@ func ReversePath(slice []grid) []grid {
 }
 
 func GetPath(startgrid grid, endgrid grid, c chan []grid) {
-
 	x1 := startgrid.x
 	y1 := startgrid.y
 	h := &gridHeap{}
@@ -487,9 +683,9 @@ func GetPath(startgrid grid, endgrid grid, c chan []grid) {
 	startgrid.par = &startgrid
 	startgrid.g = 0
 
-	list := make([][]bool, int(engo.WindowWidth()*ScaleFactor)/GridSize)
+	list := make([][]bool, GridMaxX)
 	for i, _ := range list {
-		list[i] = make([]bool, int(engo.WindowHeight()*ScaleFactor)/GridSize)
+		list[i] = make([]bool, GridMaxY)
 	}
 	list[x1][y1] = true
 
@@ -510,7 +706,6 @@ func GetPath(startgrid grid, endgrid grid, c chan []grid) {
 			c <- make([]grid, 0)
 		}
 	}
-	path = append(path, temp)
 	c <- ReversePath(path)
 
 }
@@ -520,8 +715,8 @@ func DrawPathBlock(x, y int, col color.RGBA) {
 		BasicEntity: ecs.NewBasic(),
 		SpaceComponent: common.SpaceComponent{
 			Position: engo.Point{float32(x * GridSize), float32(y * GridSize)},
-			Width:    float32(GridSize - 10),
-			Height:   float32(GridSize - 10),
+			Width:    float32(GridSize),
+			Height:   float32(GridSize),
 		},
 		RenderComponent: common.RenderComponent{
 			Drawable: common.Rectangle{},
