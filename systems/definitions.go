@@ -281,6 +281,12 @@ func GetGridAtPos(x, y float32) bool {
 	return Grid[int(x)/GridSize][int(y)/GridSize]
 }
 
+func GetCenterOfGrid(x, y int) engo.Point {
+	X, Y := x*GridSize, y*GridSize
+
+	return engo.Point{float32(X + 16), float32(Y + 16)}
+}
+
 func WithinGameWindow(x, y float32) bool {
 	CamSys := ActiveSystems.CameraSys
 	cx, cy := CamSys.X()-engo.WindowWidth()/2, CamSys.Y()-engo.WindowHeight()/2

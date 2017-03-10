@@ -9,6 +9,7 @@ import (
 	"image/color"
 	"math"
 	"math/rand"
+	"sync"
 )
 
 var (
@@ -24,7 +25,8 @@ var (
 type AISystem struct {
 	world *ecs.World
 
-	Humans []HumanEntity
+	Humans        []HumanEntity
+	HumanChannels chan HumanComStruct
 }
 
 const (
@@ -165,15 +167,13 @@ func (ais *AISystem) CreateHuman(_Name string, Pos engo.Point) {
 
 	new_human := HumanEntity{
 		BasicEntity: ecs.NewBasic(),
-		SpaceComponent: common.SpaceComponent{
-			Position: Pos,
-		},
 		RenderComponent: common.RenderComponent{
 			Drawable: details.Texture,
 		},
 		AIComponent: AIComponent{
-			State:       StateWaiting,
-			LastGridPos: engo.Point{X: float32(math.Floor(float64(Pos.X / float32(GridSize)))), Y: float32(math.Floor(float64(Pos.Y / float32(GridSize))))},
+			State:          StateWaiting,
+			LastGridPos:    engo.Point{X: float32(math.Floor(float64(Pos.X / float32(GridSize)))), Y: float32(math.Floor(float64(Pos.Y / float32(GridSize))))},
+			SpaceComponent: common.SpaceComponent{Position: Pos},
 		},
 		Health: details.MaxHealth,
 		Name:   _Name,
@@ -191,7 +191,6 @@ func (*AISystem) Remove(ecs.BasicEntity) {}
 type HumanEntity struct {
 	ecs.BasicEntity
 	common.RenderComponent
-	common.SpaceComponent
 	AIComponent
 
 	Name   string
@@ -204,12 +203,28 @@ type AIComponent struct {
 	CurrentPath []grid
 	State       int
 	LastGridPos engo.Point
+	common.SpaceComponent
 }
 
-func (aic *AIComponent) MoveTo(To engo.Point) {}
+func (aic *AIComponent) MoveTo(To engo.Point) {
+	if WithinGameWindow(To.X, To.Y) {
+		c := make(chan []grid)
+		GetPath(PointToGrid(aic.Position), PointToGrid(To), c)
+		aic.CurrentPath = <-c
+	}
+}
 
 func (aic *AIComponent) Update(dt float32) {
-	if aic.State == StateWaiting {
+	switch aic.State {
+	case StateWaiting:
+		aic.MoveTo(engo.Point{X: float32(GridSize * 30), Y: float32(GridSize * 30)})
+		aic.State = StateMoving
+	case StateMoving:
+		TargetLocation := GetCenterOfGrid(aic.CurrentPath[0].x, aic.CurrentPath[0].y)
+		x := (TargetLocation.X - aic.Position.X) * dt
+		y := (TargetLocation.Y - aic.Position.Y) * dt
+
+		aic.Position.Add(engo.Point{x, y})
 
 	}
 }
@@ -221,6 +236,21 @@ type HumanDetails struct {
 	Texture   common.Drawable
 	Width     float32
 	Height    float32
+}
+
+type HumanComStruct struct {
+	FinishedUpdate bool
+	RW_Mutex       sync.Mutex
+}
+
+func (hcs *HumanComStruct) ReadUpdateStatus() bool {
+	hcs.RW_Mutex.Lock()
+	defer hcs.RW_Mutex.Unlock()
+	return hcs.FinishedUpdate
+}
+
+func PointToGrid(p engo.Point) grid {
+	return grid{x: int(p.X) / GridSize, y: int(p.Y) / GridSize}
 }
 
 //---------------------------------------------PathFinding Algorithm------------------------------------------------
