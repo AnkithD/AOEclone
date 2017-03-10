@@ -188,7 +188,7 @@ type LabelGroup struct {
 var (
 	TownCenterLabels, MilitaryBlockLabels, ResourceBuildingLabels,
 	HouseLabels, VillagerLabels, BushLabels, TreeLabels,
-	WarriorLabels LabelGroup
+	WarriorLabels, EnemyLabels LabelGroup
 
 	LabelGroupMap map[string]LabelGroup
 
@@ -590,6 +590,24 @@ func (hs *HUDSystem) New(w *ecs.World) {
 
 		// -----------------------------------------------------------------------------------------------------
 
+		temp1 = Label{BasicEntity: ecs.NewBasic()}
+		temp1.SpaceComponent = common.SpaceComponent{Position: engo.Point{DescriptionRect.SpaceComponent.Position.X + 48, DescriptionRect.SpaceComponent.Position.Y + 32}}
+		temp1.RenderComponent.Drawable = common.Text{Font: fnt, Text: "Enemy"}
+		temp1.SetShader(common.TextHUDShader)
+		temp1.SetZIndex(250)
+
+		temp3 = &HealthLabel{BasicEntity: ecs.NewBasic(), Type: "Human"}
+		temp3.SetSecondField(HumanDetailsMap["Enemy"].MaxHealth)
+		*temp3.GetSpaceComponent() = common.SpaceComponent{Position: engo.Point{temp1.SpaceComponent.Position.X, temp1.SpaceComponent.Position.Y + 32}}
+		temp3.GetRenderComponent().SetShader(common.TextHUDShader)
+		temp3.GetRenderComponent().SetZIndex(250)
+
+		EnemyLabels = LabelGroup{Name: "Enemy"}
+		EnemyLabels.DescriptionLabel = temp1
+		EnemyLabels.DynamicLabels = append(make([]DynamicLabel, 0), temp3)
+
+		// -----------------------------------------------------------------------------------------------------
+
 		LabelGroupMap = make(map[string]LabelGroup)
 		LabelGroupMap["Town Center"] = TownCenterLabels
 		LabelGroupMap["Military Block"] = MilitaryBlockLabels
@@ -598,6 +616,7 @@ func (hs *HUDSystem) New(w *ecs.World) {
 		LabelGroupMap["Bush"] = BushLabels
 		LabelGroupMap["Tree"] = TreeLabels
 		LabelGroupMap["Warrior"] = WarriorLabels
+		LabelGroupMap["Enemy"] = EnemyLabels
 
 	}()
 

@@ -20,14 +20,18 @@ var (
 	n            int
 	PlacingHuman *HumanIcon
 
-	PathBlocks []*GridEntity
-	timeMax    float32
+	PathBlocks    []*GridEntity
+	timeMax       float32
+	PatrolPoints  []grid
+	PatrolIndex   int
+	enemies_reach bool
 )
 
 type AISystem struct {
 	world *ecs.World
 
 	Humans        []*HumanEntity
+	Enimies       []*HumanEntity
 	HumanChannels chan HumanComStruct
 	FChannelNum   bool
 }
@@ -41,9 +45,12 @@ const (
 func (ais *AISystem) New(w *ecs.World) {
 	ais.world = w
 	ais.Humans = make([]*HumanEntity, 0)
+	ais.Enimies = make([]*HumanEntity, 0)
 	ais.HumanChannels = make(chan HumanComStruct, 100)
 
-	timeMax = 30
+	enemies_reach = false
+
+	timeMax = 1
 	PlacingHuman = nil
 	PathBlocks = make([]*GridEntity, 0)
 	HumanDetailsMap = make(map[string]HumanDetails)
@@ -99,12 +106,24 @@ func (ais *AISystem) New(w *ecs.World) {
 				return
 			}
 		}
+		for _, item := range ais.Enimies {
+			if item.BasicEntity.ID() == msg.ID {
+				HealthEnquiryResponse.HealthResult = item.Health
+				// switch item.Name {
+				// case "Bush":
+				// 	HealthEnquiryResponse.ResourceName = "Food"
+				// case "Tree":
+				// 	HealthEnquiryResponse.ResourceName = "Wood"
+				// }
+				HealthEnquiryResponse.set = true
+				return
+			}
+		}
 
-		panic("Health Enquiry for unkown building")
+		panic("Health Enquiry for unkown Human")
 	})
 
 	engo.Mailbox.Listen("CreateHumanMessage", func(_msg engo.Message) {
-		fmt.Println("Got message")
 		msg, ok := _msg.(CreateHumanMessage)
 		if !ok {
 			panic("AI System wants Create human message!")
@@ -145,7 +164,7 @@ func (ais *AISystem) Update(dt float32) {
 	func() {
 		timer = timer + dt
 		if timer >= timeMax {
-			timeMax = 180
+			timeMax = 300
 			n = n + 2
 			//fmt.Println("soldiers have started at the coordinates:\n")
 			timer = 0
@@ -221,7 +240,7 @@ func (ais *AISystem) Update(dt float32) {
 				DrawPathBlock(s.x, s.y, color.RGBA{0, 0, 255, 255})
 				go GetPath(s, e, PathChannel)
 			} else {
-				fmt.Println(e.x, e.y, GridMaxX, GridMaxY)
+				//fmt.Println(e.x, e.y, GridMaxX, GridMaxY)
 			}
 		}
 
@@ -247,6 +266,11 @@ func (ais *AISystem) Update(dt float32) {
 				for i, _ := range ais.Humans {
 					if ais.Humans[i].ID() == msg.ID {
 						go ais.Humans[i].Update(dt, ais.HumanChannels)
+					}
+				}
+				for i, _ := range ais.Enimies {
+					if ais.Enimies[i].ID() == msg.ID {
+						go ais.Enimies[i].Update(dt, ais.HumanChannels)
 					}
 				}
 			default:
@@ -313,7 +337,11 @@ func (ais *AISystem) CreateHuman(_Name string, Pos engo.Point) {
 		Name:   _Name,
 	}
 
-	ais.Humans = append(ais.Humans, &new_human)
+	if _Name == "Warrior" {
+		ais.Humans = append(ais.Humans, &new_human)
+	} else {
+		ais.Enimies = append(ais.Enimies, &new_human)
+	}
 	CacheInSectors(&new_human)
 	Grid[new_human.LastGridPos.x][new_human.LastGridPos.y] = true
 
@@ -368,8 +396,38 @@ func (he *HumanEntity) Update(dt float32, ComChannel chan HumanComStruct) {
 
 	switch he.State {
 	case StateWaiting:
-		if he.Name == "Enemy" && dt == 0 {
-			he.MoveTo(engo.Point{X: float32(32 * GridSize), Y: float32(21 * GridSize)})
+		if he.Name == "Enemy" && !enemies_reach {
+			pos := GetNearestFree(grid{x: 32, y: 21})
+			MoveGrid[pos.x][pos.y] = true
+			he.MoveTo(engo.Point{X: float32(pos.x * GridSize), Y: float32(pos.y * GridSize)})
+		}
+
+		if he.Name == "Enemy" && enemies_reach {
+			if he.Health <= 0 && he.Health != -1 {
+				ActiveSystems.RenderSys.Remove(he.BasicEntity)
+				he.Health = -1
+			}
+			if he.Health == -1 {
+				return
+			}
+			sec, _ := GetSectorFromPos(he.Position.X, he.Position.Y)
+			for i, _ := range *(sec) {
+				human := (*sec)[i]
+				if human.Name == "Warrior" {
+					x, y := int(human.Position.X)/GridSize, int(human.Position.Y)/GridSize
+					i, j := int(he.Position.X)/GridSize, int(he.Position.Y)/GridSize
+					if x < i {
+						x, i = i, x
+					}
+					if y < j {
+						y, j = j, y
+					}
+
+					if (x-i) <= 1 && (y-j) <= 1 {
+						he.Health -= int(100 * dt)
+					}
+				}
+			}
 		}
 
 		if engo.Input.Mouse.Action == engo.Press && engo.Input.Mouse.Button == engo.MouseButtonRight &&
@@ -417,6 +475,8 @@ func (he *HumanEntity) Update(dt float32, ComChannel chan HumanComStruct) {
 			if len(he.CurrentPath) > 1 {
 				he.CurrentPath = he.CurrentPath[1:]
 			} else {
+				MoveGrid[i][j] = true
+				enemies_reach = true
 				he.State = StateWaiting
 			}
 		}
@@ -464,6 +524,38 @@ type HumanComStruct struct {
 
 func PointToGrid(p engo.Point) grid {
 	return grid{x: int(p.X) / GridSize, y: int(p.Y) / GridSize}
+}
+
+func GetNearestFree(p grid) grid {
+	if !GetGridAtPos(float32(p.x*GridSize), float32(p.y*GridSize)) {
+		return p
+	}
+	if WithinGameWindow(float32(p.x*GridSize), float32(p.y*GridSize)) && !GetGridAtPos(float32((p.x+1)*GridSize), float32((p.y+1)*GridSize)) {
+		return grid{x: p.x + 1, y: p.y + 1}
+	}
+	if WithinGameWindow(float32(p.x*GridSize), float32((p.y+1)*GridSize)) && !GetGridAtPos(float32((p.x)*GridSize), float32((p.y+1)*GridSize)) {
+		return grid{x: p.x, y: p.y + 1}
+	}
+	if WithinGameWindow(float32((p.x+1)*GridSize), float32((p.y)*GridSize)) && !GetGridAtPos(float32((p.x+1)*GridSize), float32((p.y)*GridSize)) {
+		return grid{x: p.x + 1, y: p.y}
+	}
+	if WithinGameWindow(float32((p.x-1)*GridSize), float32((p.y+1)*GridSize)) && !GetGridAtPos(float32((p.x-1)*GridSize), float32((p.y+1)*GridSize)) {
+		return grid{x: p.x - 1, y: p.y + 1}
+	}
+	if WithinGameWindow(float32(p.x*GridSize), float32((p.y-1)*GridSize)) && !GetGridAtPos(float32((p.x)*GridSize), float32((p.y-1)*GridSize)) {
+		return grid{x: p.x, y: p.y - 1}
+	}
+	if WithinGameWindow(float32((p.x-1)*GridSize), float32(p.y*GridSize)) && !GetGridAtPos(float32((p.x-1)*GridSize), float32((p.y)*GridSize)) {
+		return grid{x: p.x - 1, y: p.y}
+	}
+	if WithinGameWindow(float32((p.x-1)*GridSize), float32((p.y-1)*GridSize)) && !GetGridAtPos(float32((p.x-1)*GridSize), float32((p.y-1)*GridSize)) {
+		return grid{x: p.x - 1, y: p.y - 1}
+	}
+	if WithinGameWindow(float32((p.x+1)*GridSize), float32((p.y-1)*GridSize)) && !GetGridAtPos(float32((p.x+1)*GridSize), float32((p.y-1)*GridSize)) {
+		return grid{x: p.x + 1, y: p.y - 1}
+	}
+	return GetNearestFree(grid{x: p.x + 1, y: p.y + 1})
+
 }
 
 //---------------------------------------------PathFinding Algorithm------------------------------------------------
@@ -706,7 +798,6 @@ func GetPath(startgrid grid, endgrid grid, c chan []grid) {
 	list[x1][y1] = true
 
 	open(&startgrid, h, &list, &endgrid)
-
 	var path []grid
 
 	temp := endgrid

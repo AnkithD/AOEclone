@@ -55,6 +55,7 @@ var (
 	Chunks        [][]StaticEntity
 	ChunkSize     int
 	Grid          [][]bool
+	MoveGrid      [][]bool
 
 	GridMaxX int
 	GridMaxY int
@@ -295,7 +296,7 @@ func UnCacheInSectors(he *HumanEntity, pos engo.Point) {
 }
 
 func GetGridAtPos(x, y float32) bool {
-	return Grid[int(x)/GridSize][int(y)/GridSize]
+	return Grid[int(x)/GridSize][int(y)/GridSize] || MoveGrid[int(x)/GridSize][int(y)/GridSize]
 }
 
 func GetCenterOfGrid(x, y int) engo.Point {
@@ -422,6 +423,11 @@ func InitializeVariables() {
 	Grid = make([][]bool, GridMaxX)
 	for i, _ := range Grid {
 		Grid[i] = make([]bool, GridMaxY)
+	}
+
+	MoveGrid = make([][]bool, GridMaxX)
+	for i, _ := range MoveGrid {
+		MoveGrid[i] = make([]bool, GridMaxY)
 	}
 
 	// Chunks used to Cache Static Entities
